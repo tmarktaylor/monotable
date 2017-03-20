@@ -14,8 +14,3 @@ plug-in format functions, column width control.
 ### notes
 
 * Coming soon, a link to monotable in the Python Package Index.
-
-* The code examples in README.rst use Sphinx directives and are not displayed
-  by the preview on GitHub.  The examples are visible in the README.rst
-  raw view.
-
