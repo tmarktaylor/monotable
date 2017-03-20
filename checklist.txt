@@ -1,0 +1,15 @@
+- Update __init__.py.__version__ per Semantic Versioning.  Tests will fail
+  until all version strings are the same.
+- Check for outstanding 'to do' notes.
+- Make sure api.rst has autodoc directives for API additions.
+- update changelog
+- update copyright year
+- Run code inspections.
+- Run pytest cases.
+- Run pytest cases with python warnings enabled. 'python -W once -m pytest'
+- Run tests against 2.7 and 3.x python versions.
+- Run pytest with statement and branch coverage.
+- Run Sphinx doctest.
+- Run readme_preview.py.
+- Build Sphinx docs.
+- Verify sdist archive contains at least all the files under version control.
