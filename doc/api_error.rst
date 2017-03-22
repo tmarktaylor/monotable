@@ -10,6 +10,7 @@ Exception
 .. module:: monotable
 .. autoexception:: MonoTableCellError
 
+.. _callbacks-label:
 
 Format Function Error Callbacks
 -------------------------------

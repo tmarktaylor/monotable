@@ -3,6 +3,8 @@
 ASCII table with per column format specs, multi-line content,
 plug-in format functions, column width control.
 
+* [Introduction](https://github.com/tmarktaylor/monotable/blob/master/README.rst)
+
 ### master branch status
 
 * [![Documentation Status](https://readthedocs.org/projects/monotable/badge/?version=latest)](http://monotable.readthedocs.io/en/latest/?badge=latest) on [Read the Docs](https://readthedocs.org)

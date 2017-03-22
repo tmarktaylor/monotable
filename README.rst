@@ -311,7 +311,7 @@ in the option_spec.
 - The Duties column auto-aligns to the left since the cells
   are strings.
 - The headings auto-align to the alignment of the cell in the first row.
-- The title starts with an ``'>'`` align_spec which right aligns
+- The title starts with an ``'>'`` align_spec_char which right aligns
   the title over the table.
 
 .. admonition:: More ...

@@ -205,6 +205,8 @@ strings are silently ignored.
     volume |
     --------------
 
+.. _simple-table-label:
+
 Make a reStructuredText Simple Table
 ------------------------------------
 
