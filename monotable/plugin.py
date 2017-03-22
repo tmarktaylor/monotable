@@ -117,7 +117,7 @@ def raise_it(cell_error_exception):
 
 
 def print_it(cell_error_exception):
-    """Format function error callback.  Exception is printed. Returns ???."""
+    """Format function error callback.  Prints exception. Returns '???'."""
 
     print(cell_error_exception)
     if sys.version_info > (3,):
@@ -127,6 +127,6 @@ def print_it(cell_error_exception):
 
 
 def ignore_it(_):
-    """Format function error callback.  No action taken.  Returns ???."""
+    """Format function error callback.  No action taken.  Returns '???'."""
 
     return '???'

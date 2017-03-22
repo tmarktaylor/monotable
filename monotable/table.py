@@ -72,8 +72,6 @@ table and a heading guideline is inserted in its place.
 class MonoTable:
     """Create an aligned and formatted text table from a grid of cells.
 
-    Quick link to :py:meth:`~MonoTable.__init__`.
-
     Pass a sequence of heading strings and a
     sequence of format strings to the constructor.  Call
     :py:meth:`~MonoTable.table` passing a sequence of sequence of
@@ -195,7 +193,7 @@ class MonoTable:
 
     All the class variables can be overridden in ether a subclass or on
     an instance.  For the complete list
-    please see section `MonoTable Class Variables`_.
+    please see section :ref:`class-vars-label`.
     """
 
     format_func = format    #: <built-in function format>
@@ -332,15 +330,15 @@ class MonoTable:
     heading_valign = monotable.alignment.BOTTOM
     """Alignment used for vertical justification of a multi-line heading.
 
-    Should be one of one of `Vertical Alignment Constants`_ TOP, CENTER_TOP,
-    CENTER_BOTTOM, or BOTTOM.
+    Should be one of one of :ref:`vertical-alignment-constants-label`
+    TOP, CENTER_TOP, CENTER_BOTTOM, or BOTTOM.
     """
 
     cell_valign = monotable.alignment.TOP
     """Alignment used for vertical justification of a multi-line cell.
 
-    Should be one of one of `Vertical Alignment Constants`_ TOP, CENTER_TOP,
-    CENTER_BOTTOM, or BOTTOM.
+    Should be one of one of :ref:`vertical-alignment-constants-label`
+    TOP, CENTER_TOP, CENTER_BOTTOM, or BOTTOM.
     """
 
     max_cell_height = None

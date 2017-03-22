@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 monotable Documentation
-==========================================
+=======================
 
 Contents:
 
@@ -13,7 +13,11 @@ Contents:
 
    introduction
    more_examples
-   api
+   api_class
+   api_class_var
+   api_format_functions
+   api_error
+   api_hr_align_constants
    features
    configuring
    hints
