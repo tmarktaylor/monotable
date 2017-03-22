@@ -4,8 +4,8 @@ Module Api
 .. toctree::
    :maxdepth: 2
 
-
 .. module:: monotable
+.. include:: autodoc_ref.txt
 
 MonoTable
 ---------
@@ -22,25 +22,14 @@ MonoTable Class Variables
 -------------------------
 
 | Link to class variable below:
-| :py:attr:`~MonoTable.format_func`
-  :py:attr:`~MonoTable.format_exc_callback`
-| :py:attr:`~MonoTable.default_float_format_spec`
-  :py:attr:`~MonoTable.format_none_as`
-| :py:attr:`~MonoTable.sep`
-  :py:attr:`~MonoTable.separated_guidelines`
-  :py:attr:`~MonoTable.guideline_chars`
-| :py:attr:`~MonoTable.format_func_map`
-| :py:attr:`~MonoTable.more_marker`
-  :py:attr:`~MonoTable.align_spec_chars`
-  :py:attr:`~MonoTable.wrap_spec_char`
-| :py:attr:`~MonoTable.option_spec_delimiters`
-| :py:attr:`~MonoTable.heading_valign`
-  :py:attr:`~MonoTable.cell_valign`
-  :py:attr:`~MonoTable.max_cell_height`
-| :py:attr:`~MonoTable.border_chars`
-  :py:attr:`~MonoTable.hmargin`
-  :py:attr:`~MonoTable.vmargin`
-
+| |format_func| |format_exc_callback|
+| |default_float_format_spec| |format_none_as|
+| |sep| |separated_guidelines| |guideline_chars|
+| |format_func_map|
+| |more_marker| |align_spec_chars| |wrap_spec_char|
+| |option_spec_delimiters|
+| |heading_valign| |cell_valign| |max_cell_height|
+| |border_chars| |hmargin| |vmargin|
 
 .. autoattribute:: MonoTable.format_func
 .. autoattribute:: MonoTable.format_exc_callback

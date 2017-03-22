@@ -1,3 +1,6 @@
+.. module:: monotable
+.. include:: autodoc_ref.txt
+
 .. _features-label:
 
 Full List of Features
@@ -21,7 +24,7 @@ Full List of Features
     - User defined format function.  This requires configuration.
 
 
-- The default format function is configurable.
+- The default format function is configurable. |format_func|
 - Supports cells that format to multi-line strings and
   truncates too long strings.
 
