@@ -10,9 +10,9 @@ matrix:
     - python: 3.4
       env: TOXENV=py34
     - python: 3.5
-      env: TOXENV=py35,cover,inspect,readme
+      env: TOXENV=py35,pypy3,cover,inspect,readme
     - python: 3.6
-      env: TOXENV=py36,pypy3,docs
+      env: TOXENV=py36,docs
 
 install:
   - pip install tox coverage coveralls

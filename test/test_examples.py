@@ -9,7 +9,11 @@ import monotable
 import monotable.plugin
 
 def replace_line_endings(text):
-    """Replace line endings in string text with Python '\n'."""
+    """Drop first, replace remaining line endings with Python '\n'.
+    
+    Use with triple quoted strings spanning newlines.
+    """
+    text = text[1:]
     lines = text.splitlines()
     return '\n'.join(lines)
 
@@ -33,7 +37,7 @@ def test_simple_data_types():
     cells = [[123456789, math.pi, 'Hello World', (2, 3)],
              [2, math.e * 1000, 'another string', ('a', 'b')]]
     text = t.table(cells)
-    expected = """\
+    expected = """
 --------------------------------------------------
       int        float  string          tuple
 --------------------------------------------------
@@ -63,7 +67,7 @@ def test_an_attribute_and_an_index_with_instance_assigned_format_func():
     cells = [[point(1, 91), point(2, 92), point(3, 93), point(4, 94)],
              [point(5, 95), point(6, 96), point(7, 97), point(8, 98)]]
     text = t.table(cells, title='<Select attribute/index.')
-    expected = """\
+    expected = """
 Select attribute/index.
 ------------------------------
 x        y        [0]    [1]
@@ -94,7 +98,7 @@ def test_datetime():
     title = ('<=Formatting a datetime object '
              'datetime.datetime(2016, 1, 10, 19, 35, 18)')
     text = t.bordered_table(cells, title=title)
-    expected = """\
+    expected = """
 Formatting a datetime object
 datetime.datetime(2016, 1, 10, 19, 35, 18)
 +----------------------+------------------+
@@ -121,7 +125,7 @@ def test_template_substitution_and_multiline():
     cells = [[2345, dict(name='Row Zero', age=888, favorite_color='blue')],
              [6789, dict(name='Row One', age=999, favorite_color='No! Red!')]]
     text = t.bordered_table(cells, title='str.Template() Formatting.')
-    expected = """\
+    expected = """
       str.Template() Formatting.
 +------+-----------------------------+
 |  int | Formatted by str.Template() |
@@ -155,7 +159,7 @@ def test_mapping_and_multiline():
               dict(name='Row One', age=999.111, favorite_color='No! Red!')]]
     t = monotable.MonoTable(headings, formats)
     text = t.bordered_table(cells, title='mformat() Formatting.')
-    expected = """\
+    expected = """
       mformat() Formatting.
 +------+------------------------+
 |  int | Formatted by mformat() |
@@ -199,7 +203,7 @@ def test_printf_style_with_tuple_format_and_subclass_for_format_func():
     cells = [[123456789, math.pi, 'Hello World', (1, 2)],
              [2, math.e * 1000, 'another string', (3, 4)]]
     text = t.table(cells)
-    expected = """\
+    expected = """
 ----------------------------------------------
       int        float  string          tuple
 ----------------------------------------------
@@ -229,7 +233,7 @@ def test_horizontal_and_vertical_guidelines_and_indent():
              ['sound', 'bell'],
              ['volume', 'very loud']]
     text = t.table(cells)
-    expected = """\
+    expected = """
 *****------------------
 *****col-0  | col-1
 *****------------------
@@ -252,7 +256,7 @@ def test_max_format_option():
              [2, 'Raise capital', '06/10/2016'],
              [3, 'Oversee day to day operations', '06/21/2016']]
     text = t.table(cells, title='Limit center column to 15 characters.')
-    expected = """\
+    expected = """
 Limit center column to 15 characters.
 --------------------------------------
 Id Number  Duties           Start Date
@@ -281,7 +285,7 @@ def test_wrap_format_option():
              [3, 'Oversee day to day operations', '06/21/2016']]
     text = t.table(cells,
                    title='Wrap center column to a maximum of 12 characters.')
-    expected = """\
+    expected = """
 Wrap center column to a maximum of 12 characters.
 ----------------------------------
 Id Number  Duties       Start Date
@@ -315,7 +319,7 @@ def test_max_cell_height():
     title = ('Wrap center column to a maximum of 12 characters.\n'
              'Limit cell height to 2 lines')
     text = t.table(cells, title=title)
-    expected = """\
+    expected = """
 Wrap center column to a maximum of 12 characters.
 Limit cell height to 2 lines
 ----------------------------------
@@ -345,7 +349,7 @@ def test_bordered_format():
              'Limit cell height to 2 lines.\n'
              'Format with borders.')
     text = t.bordered_table(cells, title=title)
-    expected = """\
+    expected = """
 Wrap center column to a maximum of 12 characters.
 Limit cell height to 2 lines.
 Format with borders.
@@ -385,7 +389,7 @@ def test_user_defined_format_function():
              [2, 'Raise capital', '12345'],
              [3, 'Oversee day to day operations', '123-45-6789']]
     text = t.table(cells, title='>User defined format function.')
-    expected = """\
+    expected = """
                         User defined format function.
 -----------------------------------------------------
                                           Sensitive
@@ -411,7 +415,7 @@ def test_default_float_format_spec():
     t = monotable.MonoTable(headings, formats)
     t.default_float_format_spec = '.4f'
     text = t.table(cells, title='Different float precision in each column.')
-    expected = """\
+    expected = """
 Different float precision in each column.
 --------------------------------
 .1f    .3f      .5f  default=.4f
@@ -433,7 +437,7 @@ def test_disable_default_float_format_spec():
     t = monotable.MonoTable(headings, formats)
     t.default_float_format_spec = ''
     text = t.table(cells, title='<Disable default in last column.')
-    expected = """\
+    expected = """
 Disable default in last column.
 ----------------------------------------------
                                        disable
@@ -462,7 +466,7 @@ def test_heading_left_align_spec_and_format_left_align_spec():
     t = monotable.MonoTable(headings, formats)
     t.default_float_format_spec = '.4f'
     text = t.table(cells, title='Different float precision in each column.')
-    expected = """\
+    expected = """
 Different float precision in each column.
 -----------------------------------
  .1f  .3f     .5f       default=.4f
@@ -486,7 +490,7 @@ def test_heading_center_align_spec_and_format_center_align_spec():
     t = monotable.MonoTable(headings, formats)
     t.default_float_format_spec = '.4f'
     text = t.table(cells, title='Different float precision in each column.')
-    expected = """\
+    expected = """
 Different float precision in each column.
 --------------------------------
 .1f   .3f     .5f    default=.4f
@@ -510,7 +514,7 @@ def test_heading_and_format_right_align_spec():
         default_float_format_spec = '.4f'
     t = FloatPoint4MonoTable(headings, formats)
     text = t.table(cells, title='Different float precision in each column.')
-    expected = """\
+    expected = """
 Different float precision in each column.
 --------------------------------
 .1f    .3f      .5f  default=.4f
@@ -533,7 +537,7 @@ def test_override_align_spec_chars():
     t = monotable.MonoTable(headings, formats)
     t.align_spec_chars = 'LCR'
     text = t.table(cells, title='RUser align_spec_chars.')
-    expected = """\
+    expected = """
                      User align_spec_chars.
 -------------------------------------------
 an int  string  another int  another string
@@ -555,7 +559,7 @@ def test_override_title_wrap_spec():
     t = monotable.MonoTable(headings)
     t.wrap_spec_char = '$'
     text = t.table(cells, title='<$User wrap_spec changed on an instance.')
-    expected = """\
+    expected = """
 User wrap_spec
 changed on an
 instance.
@@ -578,7 +582,7 @@ def test_override_heading_valign():
     t = monotable.MonoTable(headings)
     t.heading_valign = monotable.TOP
     text = t.table(cells, title='instance.heading_valign = TOP')
-    expected = """\
+    expected = """
 instance.heading_valign = TOP
 ---------------
     a  a
@@ -600,7 +604,7 @@ def test_override_guideline_chars():
     t = monotable.MonoTable(headings, formats)
     t.guideline_chars = 'X=*'
     text = t.table(cells, title='>User guideline_chars.')
-    expected = """\
+    expected = """
                       User guideline_chars.
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 an int  string  another int  another string
@@ -626,7 +630,7 @@ def test_override_separated_guidelines():
              ['function-name', '\\', 'user defined function']]
 
     text = t.table(cells)
-    expected = """\
+    expected = """
 =============  ========================  =========================
 option name    format function           description
 =============  ========================  =========================
@@ -651,7 +655,7 @@ def test_override_separated_guidelines_no_bottom_guideline():
     formats = ['>', '', '<', '^']
     t = SeparatedMonoTable(headings, formats)
     text = t.table(cells, title='>separated_guidelines = True.')
-    expected = """\
+    expected = """
                separated_guidelines = True.
 ======  ======  ===========  ==============
 an int  string  another int  another string
@@ -672,7 +676,7 @@ def test_omit_top_and_botom_guidelines():
 
     t = CustomMonoTable(headings, formats)
     text = t.table(cells, title='<No top, bottom guidelines.')
-    expected = """\
+    expected = """
 No top, bottom guidelines.
 an int  string  another int  another string
 ===========================================
@@ -691,7 +695,7 @@ def test_top_guideline_is_dots_and_only_guideline():
     formats = ['>', '', '<', '^']
     t = CustomMonoTable(headings, formats)
     text = t.table(cells, title='^Top guideline is .s, no others.')
-    expected = """\
+    expected = """
       Top guideline is .s, no others.
 ...........................................
 an int  string  another int  another string
@@ -711,7 +715,7 @@ def test_override_cell_vertical_alignment_to_center_top():
     headings = ['4 line cells', '3 line cells', '2 line cells']
     t = CustomMonoTable(headings)
     text = t.table(cells, title='cell_valign=CENTER_TOP')
-    expected = """\
+    expected = """
          cell_valign=CENTER_TOP
 ----------------------------------------
 4 line cells  3 line cells  2 line cells
@@ -742,7 +746,7 @@ def test_override_cell_vertical_alignment_to_center_bottom():
 
     t = CustomMonoTable(headings)
     text = t.table(cells, title='cell_valign=CENTER_BOTTOM')
-    expected = """\
+    expected = """
        cell_valign=CENTER_BOTTOM
 ----------------------------------------
 4 line cells  3 line cells  2 line cells
@@ -783,7 +787,7 @@ def test_override_more_marker_override_max_cell_height_option_max_width():
 
     t = CustomMonoTable(headings, formats)
     text = t.table(cells, title="max_cell_height=2, more_marker='**'")
-    expected = """\
+    expected = """
 max_cell_height=2, more_marker='**'
 ---------------------
 4 line  3    2 line
@@ -819,7 +823,7 @@ def test_comma_format_spec():
     cells = [[123456789, pi, 'Hello\nWorld', (2, 3)],
              [2, e * 1000, 'another string']]
     text = t.table(cells, title='Centered Title Line.')
-    expected = """\
+    expected = """
              Centered Title Line.
 ---------------------------------------------
          an       the
@@ -843,7 +847,7 @@ def test_default_when_override_border_chars_to_empty_string():
     t.border_chars = ''
     cells = [[1, 29, 3.5], [4, 5, 16.34]]
     text = t.bordered_table(cells, '^centered caption\njust 2 lines')
-    expected = """\
+    expected = """
         centered caption
           just 2 lines
 +++++++++++++++++++++++++++++++
@@ -869,7 +873,7 @@ def test_override_border_chars():
     t.border_chars = 'TBSCH'
     cells = [[1, 29, 3.5], [4, 5, 16.34]]
     text = t.bordered_table(cells, '^centered caption\njust 2 lines')
-    expected = """\
+    expected = """
         centered caption
           just 2 lines
 CTTTTTTTCTTTTTTTTTCTTTTTTTTTTTC
@@ -895,7 +899,7 @@ def test_override_hmargin_vmargin():
     t = BigMarginMonoTable(headings)
     cells = [[1, 29, 3.5], [4, 5, 16.34]]
     text = t.bordered_table(cells, '<hmargin=3, vmargin=2')
-    expected = """\
+    expected = """
 hmargin=3, vmargin=2
 +-----------+-------------+---------------+
 |           |             |               |
@@ -976,7 +980,7 @@ def test_tile_four_tables_together():
              [None, None],  # to insert space between the top and bottom rows
              [tcf, tcf]]    # same table twice in the bottom row
     text = tiled.table(cells)
-    expected = """\
+    expected = """
 vertical align CENTER_BOTTOM       max_cell_height=2
 --------------------------       ---------------------
 4 line cells  3 line cells       4 line  3    2 line

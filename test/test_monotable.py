@@ -21,7 +21,11 @@ def read_file(*path_components):
 
 
 def replace_line_endings(text):
-    """Replace line endings in string text with Python '\n'."""
+    """Drop first, replace remaining line endings with Python '\n'.
+
+    Use with triple quoted strings spanning newlines.
+    """
+    text = text[1:]
     lines = text.splitlines()
     return '\n'.join(lines)
 
@@ -179,7 +183,7 @@ def test_one_column_table():
     cells = [['Spam'], ['Spam'], ['Spam'], ['Spam']]
     tbl = monotable.MonoTable(headings)
     text = tbl.table(cells)
-    expected = """\
+    expected = """
 -------
 Choices
 -------
@@ -196,7 +200,7 @@ def test_one_column_bordered_table():
     cells = [['Spam'], ['Spam'], ['Spam'], ['Spam']]
     tbl = monotable.MonoTable(headings)
     text = tbl.bordered_table(cells)
-    expected = """\
+    expected = """
 +---------+
 | Choices |
 +=========+
@@ -224,7 +228,7 @@ def test_cellgrid_is_tuples():
     cells = ((1, 2, 3), (4, 5, 6), (7, 8, 9))  # all tuples
     tbl = monotable.MonoTable()
     text = tbl.table(cells)
-    expected = """\
+    expected = """
 -------
 1  2  3
 4  5  6
@@ -237,7 +241,7 @@ def test_rows_are_ranges():
         cells = (range(11, 14), range(14, 17), range(17, 20))
         tbl = monotable.MonoTable()  # no headings, no formats
         text = tbl.table(cells)
-        expected = """\
+        expected = """
 ----------
 11  12  13
 14  15  16
@@ -252,7 +256,7 @@ def test_headings_formats_cells_are_tuples_and_missing_items():
     cells = ((1, 2, 3), (4, 5, 6), (7, 8))  # missing last cell
     tbl = monotable.MonoTable(headings, formats)
     text = tbl.table(cells)
-    expected = """\
+    expected = """
 -------
 a  b
 -------
@@ -269,7 +273,7 @@ def test_cell_rows_are_namedtuples():
              row(column0=11, column1=12, column2=13))
     tbl = monotable.MonoTable()
     text = tbl.table(cells)
-    expected = """\
+    expected = """
 ----------
  1   2   3
 11  12  13
@@ -293,7 +297,7 @@ def test_add_column_of_row_numbers():
     transposed_row_numbered = [row_numbers] + cell_columns
     row_numbered = transpose(transposed_row_numbered)
     text = tbl.table(row_numbered)
-    expected = """\
+    expected = """
 ------------
 row
 num  X  Y  Z
@@ -323,7 +327,7 @@ def test_cellgrid_iterable_of_iterable():
     cells = row_generator()
     tbl = monotable.MonoTable()
     text = tbl.table(cells)
-    expected = """\
+    expected = """
 -------
 1  2  3
 4  5  6
@@ -391,7 +395,7 @@ class TestMonoTableExceptionCallback:
 
         tbl.format_exc_callback = monotable.plugin.ignore_it
         text = tbl.bordered_table(self.cells)
-        expected = """\
+        expected = """
 +---------+---------+
 | column0 | column1 |
 +=========+=========+
@@ -412,7 +416,7 @@ class TestMonoTableExceptionCallback:
                                   self.formats)
 
         text = tbl.table(self.cells)
-        expected = """\
+        expected = """
 --------------------
 column0      column1
 --------------------
