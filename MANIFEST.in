@@ -3,10 +3,12 @@ include .gitignore
 include .travis.yml
 include checklist.txt
 include LICENSE
+include *.md
 include readme_preview.py
 include tox.ini
 include doc/conf.py
 include doc/*.rst
+include doc/*.txt
 include doc/make.bat
 include doc/Makefile
 include doc/_static/*
