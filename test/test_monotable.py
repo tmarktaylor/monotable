@@ -9,6 +9,7 @@ import pytest
 import monotable
 import monotable.plugin
 
+
 def read_file(*path_components):
     """Read a text file from the source tree into a string.
 
@@ -17,6 +18,12 @@ def read_file(*path_components):
     here = path.abspath(path.dirname(__file__))
     with open(path.join(here, *path_components)) as f:
         return f.read()
+
+
+def replace_line_endings(text):
+    """Replace line endings in string text with Python '\n'."""
+    lines = text.splitlines()
+    return '\n'.join(lines)
 
 
 def test_consistent_version_strings():
@@ -181,7 +188,7 @@ Spam
 Spam
 Spam
 -------"""
-    assert text == expected
+    assert text == replace_line_endings(expected)
 
 
 def test_one_column_bordered_table():
@@ -201,7 +208,7 @@ def test_one_column_bordered_table():
 +---------+
 | Spam    |
 +---------+"""
-    assert text == expected
+    assert text == replace_line_endings(expected)
 
 
 #
@@ -223,7 +230,7 @@ def test_cellgrid_is_tuples():
 4  5  6
 7  8  9
 -------"""
-    assert text == expected
+    assert text == replace_line_endings(expected)
 
 
 def test_rows_are_ranges():
@@ -236,7 +243,7 @@ def test_rows_are_ranges():
 14  15  16
 17  18  19
 ----------"""
-        assert text == expected
+        assert text == replace_line_endings(expected)
 
 
 def test_headings_formats_cells_are_tuples_and_missing_items():
@@ -253,7 +260,7 @@ a  b
 4  5  6
 7  8
 -------"""
-    assert text == expected
+    assert text == replace_line_endings(expected)
 
 
 def test_cell_rows_are_namedtuples():
@@ -267,7 +274,7 @@ def test_cell_rows_are_namedtuples():
  1   2   3
 11  12  13
 ----------"""
-    assert text == expected
+    assert text == replace_line_endings(expected)
 
 
 def test_add_column_of_row_numbers():
@@ -295,7 +302,7 @@ num  X  Y  Z
   2  D  E  F
   3  G  H  I
 ------------"""
-    assert text == expected
+    assert text == replace_line_endings(expected)
 
 
 def test_cellgrid_iterable_of_iterable():
@@ -322,7 +329,7 @@ def test_cellgrid_iterable_of_iterable():
 4  5  6
 7  8  9
 -------"""
-    assert text == expected
+    assert text == replace_line_endings(expected)
 
 
 def test_forgot_outer_list_with_one_row_cellgrid():
@@ -392,7 +399,7 @@ class TestMonoTableExceptionCallback:
 +---------+---------+
 |       1 |     ??? |
 +---------+---------+"""
-        assert text == expected
+        assert text == replace_line_endings(expected)
 
     def test_user_supplied_ignore_it(self):
         def my_ignore_it(_):
@@ -412,7 +419,7 @@ column0      column1
       0         9999
       1  !!!!!!!!!!!
 --------------------"""
-        assert text == expected
+        assert text == replace_line_endings(expected)
 
 
 def test_print_it(capsys):

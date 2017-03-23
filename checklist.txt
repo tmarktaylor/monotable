@@ -1,7 +1,7 @@
 - Update __init__.py.__version__ per Semantic Versioning.  Tests will fail
   until all version strings are the same.
 - Check for outstanding 'to do' notes.
-- Make sure api.rst has autodoc directives for API additions.
+- Make sure Sphinx api_*.rst sources have autodoc directives for API additions.
 - update changelog
 - update copyright year
 - Run code inspections.

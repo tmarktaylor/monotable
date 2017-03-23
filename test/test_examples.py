@@ -8,6 +8,11 @@ import math
 import monotable
 import monotable.plugin
 
+def replace_line_endings(text):
+    """Replace line endings in string text with Python '\n'."""
+    lines = text.splitlines()
+    return '\n'.join(lines)
+
 def test_doctest_scanner_py():
     failure_count, test_count = doctest.testmod(m=monotable.scanner)
     assert test_count > 0
@@ -35,7 +40,7 @@ def test_simple_data_types():
 123456789     3.141593  Hello World     (2, 3)
         2  2718.281828  another string  ('a', 'b')
 --------------------------------------------------"""
-    assert text == expected
+    assert text == replace_line_endings(expected)
 
 
 def test_an_attribute_and_an_index_with_instance_assigned_format_func():
@@ -67,7 +72,7 @@ attrib.  attrib.  index  index
 1        92       3      94
 5        96       7      98
 ------------------------------"""
-    assert text == expected
+    assert text == replace_line_endings(expected)
 
 
 def test_datetime():
@@ -98,7 +103,7 @@ datetime.datetime(2016, 1, 10, 19, 35, 18)
 +======================+==================+
 | 2016-01-10--07:35:18 | week-02-day-010  |
 +----------------------+------------------+"""
-    assert text == expected
+    assert text == replace_line_endings(expected)
 
 
 def test_template_substitution_and_multiline():
@@ -129,7 +134,7 @@ def test_template_substitution_and_multiline():
 |      | age= 999                    |
 |      | color= No! Red!             |
 +------+-----------------------------+"""
-    assert text == expected
+    assert text == replace_line_endings(expected)
 
 
 def test_mapping_and_multiline():
@@ -163,7 +168,7 @@ def test_mapping_and_multiline():
 |      | age= 999.1             |
 |      | color= No! Red!        |
 +------+------------------------+"""
-    assert text == expected
+    assert text == replace_line_endings(expected)
 
 
 def test_printf_style_with_tuple_format_and_subclass_for_format_func():
@@ -201,7 +206,7 @@ def test_printf_style_with_tuple_format_and_subclass_for_format_func():
 123456789     3.141593  Hello World     (1, 2)
         2  2718.281828  another string  (3, 4)
 ----------------------------------------------"""
-    assert text == expected
+    assert text == replace_line_endings(expected)
 
 
 def test_horizontal_and_vertical_guidelines_and_indent():
@@ -234,7 +239,7 @@ def test_horizontal_and_vertical_guidelines_and_indent():
 *****sound  | bell
 *****volume | very loud
 *****------------------"""
-    assert text == expected
+    assert text == replace_line_endings(expected)
 
 
 def test_max_format_option():
@@ -256,7 +261,7 @@ Id Number  Duties           Start Date
         2  Raise capital    06/10/2016
         3  Oversee day ...  06/21/2016
 --------------------------------------"""
-    assert text == expected
+    assert text == replace_line_endings(expected)
 
 
 def test_wrap_format_option():
@@ -289,7 +294,7 @@ Id Number  Duties       Start Date
            to day
            operations
 ----------------------------------"""
-    assert text == expected
+    assert text == replace_line_endings(expected)
 
 
 def test_max_cell_height():
@@ -323,7 +328,7 @@ Id Number  Duties       Start Date
         3  Oversee day  06/21/2016
            to day  ...
 ----------------------------------"""
-    assert text == expected
+    assert text == replace_line_endings(expected)
 
 
 def test_bordered_format():
@@ -356,7 +361,7 @@ Format with borders.
 |         3 | Oversee day | 06/21/2016 |
 |           | to day  ... |            |
 +-----------+-------------+------------+"""
-    assert text == expected
+    assert text == replace_line_endings(expected)
 
 
 def test_user_defined_format_function():
@@ -390,7 +395,7 @@ Id Number  Duties                         Info
         2  Raise capital                  *2345
         3  Oversee day to day operations  *******6789
 -----------------------------------------------------"""
-    assert text == expected
+    assert text == replace_line_endings(expected)
 
 
 def test_default_float_format_spec():
@@ -413,7 +418,7 @@ Different float precision in each column.
 --------------------------------
 9.1  9.123  9.12346       9.1235
 --------------------------------"""
-    assert text == expected
+    assert text == replace_line_endings(expected)
 
 
 def test_disable_default_float_format_spec():
@@ -436,7 +441,7 @@ Disable default in last column.
 ----------------------------------------------
 9.1  9.123  9.12346                  9.1234567
 ----------------------------------------------"""
-    assert text == expected
+    assert text == replace_line_endings(expected)
 
 
 def test_heading_left_align_spec_and_format_left_align_spec():
@@ -465,7 +470,7 @@ Different float precision in each column.
  9.1  9.123    9.12346       9.1235
 88.1  88.100  88.10000      88.1000
 -----------------------------------"""
-    assert text == expected
+    assert text == replace_line_endings(expected)
 
 
 def test_heading_center_align_spec_and_format_center_align_spec():
@@ -488,7 +493,7 @@ Different float precision in each column.
 --------------------------------
 9.1  9.123  9.12346       9.1235
 --------------------------------"""
-    assert text == expected
+    assert text == replace_line_endings(expected)
 
 
 def test_heading_and_format_right_align_spec():
@@ -512,7 +517,7 @@ Different float precision in each column.
 --------------------------------
 9.1  9.123  9.12346       9.1235
 --------------------------------"""
-    assert text == expected
+    assert text == replace_line_endings(expected)
 
 
 def test_override_align_spec_chars():
@@ -535,7 +540,7 @@ an int  string  another int  another string
 -------------------------------------------
    123  import  4567              this
 -------------------------------------------"""
-    assert text == expected
+    assert text == replace_line_endings(expected)
 
 
 def test_override_title_wrap_spec():
@@ -559,7 +564,7 @@ an int  a string
 ----------------
    123  import
 ----------------"""
-    assert text == expected
+    assert text == replace_line_endings(expected)
 
 
 def test_override_heading_valign():
@@ -583,7 +588,7 @@ short  slightly
 ---------------
   123  import
 ---------------"""
-    assert text == expected
+    assert text == replace_line_endings(expected)
 
 
 def test_override_guideline_chars():
@@ -602,7 +607,7 @@ an int  string  another int  another string
 ===========================================
    123  import  4567              this
 *******************************************"""
-    assert text == expected
+    assert text == replace_line_endings(expected)
 
 
 def test_override_separated_guidelines():
@@ -631,7 +636,7 @@ sformat        monotable.plugin.sformat  str.format()
 tformat        monotable.plugin.tformat  string.Template()
 function-name  \                         user defined function
 =============  ========================  ========================="""
-    assert text == expected
+    assert text == replace_line_endings(expected)
 
 
 def test_override_separated_guidelines_no_bottom_guideline():
@@ -652,7 +657,7 @@ def test_override_separated_guidelines_no_bottom_guideline():
 an int  string  another int  another string
 ======  ======  ===========  ==============
    123  import  4567              this"""
-    assert text == expected
+    assert text == replace_line_endings(expected)
 
 
 def test_omit_top_and_botom_guidelines():
@@ -672,7 +677,7 @@ No top, bottom guidelines.
 an int  string  another int  another string
 ===========================================
    123  import  4567              this"""
-    assert text == expected
+    assert text == replace_line_endings(expected)
 
 
 def test_top_guideline_is_dots_and_only_guideline():
@@ -691,7 +696,7 @@ def test_top_guideline_is_dots_and_only_guideline():
 ...........................................
 an int  string  another int  another string
    123  import  4567              this"""
-    assert text == expected
+    assert text == replace_line_endings(expected)
 
 
 def test_override_cell_vertical_alignment_to_center_top():
@@ -721,7 +726,7 @@ four          line          two line
 line          cell          cell
 cell
 ----------------------------------------"""
-    assert text == expected
+    assert text == replace_line_endings(expected)
 
 
 def test_override_cell_vertical_alignment_to_center_bottom():
@@ -752,7 +757,7 @@ four          three         two line
 line          line          cell
 cell          cell
 ----------------------------------------"""
-    assert text == expected
+    assert text == replace_line_endings(expected)
 
 
 def test_override_more_marker_override_max_cell_height_option_max_width():
@@ -790,7 +795,7 @@ A       t**  two line
 four**  l**  cell
 ---------------------"""
 
-    assert text == expected
+    assert text == replace_line_endings(expected)
 
 
 def test_comma_format_spec():
@@ -825,7 +830,7 @@ def test_comma_format_spec():
           2  2,718.28  another string
 ---------------------------------------------"""
 
-    assert text == expected
+    assert text == replace_line_endings(expected)
 
 
 def test_default_when_override_border_chars_to_empty_string():
@@ -850,7 +855,7 @@ def test_default_when_override_border_chars_to_empty_string():
 +++++++++++++++++++++++++++++++
 +     4 +       5 + 16.340000 +
 +++++++++++++++++++++++++++++++"""
-    assert text == expected
+    assert text == replace_line_endings(expected)
 
 
 def test_override_border_chars():
@@ -876,7 +881,7 @@ S     1 S      29 S  3.500000 S
 CBBBBBBBCBBBBBBBBBCBBBBBBBBBBBC
 S     4 S       5 S 16.340000 S
 CBBBBBBBCBBBBBBBBBCBBBBBBBBBBBC"""
-    assert text == expected
+    assert text == replace_line_endings(expected)
 
 
 def test_override_hmargin_vmargin():
@@ -913,7 +918,7 @@ hmargin=3, vmargin=2
 |           |             |               |
 |           |             |               |
 +-----------+-------------+---------------+"""
-    assert text == expected
+    assert text == replace_line_endings(expected)
 
 
 def test_tile_four_tables_together():
@@ -998,4 +1003,4 @@ cell          cell
 +++++++++++++++++++++++++++++    +++++++++++++++++++++++++++++
 +     4 +       5 + 16.3400 +    +     4 +       5 + 16.3400 +
 +++++++++++++++++++++++++++++    +++++++++++++++++++++++++++++"""
-    assert text == expected
+    assert text == replace_line_endings(expected)
