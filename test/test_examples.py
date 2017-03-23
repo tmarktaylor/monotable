@@ -8,19 +8,12 @@ import math
 import monotable
 import monotable.plugin
 
-def replace_line_endings(text):
-    """Drop first, replace remaining line endings with Python '\n'.
-    
-    Use with triple quoted strings spanning newlines.
-    """
-    text = text[1:]
-    lines = text.splitlines()
-    return '\n'.join(lines)
 
 def test_doctest_scanner_py():
     failure_count, test_count = doctest.testmod(m=monotable.scanner)
     assert test_count > 0
     assert failure_count == 0
+
 
 def test_simple_data_types():
     """Simple data types.
@@ -37,12 +30,14 @@ def test_simple_data_types():
     cells = [[123456789, math.pi, 'Hello World', (2, 3)],
              [2, math.e * 1000, 'another string', ('a', 'b')]]
     text = t.table(cells)
-    expected = """--------------------------------------------------
-      int        float  string          tuple
---------------------------------------------------
-123456789     3.141593  Hello World     (2, 3)
-        2  2718.281828  another string  ('a', 'b')
---------------------------------------------------"""
+    expected = '\n'.join([
+        "--------------------------------------------------",
+        "      int        float  string          tuple",
+        "--------------------------------------------------",
+        "123456789     3.141593  Hello World     (2, 3)",
+        "        2  2718.281828  another string  ('a', 'b')",
+        "--------------------------------------------------",
+        ])
     assert text == expected
 
 
@@ -66,17 +61,17 @@ def test_an_attribute_and_an_index_with_instance_assigned_format_func():
     cells = [[point(1, 91), point(2, 92), point(3, 93), point(4, 94)],
              [point(5, 95), point(6, 96), point(7, 97), point(8, 98)]]
     text = t.table(cells, title='<Select attribute/index.')
-    expected = """
-Select attribute/index.
-------------------------------
-x        y        [0]    [1]
-attrib.  attrib.  index  index
-------------------------------
-1        92       3      94
-5        96       7      98
-------------------------------"""
-    assert text == replace_line_endings(expected)
-
+    expected = '\n'.join([
+        "Select attribute/index.",
+        "------------------------------",
+        "x        y        [0]    [1]",
+        "attrib.  attrib.  index  index",
+        "------------------------------",
+        "1        92       3      94",
+        "5        96       7      98",
+        "------------------------------",
+       ])
+    assert text == expected
 
 def test_datetime():
     """Test formatting datetime object.
@@ -97,16 +92,17 @@ def test_datetime():
     title = ('<=Formatting a datetime object '
              'datetime.datetime(2016, 1, 10, 19, 35, 18)')
     text = t.bordered_table(cells, title=title)
-    expected = """
-Formatting a datetime object
-datetime.datetime(2016, 1, 10, 19, 35, 18)
-+----------------------+------------------+
-| format string        | format string    |
-| "%Y-%m-%d--%I:%M:%S" | "week-%U-day-%j" |
-+======================+==================+
-| 2016-01-10--07:35:18 | week-02-day-010  |
-+----------------------+------------------+"""
-    assert text == replace_line_endings(expected)
+    expected = '\n'.join([
+        "Formatting a datetime object",
+        "datetime.datetime(2016, 1, 10, 19, 35, 18)",
+        "+----------------------+------------------+",
+        "| format string        | format string    |",
+        '| "%Y-%m-%d--%I:%M:%S" | "week-%U-day-%j" |',
+        "+======================+==================+",
+        "| 2016-01-10--07:35:18 | week-02-day-010  |",
+        "+----------------------+------------------+",
+    ])
+    assert text == expected
 
 
 def test_template_substitution_and_multiline():
@@ -124,20 +120,21 @@ def test_template_substitution_and_multiline():
     cells = [[2345, dict(name='Row Zero', age=888, favorite_color='blue')],
              [6789, dict(name='Row One', age=999, favorite_color='No! Red!')]]
     text = t.bordered_table(cells, title='str.Template() Formatting.')
-    expected = """
-      str.Template() Formatting.
-+------+-----------------------------+
-|  int | Formatted by str.Template() |
-+======+=============================+
-| 2345 | name= Row Zero              |
-|      | age= 888                    |
-|      | color= blue                 |
-+------+-----------------------------+
-| 6789 | name= Row One               |
-|      | age= 999                    |
-|      | color= No! Red!             |
-+------+-----------------------------+"""
-    assert text == replace_line_endings(expected)
+    expected = '\n'.join([
+        "      str.Template() Formatting.",
+        "+------+-----------------------------+",
+        "|  int | Formatted by str.Template() |",
+        "+======+=============================+",
+        "| 2345 | name= Row Zero              |",
+        "|      | age= 888                    |",
+        "|      | color= blue                 |",
+        "+------+-----------------------------+",
+        "| 6789 | name= Row One               |",
+        "|      | age= 999                    |",
+        "|      | color= No! Red!             |",
+        "+------+-----------------------------+",
+    ])
+    assert text == expected
 
 
 def test_mapping_and_multiline():
@@ -158,20 +155,21 @@ def test_mapping_and_multiline():
               dict(name='Row One', age=999.111, favorite_color='No! Red!')]]
     t = monotable.MonoTable(headings, formats)
     text = t.bordered_table(cells, title='mformat() Formatting.')
-    expected = """
-      mformat() Formatting.
-+------+------------------------+
-|  int | Formatted by mformat() |
-+======+========================+
-| 2345 | name= Row Zero         |
-|      | age= 888.0             |
-|      | color= blue            |
-+------+------------------------+
-| 6789 | name= Row One          |
-|      | age= 999.1             |
-|      | color= No! Red!        |
-+------+------------------------+"""
-    assert text == replace_line_endings(expected)
+    expected = '\n'.join([
+        "      mformat() Formatting.",
+        "+------+------------------------+",
+        "|  int | Formatted by mformat() |",
+        "+======+========================+",
+        "| 2345 | name= Row Zero         |",
+        "|      | age= 888.0             |",
+        "|      | color= blue            |",
+        "+------+------------------------+",
+        "| 6789 | name= Row One          |",
+        "|      | age= 999.1             |",
+        "|      | color= No! Red!        |",
+        "+------+------------------------+",
+    ])
+    assert text == expected
 
 
 def test_printf_style_with_tuple_format_and_subclass_for_format_func():
@@ -202,14 +200,15 @@ def test_printf_style_with_tuple_format_and_subclass_for_format_func():
     cells = [[123456789, math.pi, 'Hello World', (1, 2)],
              [2, math.e * 1000, 'another string', (3, 4)]]
     text = t.table(cells)
-    expected = """
-----------------------------------------------
-      int        float  string          tuple
-----------------------------------------------
-123456789     3.141593  Hello World     (1, 2)
-        2  2718.281828  another string  (3, 4)
-----------------------------------------------"""
-    assert text == replace_line_endings(expected)
+    expected = '\n'.join([
+        "----------------------------------------------",
+        "      int        float  string          tuple",
+        "----------------------------------------------",
+        "123456789     3.141593  Hello World     (1, 2)",
+        "        2  2718.281828  another string  (3, 4)",
+        "----------------------------------------------",
+    ])
+    assert text == expected
 
 
 def test_horizontal_and_vertical_guidelines_and_indent():
@@ -232,17 +231,18 @@ def test_horizontal_and_vertical_guidelines_and_indent():
              ['sound', 'bell'],
              ['volume', 'very loud']]
     text = t.table(cells)
-    expected = """
-*****------------------
-*****col-0  | col-1
-*****------------------
-*****time   | 12:45
-*****place  | home
-*****------------------
-*****sound  | bell
-*****volume | very loud
-*****------------------"""
-    assert text == replace_line_endings(expected)
+    expected = '\n'.join([
+        "*****------------------",
+        "*****col-0  | col-1",
+        "*****------------------",
+        "*****time   | 12:45",
+        "*****place  | home",
+        "*****------------------",
+        "*****sound  | bell",
+        "*****volume | very loud",
+        "*****------------------",
+    ])
+    assert text == expected
 
 
 def test_max_format_option():
@@ -255,16 +255,17 @@ def test_max_format_option():
              [2, 'Raise capital', '06/10/2016'],
              [3, 'Oversee day to day operations', '06/21/2016']]
     text = t.table(cells, title='Limit center column to 15 characters.')
-    expected = """
-Limit center column to 15 characters.
---------------------------------------
-Id Number  Duties           Start Date
---------------------------------------
-        1  President an...  06/02/2016
-        2  Raise capital    06/10/2016
-        3  Oversee day ...  06/21/2016
---------------------------------------"""
-    assert text == replace_line_endings(expected)
+    expected = '\n'.join([
+        "Limit center column to 15 characters.",
+        "--------------------------------------",
+        "Id Number  Duties           Start Date",
+        "--------------------------------------",
+        "        1  President an...  06/02/2016",
+        "        2  Raise capital    06/10/2016",
+        "        3  Oversee day ...  06/21/2016",
+        "--------------------------------------",
+    ])
+    assert text == expected
 
 
 def test_wrap_format_option():
@@ -284,20 +285,21 @@ def test_wrap_format_option():
              [3, 'Oversee day to day operations', '06/21/2016']]
     text = t.table(cells,
                    title='Wrap center column to a maximum of 12 characters.')
-    expected = """
-Wrap center column to a maximum of 12 characters.
-----------------------------------
-Id Number  Duties       Start Date
-----------------------------------
-        1  President    06/02/2016
-           and CEO
-        2  Raise        06/10/2016
-           capital
-        3  Oversee day  06/21/2016
-           to day
-           operations
-----------------------------------"""
-    assert text == replace_line_endings(expected)
+    expected = '\n'.join([
+        "Wrap center column to a maximum of 12 characters.",
+        "----------------------------------",
+        "Id Number  Duties       Start Date",
+        "----------------------------------",
+        "        1  President    06/02/2016",
+        "           and CEO",
+        "        2  Raise        06/10/2016",
+        "           capital",
+        "        3  Oversee day  06/21/2016",
+        "           to day",
+        "           operations",
+        "----------------------------------",
+    ])
+    assert text == expected
 
 
 def test_max_cell_height():
@@ -318,20 +320,21 @@ def test_max_cell_height():
     title = ('Wrap center column to a maximum of 12 characters.\n'
              'Limit cell height to 2 lines')
     text = t.table(cells, title=title)
-    expected = """
-Wrap center column to a maximum of 12 characters.
-Limit cell height to 2 lines
-----------------------------------
-Id Number  Duties       Start Date
-----------------------------------
-        1  President    06/02/2016
-           and CEO
-        2  Raise        06/10/2016
-           capital
-        3  Oversee day  06/21/2016
-           to day  ...
-----------------------------------"""
-    assert text == replace_line_endings(expected)
+    expected = '\n'.join([
+        "Wrap center column to a maximum of 12 characters.",
+        "Limit cell height to 2 lines",
+        "----------------------------------",
+        "Id Number  Duties       Start Date",
+        "----------------------------------",
+        "        1  President    06/02/2016",
+        "           and CEO",
+        "        2  Raise        06/10/2016",
+        "           capital",
+        "        3  Oversee day  06/21/2016",
+        "           to day  ...",
+        "----------------------------------",
+    ])
+    assert text == expected
 
 
 def test_bordered_format():
@@ -348,23 +351,24 @@ def test_bordered_format():
              'Limit cell height to 2 lines.\n'
              'Format with borders.')
     text = t.bordered_table(cells, title=title)
-    expected = """
-Wrap center column to a maximum of 12 characters.
-Limit cell height to 2 lines.
-Format with borders.
-+-----------+-------------+------------+
-| Id Number | Duties      | Start Date |
-+===========+=============+============+
-|         1 | President   | 06/02/2016 |
-|           | and CEO     |            |
-+-----------+-------------+------------+
-|         2 | Raise       | 06/10/2016 |
-|           | capital     |            |
-+-----------+-------------+------------+
-|         3 | Oversee day | 06/21/2016 |
-|           | to day  ... |            |
-+-----------+-------------+------------+"""
-    assert text == replace_line_endings(expected)
+    expected = '\n'.join([
+        "Wrap center column to a maximum of 12 characters.",
+        "Limit cell height to 2 lines.",
+        "Format with borders.",
+        "+-----------+-------------+------------+",
+        "| Id Number | Duties      | Start Date |",
+        "+===========+=============+============+",
+        "|         1 | President   | 06/02/2016 |",
+        "|           | and CEO     |            |",
+        "+-----------+-------------+------------+",
+        "|         2 | Raise       | 06/10/2016 |",
+        "|           | capital     |            |",
+        "+-----------+-------------+------------+",
+        "|         3 | Oversee day | 06/21/2016 |",
+        "|           | to day  ... |            |",
+        "+-----------+-------------+------------+",
+    ])
+    assert text == expected
 
 
 def test_user_defined_format_function():
@@ -388,17 +392,18 @@ def test_user_defined_format_function():
              [2, 'Raise capital', '12345'],
              [3, 'Oversee day to day operations', '123-45-6789']]
     text = t.table(cells, title='>User defined format function.')
-    expected = """
-                        User defined format function.
------------------------------------------------------
-                                          Sensitive
-Id Number  Duties                         Info
------------------------------------------------------
-        1  President and CEO              123
-        2  Raise capital                  *2345
-        3  Oversee day to day operations  *******6789
------------------------------------------------------"""
-    assert text == replace_line_endings(expected)
+    expected = '\n'.join([
+        "                        User defined format function.",
+        "-----------------------------------------------------",
+        "                                          Sensitive",
+        "Id Number  Duties                         Info",
+        "-----------------------------------------------------",
+        "        1  President and CEO              123",
+        "        2  Raise capital                  *2345",
+        "        3  Oversee day to day operations  *******6789",
+        "-----------------------------------------------------",
+    ])
+    assert text == expected
 
 
 def test_default_float_format_spec():
@@ -414,14 +419,15 @@ def test_default_float_format_spec():
     t = monotable.MonoTable(headings, formats)
     t.default_float_format_spec = '.4f'
     text = t.table(cells, title='Different float precision in each column.')
-    expected = """
-Different float precision in each column.
---------------------------------
-.1f    .3f      .5f  default=.4f
---------------------------------
-9.1  9.123  9.12346       9.1235
---------------------------------"""
-    assert text == replace_line_endings(expected)
+    expected = '\n'.join([
+        "Different float precision in each column.",
+        "--------------------------------",
+        ".1f    .3f      .5f  default=.4f",
+        "--------------------------------",
+        "9.1  9.123  9.12346       9.1235",
+        "--------------------------------",
+    ])
+    assert text == expected
 
 
 def test_disable_default_float_format_spec():
@@ -436,15 +442,16 @@ def test_disable_default_float_format_spec():
     t = monotable.MonoTable(headings, formats)
     t.default_float_format_spec = ''
     text = t.table(cells, title='<Disable default in last column.')
-    expected = """
-Disable default in last column.
-----------------------------------------------
-                                       disable
-.1f    .3f      .5f  default_float_format_spec
-----------------------------------------------
-9.1  9.123  9.12346                  9.1234567
-----------------------------------------------"""
-    assert text == replace_line_endings(expected)
+    expected = '\n'.join([
+        "Disable default in last column.",
+        "----------------------------------------------",
+        "                                       disable",
+        ".1f    .3f      .5f  default_float_format_spec",
+        "----------------------------------------------",
+        "9.1  9.123  9.12346                  9.1234567",
+        "----------------------------------------------",
+    ])
+    assert text == expected
 
 
 def test_heading_left_align_spec_and_format_left_align_spec():
@@ -465,15 +472,16 @@ def test_heading_left_align_spec_and_format_left_align_spec():
     t = monotable.MonoTable(headings, formats)
     t.default_float_format_spec = '.4f'
     text = t.table(cells, title='Different float precision in each column.')
-    expected = """
-Different float precision in each column.
------------------------------------
- .1f  .3f     .5f       default=.4f
------------------------------------
- 9.1  9.123    9.12346       9.1235
-88.1  88.100  88.10000      88.1000
------------------------------------"""
-    assert text == replace_line_endings(expected)
+    expected = '\n'.join([
+        "Different float precision in each column.",
+        "-----------------------------------",
+        " .1f  .3f     .5f       default=.4f",
+        "-----------------------------------",
+        " 9.1  9.123    9.12346       9.1235",
+        "88.1  88.100  88.10000      88.1000",
+        "-----------------------------------",
+    ])
+    assert text == expected
 
 
 def test_heading_center_align_spec_and_format_center_align_spec():
@@ -489,14 +497,15 @@ def test_heading_center_align_spec_and_format_center_align_spec():
     t = monotable.MonoTable(headings, formats)
     t.default_float_format_spec = '.4f'
     text = t.table(cells, title='Different float precision in each column.')
-    expected = """
-Different float precision in each column.
---------------------------------
-.1f   .3f     .5f    default=.4f
---------------------------------
-9.1  9.123  9.12346       9.1235
---------------------------------"""
-    assert text == replace_line_endings(expected)
+    expected = '\n'.join([
+        "Different float precision in each column.",
+        "--------------------------------",
+        ".1f   .3f     .5f    default=.4f",
+        "--------------------------------",
+        "9.1  9.123  9.12346       9.1235",
+        "--------------------------------",
+    ])
+    assert text == expected
 
 
 def test_heading_and_format_right_align_spec():
@@ -513,14 +522,15 @@ def test_heading_and_format_right_align_spec():
         default_float_format_spec = '.4f'
     t = FloatPoint4MonoTable(headings, formats)
     text = t.table(cells, title='Different float precision in each column.')
-    expected = """
-Different float precision in each column.
---------------------------------
-.1f    .3f      .5f  default=.4f
---------------------------------
-9.1  9.123  9.12346       9.1235
---------------------------------"""
-    assert text == replace_line_endings(expected)
+    expected = '\n'.join([
+        "Different float precision in each column.",
+        "--------------------------------",
+        ".1f    .3f      .5f  default=.4f",
+        "--------------------------------",
+        "9.1  9.123  9.12346       9.1235",
+        "--------------------------------",
+    ])
+    assert text == expected
 
 
 def test_override_align_spec_chars():
@@ -536,14 +546,15 @@ def test_override_align_spec_chars():
     t = monotable.MonoTable(headings, formats)
     t.align_spec_chars = 'LCR'
     text = t.table(cells, title='RUser align_spec_chars.')
-    expected = """
-                     User align_spec_chars.
--------------------------------------------
-an int  string  another int  another string
--------------------------------------------
-   123  import  4567              this
--------------------------------------------"""
-    assert text == replace_line_endings(expected)
+    expected = '\n'.join([
+        "                     User align_spec_chars.",
+        "-------------------------------------------",
+        "an int  string  another int  another string",
+        "-------------------------------------------",
+        "   123  import  4567              this",
+        "-------------------------------------------",
+    ])
+    assert text == expected
 
 
 def test_override_title_wrap_spec():
@@ -558,16 +569,17 @@ def test_override_title_wrap_spec():
     t = monotable.MonoTable(headings)
     t.wrap_spec_char = '$'
     text = t.table(cells, title='<$User wrap_spec changed on an instance.')
-    expected = """
-User wrap_spec
-changed on an
-instance.
-----------------
-an int  a string
-----------------
-   123  import
-----------------"""
-    assert text == replace_line_endings(expected)
+    expected = '\n'.join([
+        "User wrap_spec",
+        "changed on an",
+        "instance.",
+        "----------------",
+        "an int  a string",
+        "----------------",
+        "   123  import",
+        "----------------",
+    ])
+    assert text == expected
 
 
 def test_override_heading_valign():
@@ -581,17 +593,18 @@ def test_override_heading_valign():
     t = monotable.MonoTable(headings)
     t.heading_valign = monotable.TOP
     text = t.table(cells, title='instance.heading_valign = TOP')
-    expected = """
-instance.heading_valign = TOP
----------------
-    a  a
-short  slightly
-  int  longer
-       string
----------------
-  123  import
----------------"""
-    assert text == replace_line_endings(expected)
+    expected = '\n'.join([
+        "instance.heading_valign = TOP",
+        "---------------",
+        "    a  a",
+        "short  slightly",
+        "  int  longer",
+        "       string",
+        "---------------",
+        "  123  import",
+        "---------------",
+    ])
+    assert text == expected
 
 
 def test_override_guideline_chars():
@@ -603,14 +616,15 @@ def test_override_guideline_chars():
     t = monotable.MonoTable(headings, formats)
     t.guideline_chars = 'X=*'
     text = t.table(cells, title='>User guideline_chars.')
-    expected = """
-                      User guideline_chars.
-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-an int  string  another int  another string
-===========================================
-   123  import  4567              this
-*******************************************"""
-    assert text == replace_line_endings(expected)
+    expected = '\n'.join([
+        "                      User guideline_chars.",
+        "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+        "an int  string  another int  another string",
+        "===========================================",
+        "   123  import  4567              this",
+        "*******************************************",
+    ])
+    assert text == expected
 
 
 def test_override_separated_guidelines():
@@ -629,17 +643,18 @@ def test_override_separated_guidelines():
              ['function-name', '\\', 'user defined function']]
 
     text = t.table(cells)
-    expected = """
-=============  ========================  =========================
-option name    format function           description
-=============  ========================  =========================
-mformat        monotable.plugin.mformat  mapping with str.format()
-pformat        monotable.plugin.pformat  printf style
-sformat        monotable.plugin.sformat  str.format()
-tformat        monotable.plugin.tformat  string.Template()
-function-name  \                         user defined function
-=============  ========================  ========================="""
-    assert text == replace_line_endings(expected)
+    expected = '\n'.join([
+        "=============  ========================  =========================",
+        "option name    format function           description",
+        "=============  ========================  =========================",
+        "mformat        monotable.plugin.mformat  mapping with str.format()",
+        "pformat        monotable.plugin.pformat  printf style",
+        "sformat        monotable.plugin.sformat  str.format()",
+        "tformat        monotable.plugin.tformat  string.Template()",
+        "function-name  \                         user defined function",
+        "=============  ========================  =========================",
+    ])
+    assert text == expected
 
 
 def test_override_separated_guidelines_no_bottom_guideline():
@@ -654,13 +669,14 @@ def test_override_separated_guidelines_no_bottom_guideline():
     formats = ['>', '', '<', '^']
     t = SeparatedMonoTable(headings, formats)
     text = t.table(cells, title='>separated_guidelines = True.')
-    expected = """
-               separated_guidelines = True.
-======  ======  ===========  ==============
-an int  string  another int  another string
-======  ======  ===========  ==============
-   123  import  4567              this"""
-    assert text == replace_line_endings(expected)
+    expected = '\n'.join([
+        "               separated_guidelines = True.",
+        "======  ======  ===========  ==============",
+        "an int  string  another int  another string",
+        "======  ======  ===========  ==============",
+        "   123  import  4567              this",
+    ])
+    assert text == expected
 
 
 def test_omit_top_and_botom_guidelines():
@@ -675,12 +691,13 @@ def test_omit_top_and_botom_guidelines():
 
     t = CustomMonoTable(headings, formats)
     text = t.table(cells, title='<No top, bottom guidelines.')
-    expected = """
-No top, bottom guidelines.
-an int  string  another int  another string
-===========================================
-   123  import  4567              this"""
-    assert text == replace_line_endings(expected)
+    expected = '\n'.join([
+        "No top, bottom guidelines.",
+        "an int  string  another int  another string",
+        "===========================================",
+        "   123  import  4567              this",
+    ])
+    assert text == expected
 
 
 def test_top_guideline_is_dots_and_only_guideline():
@@ -694,12 +711,13 @@ def test_top_guideline_is_dots_and_only_guideline():
     formats = ['>', '', '<', '^']
     t = CustomMonoTable(headings, formats)
     text = t.table(cells, title='^Top guideline is .s, no others.')
-    expected = """
-      Top guideline is .s, no others.
-...........................................
-an int  string  another int  another string
-   123  import  4567              this"""
-    assert text == replace_line_endings(expected)
+    expected = '\n'.join([
+        "      Top guideline is .s, no others.",
+        "...........................................",
+        "an int  string  another int  another string",
+        "   123  import  4567              this",
+    ])
+    assert text == expected
 
 
 def test_override_cell_vertical_alignment_to_center_top():
@@ -714,22 +732,23 @@ def test_override_cell_vertical_alignment_to_center_top():
     headings = ['4 line cells', '3 line cells', '2 line cells']
     t = CustomMonoTable(headings)
     text = t.table(cells, title='cell_valign=CENTER_TOP')
-    expected = """
-         cell_valign=CENTER_TOP
-----------------------------------------
-4 line cells  3 line cells  2 line cells
-----------------------------------------
-A             3
-4             line          2 line
-line          cell          cell
-cell
-----------------------------------------
-A             three
-four          line          two line
-line          cell          cell
-cell
-----------------------------------------"""
-    assert text == replace_line_endings(expected)
+    expected = '\n'.join([
+        "         cell_valign=CENTER_TOP",
+        "----------------------------------------",
+        "4 line cells  3 line cells  2 line cells",
+        "----------------------------------------",
+        "A             3",
+        "4             line          2 line",
+        "line          cell          cell",
+        "cell",
+        "----------------------------------------",
+        "A             three",
+        "four          line          two line",
+        "line          cell          cell",
+        "cell",
+        "----------------------------------------",
+    ])
+    assert text == expected
 
 
 def test_override_cell_vertical_alignment_to_center_bottom():
@@ -745,22 +764,23 @@ def test_override_cell_vertical_alignment_to_center_bottom():
 
     t = CustomMonoTable(headings)
     text = t.table(cells, title='cell_valign=CENTER_BOTTOM')
-    expected = """
-       cell_valign=CENTER_BOTTOM
-----------------------------------------
-4 line cells  3 line cells  2 line cells
-----------------------------------------
-A
-4             3             2 line
-line          line          cell
-cell          cell
-----------------------------------------
-A
-four          three         two line
-line          line          cell
-cell          cell
-----------------------------------------"""
-    assert text == replace_line_endings(expected)
+    expected = '\n'.join([
+        "       cell_valign=CENTER_BOTTOM",
+        "----------------------------------------",
+        "4 line cells  3 line cells  2 line cells",
+        "----------------------------------------",
+        "A",
+        "4             3             2 line",
+        "line          line          cell",
+        "cell          cell",
+        "----------------------------------------",
+        "A",
+        "four          three         two line",
+        "line          line          cell",
+        "cell          cell",
+        "----------------------------------------",
+    ])
+    assert text == expected
 
 
 def test_override_more_marker_override_max_cell_height_option_max_width():
@@ -786,19 +806,19 @@ def test_override_more_marker_override_max_cell_height_option_max_width():
 
     t = CustomMonoTable(headings, formats)
     text = t.table(cells, title="max_cell_height=2, more_marker='**'")
-    expected = """
-max_cell_height=2, more_marker='**'
----------------------
-4 line  3    2 line
----------------------
-A       3    2 line
-4   **  l**  cell
----------------------
-A       t**  two line
-four**  l**  cell
----------------------"""
-
-    assert text == replace_line_endings(expected)
+    expected = '\n'.join([
+        "max_cell_height=2, more_marker='**'",
+        "---------------------",
+        "4 line  3    2 line",
+        "---------------------",
+        "A       3    2 line",
+        "4   **  l**  cell",
+        "---------------------",
+        "A       t**  two line",
+        "four**  l**  cell",
+        "---------------------",
+    ])
+    assert text == expected
 
 
 def test_comma_format_spec():
@@ -822,18 +842,18 @@ def test_comma_format_spec():
     cells = [[123456789, pi, 'Hello\nWorld', (2, 3)],
              [2, e * 1000, 'another string']]
     text = t.table(cells, title='Centered Title Line.')
-    expected = """
-             Centered Title Line.
----------------------------------------------
-         an       the
-        int     float  string          tuple
----------------------------------------------
-123,456,789      3.14  Hello           (2, 3)
-                       World
-          2  2,718.28  another string
----------------------------------------------"""
-
-    assert text == replace_line_endings(expected)
+    expected = '\n'.join([
+        "             Centered Title Line.",
+        "---------------------------------------------",
+        "         an       the",
+        "        int     float  string          tuple",
+        "---------------------------------------------",
+        "123,456,789      3.14  Hello           (2, 3)",
+        "                       World",
+        "          2  2,718.28  another string",
+        "---------------------------------------------",
+    ])
+    assert text == expected
 
 
 def test_default_when_override_border_chars_to_empty_string():
@@ -846,19 +866,20 @@ def test_default_when_override_border_chars_to_empty_string():
     t.border_chars = ''
     cells = [[1, 29, 3.5], [4, 5, 16.34]]
     text = t.bordered_table(cells, '^centered caption\njust 2 lines')
-    expected = """
-        centered caption
-          just 2 lines
-+++++++++++++++++++++++++++++++
-+   one +         +           +
-+ digit + another +           +
-+   int +     int +    floats +
-+++++++++++++++++++++++++++++++
-+     1 +      29 +  3.500000 +
-+++++++++++++++++++++++++++++++
-+     4 +       5 + 16.340000 +
-+++++++++++++++++++++++++++++++"""
-    assert text == replace_line_endings(expected)
+    expected = '\n'.join([
+        "        centered caption",
+        "          just 2 lines",
+        "+++++++++++++++++++++++++++++++",
+        "+   one +         +           +",
+        "+ digit + another +           +",
+        "+   int +     int +    floats +",
+        "+++++++++++++++++++++++++++++++",
+        "+     1 +      29 +  3.500000 +",
+        "+++++++++++++++++++++++++++++++",
+        "+     4 +       5 + 16.340000 +",
+        "+++++++++++++++++++++++++++++++",
+    ])
+    assert text == expected
 
 
 def test_override_border_chars():
@@ -872,19 +893,20 @@ def test_override_border_chars():
     t.border_chars = 'TBSCH'
     cells = [[1, 29, 3.5], [4, 5, 16.34]]
     text = t.bordered_table(cells, '^centered caption\njust 2 lines')
-    expected = """
-        centered caption
-          just 2 lines
-CTTTTTTTCTTTTTTTTTCTTTTTTTTTTTC
-S   one S         S           S
-S digit S another S           S
-S   int S     int S    floats S
-CHHHHHHHCHHHHHHHHHCHHHHHHHHHHHC
-S     1 S      29 S  3.500000 S
-CBBBBBBBCBBBBBBBBBCBBBBBBBBBBBC
-S     4 S       5 S 16.340000 S
-CBBBBBBBCBBBBBBBBBCBBBBBBBBBBBC"""
-    assert text == replace_line_endings(expected)
+    expected = '\n'.join([
+        "        centered caption",
+        "          just 2 lines",
+        "CTTTTTTTCTTTTTTTTTCTTTTTTTTTTTC",
+        "S   one S         S           S",
+        "S digit S another S           S",
+        "S   int S     int S    floats S",
+        "CHHHHHHHCHHHHHHHHHCHHHHHHHHHHHC",
+        "S     1 S      29 S  3.500000 S",
+        "CBBBBBBBCBBBBBBBBBCBBBBBBBBBBBC",
+        "S     4 S       5 S 16.340000 S",
+        "CBBBBBBBCBBBBBBBBBCBBBBBBBBBBBC",
+    ])
+    assert text == expected
 
 
 def test_override_hmargin_vmargin():
@@ -898,30 +920,31 @@ def test_override_hmargin_vmargin():
     t = BigMarginMonoTable(headings)
     cells = [[1, 29, 3.5], [4, 5, 16.34]]
     text = t.bordered_table(cells, '<hmargin=3, vmargin=2')
-    expected = """
-hmargin=3, vmargin=2
-+-----------+-------------+---------------+
-|           |             |               |
-|           |             |               |
-|     one   |             |               |
-|   digit   |   another   |               |
-|     int   |       int   |      floats   |
-|           |             |               |
-|           |             |               |
-+===========+=============+===============+
-|           |             |               |
-|           |             |               |
-|       1   |        29   |    3.500000   |
-|           |             |               |
-|           |             |               |
-+-----------+-------------+---------------+
-|           |             |               |
-|           |             |               |
-|       4   |         5   |   16.340000   |
-|           |             |               |
-|           |             |               |
-+-----------+-------------+---------------+"""
-    assert text == replace_line_endings(expected)
+    expected = '\n'.join([
+        "hmargin=3, vmargin=2",
+        "+-----------+-------------+---------------+",
+        "|           |             |               |",
+        "|           |             |               |",
+        "|     one   |             |               |",
+        "|   digit   |   another   |               |",
+        "|     int   |       int   |      floats   |",
+        "|           |             |               |",
+        "|           |             |               |",
+        "+===========+=============+===============+",
+        "|           |             |               |",
+        "|           |             |               |",
+        "|       1   |        29   |    3.500000   |",
+        "|           |             |               |",
+        "|           |             |               |",
+        "+-----------+-------------+---------------+",
+        "|           |             |               |",
+        "|           |             |               |",
+        "|       4   |         5   |   16.340000   |",
+        "|           |             |               |",
+        "|           |             |               |",
+        "+-----------+-------------+---------------+",
+    ])
+    assert text == expected
 
 
 def test_tile_four_tables_together():
@@ -979,31 +1002,32 @@ def test_tile_four_tables_together():
              [None, None],  # to insert space between the top and bottom rows
              [tcf, tcf]]    # same table twice in the bottom row
     text = tiled.table(cells)
-    expected = """
-vertical align CENTER_BOTTOM       max_cell_height=2
---------------------------       ---------------------
-4 line cells  3 line cells       4 line  3    2 line
---------------------------       ---------------------
-A                                A       3    2 line
-4             3                  4   **  l**  cell
-line          line               ---------------------
-cell          cell               A       t**  two line
---------------------------       four**  l**  cell
-A                                ---------------------
-four          three
-line          line
-cell          cell
---------------------------
-
-        centered title                   centered title
-          of 2 lines                       of 2 lines
-+++++++++++++++++++++++++++++    +++++++++++++++++++++++++++++
-+   one +         +         +    +   one +         +         +
-+ digit + another +         +    + digit + another +         +
-+   int +     int +  floats +    +   int +     int +  floats +
-+++++++++++++++++++++++++++++    +++++++++++++++++++++++++++++
-+     1 +      29 +  3.5000 +    +     1 +      29 +  3.5000 +
-+++++++++++++++++++++++++++++    +++++++++++++++++++++++++++++
-+     4 +       5 + 16.3400 +    +     4 +       5 + 16.3400 +
-+++++++++++++++++++++++++++++    +++++++++++++++++++++++++++++"""
-    assert text == replace_line_endings(expected)
+    expected = '\n'.join([
+        "vertical align CENTER_BOTTOM       max_cell_height=2",
+        "--------------------------       ---------------------",
+        "4 line cells  3 line cells       4 line  3    2 line",
+        "--------------------------       ---------------------",
+        "A                                A       3    2 line",
+        "4             3                  4   **  l**  cell",
+        "line          line               ---------------------",
+        "cell          cell               A       t**  two line",
+        "--------------------------       four**  l**  cell",
+        "A                                ---------------------",
+        "four          three",
+        "line          line",
+        "cell          cell",
+        "--------------------------",
+        "",
+        "        centered title                   centered title",
+        "          of 2 lines                       of 2 lines",
+        "+++++++++++++++++++++++++++++    +++++++++++++++++++++++++++++",
+        "+   one +         +         +    +   one +         +         +",
+        "+ digit + another +         +    + digit + another +         +",
+        "+   int +     int +  floats +    +   int +     int +  floats +",
+        "+++++++++++++++++++++++++++++    +++++++++++++++++++++++++++++",
+        "+     1 +      29 +  3.5000 +    +     1 +      29 +  3.5000 +",
+        "+++++++++++++++++++++++++++++    +++++++++++++++++++++++++++++",
+        "+     4 +       5 + 16.3400 +    +     4 +       5 + 16.3400 +",
+        "+++++++++++++++++++++++++++++    +++++++++++++++++++++++++++++",
+    ])
+    assert text == expected

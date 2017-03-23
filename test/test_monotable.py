@@ -20,16 +20,6 @@ def read_file(*path_components):
         return f.read()
 
 
-def replace_line_endings(text):
-    """Drop first, replace remaining line endings with Python '\n'.
-
-    Use with triple quoted strings spanning newlines.
-    """
-    text = text[1:]
-    lines = text.splitlines()
-    return '\n'.join(lines)
-
-
 def test_consistent_version_strings():
     """Verify all same release version string.
 
@@ -183,16 +173,17 @@ def test_one_column_table():
     cells = [['Spam'], ['Spam'], ['Spam'], ['Spam']]
     tbl = monotable.MonoTable(headings)
     text = tbl.table(cells)
-    expected = """
--------
-Choices
--------
-Spam
-Spam
-Spam
-Spam
--------"""
-    assert text == replace_line_endings(expected)
+    expected = '\n'.join([
+        "-------",
+        "Choices",
+        "-------",
+        "Spam",
+        "Spam",
+        "Spam",
+        "Spam",
+        "-------",
+    ])
+    assert text == expected
 
 
 def test_one_column_bordered_table():
@@ -200,19 +191,20 @@ def test_one_column_bordered_table():
     cells = [['Spam'], ['Spam'], ['Spam'], ['Spam']]
     tbl = monotable.MonoTable(headings)
     text = tbl.bordered_table(cells)
-    expected = """
-+---------+
-| Choices |
-+=========+
-| Spam    |
-+---------+
-| Spam    |
-+---------+
-| Spam    |
-+---------+
-| Spam    |
-+---------+"""
-    assert text == replace_line_endings(expected)
+    expected = '\n'.join([
+        "+---------+",
+        "| Choices |",
+        "+=========+",
+        "| Spam    |",
+        "+---------+",
+        "| Spam    |",
+        "+---------+",
+        "| Spam    |",
+        "+---------+",
+        "| Spam    |",
+        "+---------+",
+    ])
+    assert text == expected
 
 
 #
@@ -228,26 +220,28 @@ def test_cellgrid_is_tuples():
     cells = ((1, 2, 3), (4, 5, 6), (7, 8, 9))  # all tuples
     tbl = monotable.MonoTable()
     text = tbl.table(cells)
-    expected = """
--------
-1  2  3
-4  5  6
-7  8  9
--------"""
-    assert text == replace_line_endings(expected)
+    expected = '\n'.join([
+        "-------",
+        "1  2  3",
+        "4  5  6",
+        "7  8  9",
+        "-------",
+    ])
+    assert text == expected
 
 
 def test_rows_are_ranges():
         cells = (range(11, 14), range(14, 17), range(17, 20))
         tbl = monotable.MonoTable()  # no headings, no formats
         text = tbl.table(cells)
-        expected = """
-----------
-11  12  13
-14  15  16
-17  18  19
-----------"""
-        assert text == replace_line_endings(expected)
+        expected = '\n'.join([
+            "----------",
+            "11  12  13",
+            "14  15  16",
+            "17  18  19",
+            "----------",
+        ])
+        assert text == expected
 
 
 def test_headings_formats_cells_are_tuples_and_missing_items():
@@ -256,15 +250,16 @@ def test_headings_formats_cells_are_tuples_and_missing_items():
     cells = ((1, 2, 3), (4, 5, 6), (7, 8))  # missing last cell
     tbl = monotable.MonoTable(headings, formats)
     text = tbl.table(cells)
-    expected = """
--------
-a  b
--------
-1  2  3
-4  5  6
-7  8
--------"""
-    assert text == replace_line_endings(expected)
+    expected = '\n'.join([
+        "-------",
+        "a  b",
+        "-------",
+        "1  2  3",
+        "4  5  6",
+        "7  8",
+        "-------",
+    ])
+    assert text == expected
 
 
 def test_cell_rows_are_namedtuples():
@@ -273,12 +268,13 @@ def test_cell_rows_are_namedtuples():
              row(column0=11, column1=12, column2=13))
     tbl = monotable.MonoTable()
     text = tbl.table(cells)
-    expected = """
-----------
- 1   2   3
-11  12  13
-----------"""
-    assert text == replace_line_endings(expected)
+    expected = '\n'.join([
+        "----------",
+        " 1   2   3",
+        "11  12  13",
+        "----------",
+    ])
+    assert text == expected
 
 
 def test_add_column_of_row_numbers():
@@ -297,16 +293,17 @@ def test_add_column_of_row_numbers():
     transposed_row_numbered = [row_numbers] + cell_columns
     row_numbered = transpose(transposed_row_numbered)
     text = tbl.table(row_numbered)
-    expected = """
-------------
-row
-num  X  Y  Z
-------------
-  1  A  B  C
-  2  D  E  F
-  3  G  H  I
-------------"""
-    assert text == replace_line_endings(expected)
+    expected = '\n'.join([
+        "------------",
+        "row",
+        "num  X  Y  Z",
+        "------------",
+        "  1  A  B  C",
+        "  2  D  E  F",
+        "  3  G  H  I",
+        "------------",
+    ])
+    assert text == expected
 
 
 def test_cellgrid_iterable_of_iterable():
@@ -327,13 +324,14 @@ def test_cellgrid_iterable_of_iterable():
     cells = row_generator()
     tbl = monotable.MonoTable()
     text = tbl.table(cells)
-    expected = """
--------
-1  2  3
-4  5  6
-7  8  9
--------"""
-    assert text == replace_line_endings(expected)
+    expected = '\n'.join([
+        "-------",
+        "1  2  3",
+        "4  5  6",
+        "7  8  9",
+        "-------",
+    ])
+    assert text == expected
 
 
 def test_forgot_outer_list_with_one_row_cellgrid():
@@ -395,15 +393,16 @@ class TestMonoTableExceptionCallback:
 
         tbl.format_exc_callback = monotable.plugin.ignore_it
         text = tbl.bordered_table(self.cells)
-        expected = """
-+---------+---------+
-| column0 | column1 |
-+=========+=========+
-|       0 |    9999 |
-+---------+---------+
-|       1 |     ??? |
-+---------+---------+"""
-        assert text == replace_line_endings(expected)
+        expected = '\n'.join([
+            "+---------+---------+",
+            "| column0 | column1 |",
+            "+=========+=========+",
+            "|       0 |    9999 |",
+            "+---------+---------+",
+            "|       1 |     ??? |",
+            "+---------+---------+",
+        ])
+        assert text == expected
 
     def test_user_supplied_ignore_it(self):
         def my_ignore_it(_):
@@ -416,14 +415,15 @@ class TestMonoTableExceptionCallback:
                                   self.formats)
 
         text = tbl.table(self.cells)
-        expected = """
---------------------
-column0      column1
---------------------
-      0         9999
-      1  !!!!!!!!!!!
---------------------"""
-        assert text == replace_line_endings(expected)
+        expected = '\n'.join([
+            "--------------------",
+            "column0      column1",
+            "--------------------",
+            "      0         9999",
+            "      1  !!!!!!!!!!!",
+            "--------------------",
+        ])
+        assert text == expected
 
 
 def test_print_it(capsys):
