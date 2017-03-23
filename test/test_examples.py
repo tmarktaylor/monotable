@@ -37,14 +37,13 @@ def test_simple_data_types():
     cells = [[123456789, math.pi, 'Hello World', (2, 3)],
              [2, math.e * 1000, 'another string', ('a', 'b')]]
     text = t.table(cells)
-    expected = """
---------------------------------------------------
+    expected = """--------------------------------------------------
       int        float  string          tuple
 --------------------------------------------------
 123456789     3.141593  Hello World     (2, 3)
         2  2718.281828  another string  ('a', 'b')
 --------------------------------------------------"""
-    assert text == replace_line_endings(expected)
+    assert text == expected
 
 
 def test_an_attribute_and_an_index_with_instance_assigned_format_func():
