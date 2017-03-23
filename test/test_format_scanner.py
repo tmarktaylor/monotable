@@ -142,15 +142,16 @@ def test_allowed_format_functions_user_hides_predefined():
 
 
 def test_allowed_options(format_scanner):
-    first_part_expected_options = """\
-Options are enclosed by "(" and ")".  Options are separated by ";".
-For example: "(max=22;sep=   )"
-Case is significant. Whitespace is not allowed except
-after =.  Allowed options are:
-  wrap=N  - wrap/rewrap to width of N columns. N > 0.
-  max=N   - truncate to max width of N columns. N > 0.
-  sep=ccc - characters after sep= are the column separator.
-"""
+    first_part_expected_options = '\n'.join([
+        'Options are enclosed by "(" and ")".  Options are separated by ";".',
+        'For example: "(max=22;sep=   )"',
+        'Case is significant. Whitespace is not allowed except',
+        'after =.  Allowed options are:',
+        '  wrap=N  - wrap/rewrap to width of N columns. N > 0.',
+        '  max=N   - truncate to max width of N columns. N > 0.',
+        '  sep=ccc - characters after sep= are the column separator.',
+        ''
+        ])
 
     # The test checks for match of just the beginning of each string.
     expected_format_functions = [

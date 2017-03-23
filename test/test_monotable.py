@@ -432,11 +432,12 @@ def test_print_it(capsys):
     exc = MonoTableCellError(777, 999, 'spec', 'this is the trace text')
     value = print_it(exc)
     out, err = capsys.readouterr()
-    assert out == """\
-MonoTableCellError: cell[777][999], format_spec= spec
-MonoTableCellError raised after catching:
-this is the trace text
-"""
+    assert out == '\n'.join([
+        "MonoTableCellError: cell[777][999], format_spec= spec",
+        "MonoTableCellError raised after catching:",
+        "this is the trace text",
+        ""])
+
     assert value == '???'
 
 
