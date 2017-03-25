@@ -164,12 +164,16 @@ class MonoTable:
 
     .. code-block:: none
 
-        cell -> format_func -> [wrap=N] -> [max=N]
-                format_spec            (truncates)
+        cell -> format_func -> [width=N] ->
+                format_spec    [fixed]
+                               [wrap]
 
-        * Steps enclosed by [xxx] are selected by option_spec
-          and may be omitted.
+        * width=N is selected by option_spec and may be omitted.
         * N = width of field (characters).
+        * fixed and wrap are selected by option_spec to
+          modify width's behaviour.
+        * fixed truncates or pads to exactly width=N columns.
+        * wrap textwraps.
 
     * If cell is None an empty string is formatted.
       Configure by overriding class variable
@@ -181,7 +185,7 @@ class MonoTable:
     option_spec can contain the option `sep=` which sets the separator
     string placed after the column.
 
-    If wrap_spec chat is present in table title the title is text wrapped
+    If wrap_spec_char is present in table title the title is text wrapped
     to the width of the table.
     To change the wrap_spec_char or disable wrap_spec_char scanning,
     see the class variable :py:attr:`~wrap_spec_char`.
@@ -306,7 +310,7 @@ class MonoTable:
     """Single character to indicate the title should be text wrapped.
 
     Wrapping is done to the width of the table.
-    Setting wrap_spec to "" disables title text wrap.
+    Setting wrap_spec_char to "" disables title text wrap.
     """
 
     option_spec_delimiters = '(;)'
@@ -403,17 +407,20 @@ class MonoTable:
 
         .. _options:
 
-        sep=ccc
-            Characters after 'sep=' are the column separator on the
-            right hand side of the column.
-
-        wrap=N
-            Do textwrap of formatted cell to width = N.
-
-        max=N
+        width=N
             Truncate each formatted cell line to width N and
             insert the class variable :py:attr:`more_marker` if text was
             omitted.
+
+        fixed
+            Format text to exactly width = N columns.
+
+        wrap
+            Do textwrap of formatted cell to width = N.
+
+        sep=ccc
+            Characters after 'sep=' are the column separator on the
+            right hand side of the column.
 
         mformat
             Use :py:func:`monotable.plugin.mformat` to format the cell.
@@ -744,9 +751,9 @@ class MonoTable:
             format_spec = formatobj.format_spec
 
             # create TextWrapper instance for the column if needed.
-            if formatobj.wrap is not None:
+            if formatobj.wrap:
                 text_wrapper = textwrap.TextWrapper(
-                    width=formatobj.wrap,
+                    width=formatobj.width,
                     break_long_words=True)
             else:
                 text_wrapper = None
@@ -768,12 +775,20 @@ class MonoTable:
                 if item is None:
                     # Replace None with an empty MonoBlock and
                     # bypass the formatting steps.
-                    formatted_column.append(MonoBlock(self.format_none_as,
-                                                      halign=align))
+                    # If column width is fixed, justify the MonoBlock to
+                    # pad out to the width=N value.  This will also truncate
+                    # any too long lines duplicating downstream logic.
+                    t1 = MonoBlock(self.format_none_as, halign=align)
+                    if formatobj.fixed:
+                        t1.hjustify(formatobj.width)
+                    formatted_column.append(t1)
                     continue
 
                 if isinstance(item, MonoBlock):
-                    formatted_column.append(copy.copy(item))
+                    t2 = copy.copy(item)
+                    if formatobj.fixed:
+                        t2.hjustify(formatobj.width)
+                    formatted_column.append(t2)
                     continue
                     # MonoBlocks enjoy the privilege of bypassing the
                     # formatting and format option steps.  The skipped steps
@@ -786,6 +801,11 @@ class MonoTable:
                     #
                     # The copy is made because MonoBlocks are modified
                     # individually by the justification steps.
+                    #
+                    # If column width is fixed, justify the MonoBlock to
+                    # pad out to the width=N value.  This will also truncate
+                    # any too long lines duplicating downstream logic.
+
 
                 if align == NOT_SPECIFIED:
                     align = self._halign_suggestion(item)
@@ -820,8 +840,12 @@ class MonoTable:
 
                 block = MonoBlock(text, align)
 
-                if formatobj.max is not None:
-                    block.chop_to_fieldsize(formatobj.max, self.more_marker)
+                if formatobj.width is not None:
+                    # truncate too long lines
+                    block.chop_to_fieldsize(formatobj.width, self.more_marker)
+                    if formatobj.fixed:
+                        # pad to width=N too short lines
+                        block.hjustify(formatobj.width)
 
                 formatted_column.append(block)
             formatted_columns.append(formatted_column)

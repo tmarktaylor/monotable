@@ -60,7 +60,7 @@ class FormatScanner:
     ...    pass
 
     >>> align_spec = '<'
-    >>> option_spec = '(wrap=17;sep= | ;myformat)'
+    >>> option_spec = '(width=17;wrap;sep= | ;myformat)'
     >>> format_spec = '.0f'
     >>> format_str = align_spec + option_spec + format_spec
     >>> config = monotable.scanner.MonoTableConfig(
@@ -81,8 +81,9 @@ class FormatScanner:
     # overrides config.format_func
     >>> assert formatobj.format_func == my_format_func
     >>> assert formatobj.format_spec == '.0f'
-    >>> assert formatobj.wrap == 17
-    >>> assert formatobj.max == None
+    >>> assert formatobj.width == 17
+    >>> assert formatobj.fixed == False
+    >>> assert formatobj.wrap == True
     >>> assert formatobj.sep == ' | '          # overrides config.sep
 
     Instance variables for user read access:
@@ -103,12 +104,15 @@ class FormatScanner:
         format_spec
             format_spec part of format_str.
 
-        wrap
-            Apply textwrap of this width to the formatted text.
-
-        max
-            Specifies maximum number of horizontal columns of the
+        width
+            Specifies the maximum number of horizontal columns of the
             formatted text.
+
+        fixed
+            When True, indicates the formatted text is exactly width columns.
+
+        wrap
+            When True, indicates the formatted text is text wrapped.
 
         sep
             Specifies separator string to be placed after the formatted
@@ -179,8 +183,9 @@ class FormatScanner:
             self._format_functions.update(config.format_func_map)
 
         self.error_text = ''
-        self.max = None
-        self.wrap = None
+        self.width = None
+        self.fixed = False
+        self.wrap = False
         self.sep = config.sep
         self.format_func = config.format_func
         self.align, option_format_spec = monotable.alignment.split_up(
@@ -211,17 +216,16 @@ class FormatScanner:
         if fnmatch.fnmatchcase(option_format_spec, startswith_match):
             # look for self._end starting char after self._start
             option_spec_end = option_format_spec.find(self._end, 1)
-            if option_spec_end > 0:
-                option_spec = option_format_spec[:option_spec_end + 1]
-                format_spec = option_format_spec[option_spec_end + 1:]
-                return option_spec, format_spec
+            option_spec = option_format_spec[:option_spec_end + 1]
+            format_spec = option_format_spec[option_spec_end + 1:]
+            return option_spec, format_spec
         return '', option_format_spec
 
     def _scan(self, option_spec):
         """Scan option_spec string for options and values.
 
         Updates instance variables align, error_text, format_func,
-        format_spec, max, sep, and wrap per scan results.
+        format_spec, width, fixed, wrap, and sep per scan results.
 
         option_spec
             (*)  where * is one or more option names separated by ;.
@@ -232,7 +236,7 @@ class FormatScanner:
             return
 
         # assumes option_spec starts and ends with correct delimiters
-        copy_for_error_text = option_spec[:]
+        option_spec_copy_for_error_text = option_spec[:]
         option_spec = option_spec[1:-1]  # drop start and end delimiters
         if not option_spec:  # anything left to scan?
             return
@@ -241,21 +245,33 @@ class FormatScanner:
 
         for option in option_list:
             name, arg = self._option_and_arg(option)
-            if name == 'max':
-                t = self._scan_gt_value(arg)
-                if t is not None:
-                    self.max = t
+            if name == 'width':
+                value = self._scan_gt_value(arg)
+                if value is not None:
+                    self.width = value
+                    option_list.remove(option)
+                    break
+
+        for option in option_list:
+            name, arg = self._option_and_arg(option)
+            if name == 'fixed':
+                if arg is None:
+                    self.fixed = True
                     option_list.remove(option)
                     break
 
         for option in option_list:
             name, arg = self._option_and_arg(option)
             if name == 'wrap':
-                t = self._scan_gt_value(arg)
-                if t is not None:
-                    self.wrap = self._scan_gt_value(arg)
+                if arg is None:
+                    self.wrap = True
                     option_list.remove(option)
                     break
+
+        # silently ignore fixed or wrap options if no width=N option
+        if self.width is None:
+            self.wrap = False
+            self.fixed = False
 
         for option in option_list:
             name, arg = self._option_and_arg(option)
@@ -267,10 +283,11 @@ class FormatScanner:
                     break
 
         for option in option_list:
-            name, _ = self._option_and_arg(option)
+            name, arg = self._option_and_arg(option)
             if name in self._format_functions:
-                self.format_func = self._format_functions[name]
-                option_list.remove(option)
+                if arg is None:
+                    self.format_func = self._format_functions[name]
+                    option_list.remove(option)
                 break
 
         if len(option_list) > 0:
@@ -279,7 +296,7 @@ class FormatScanner:
             # duplicates.  Duplicates can be the same option or more than
             # one format function name.  Show them in the error message.
             error_messages = ['In option_spec "{}"'.format(
-                copy_for_error_text)]
+                option_spec_copy_for_error_text)]
             for opt in option_list:
                 message = ('    unrecognized option "{}",'
                            ' bad/duplicate name or bad "=value".').format(opt)
@@ -327,13 +344,16 @@ class FormatScanner:
                  'Options are separated by "{}".'.format(self._start,
                                                          self._end,
                                                          self._between),
-                 'For example: "{}max=22{}sep=   {}"'.format(
+                 'For example: "{}width=22{}sep=   {}"'.format(
                      self._start, self._between, self._end),
                  'Case is significant. Whitespace is not allowed except',
                  'after =.  Allowed options are:',
-                 '  wrap=N  - wrap/rewrap to width of N columns. N > 0.',
-                 '  max=N   - truncate to max width of N columns. N > 0.',
-                 '  sep=ccc - characters after sep= are the column separator.'
+                 '  width=N - column width is at most N columns. N > 0.',
+                 '  fixed   - column width is exactly width=N columns.',
+                 '            Use to qualify width=N option.',
+                 '  wrap    - wrap/rewrap to width=N.',
+                 '            Use to qualify width=N option.',
+                 '  sep=ccc - characters after sep= are the column separator.',
                  ]
         lines.extend(self._allowed_format_functions())
         return lines

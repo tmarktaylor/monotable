@@ -4,7 +4,7 @@ More Examples
 Limit column width
 ------------------
 
-Here we employ the option_spec **(max=15)** to limit the width of the second
+Here we employ the option_spec **(width=15)** to limit the width of the second
 column to 15 characters.  The **more_marker** '...' shows where text was
 omitted.
 
@@ -13,7 +13,7 @@ omitted.
     import monotable
 
     headings = ['Id Number', 'Duties', 'Start Date']
-    formats = ['', '(max=15)']
+    formats = ['', '(width=15)']
     t5 = monotable.MonoTable(headings, formats)
 
     cells = [[1, 'President and CEO', '06/02/2016'],
@@ -35,7 +35,7 @@ omitted.
 
 - Note that there is no format string for the third column.  Missing
   format strings default to the empty string.
-- The max=N format option applies only to the cells, not the heading.
+- The width=N format option applies only to the cells, not the heading.
 
 Wrap a column and limit cell height
 -----------------------------------
@@ -47,7 +47,7 @@ The second column is wrapped to a maximum width of 12 characters.
     import monotable
 
     headings = ['Id Number', 'Duties', 'Start Date']
-    formats = ['', '(wrap=12)']
+    formats = ['', '(width=12;wrap)']
     t6 = monotable.MonoTable(headings, formats)
     t6.max_cell_height = 2              # override class var
 
@@ -83,9 +83,47 @@ The second column is wrapped to a maximum width of 12 characters.
 - Changing **max_cell_height** to 1 assures there will be no multi-line
   cells in the table.
 - The second column ended up wrapping to 11 characters wide,
-  one character less than the format string (wrap=12) specified.  This
+  one character less than the format string (width=12;wrap) specified.  This
   behaviour is a side affect of using Python textwrap to implement the
-  wrap=N format option.
+  format option.
+- If you want the column to be exactly N characters wide, add the fixed
+  format option like this: (width=12;wrap;fixed)
+
+Fix column width
+----------------
+
+Add **;fixed** after **(width=11)** to fix the column width.  The
+formatted text will be padded or truncated to the exact width.
+
+**fixed** can also be used with **wrap** like this: **(width=N;fixed;wrap)**.
+
+.. testcode::
+
+    import monotable
+
+    headings = ['left\ncol', 'mid\ncol', 'right\ncol']
+    formats = ['', '^(width=11;fixed)']
+    t7 = monotable.MonoTable(headings, formats)
+
+    cells = [['A', 1, 'x'],
+             ['B', 2, 'y'],
+             ['C', 3, 'z']]
+
+    title = 'Middle column is fixed width.'
+
+    print(t7.table(cells, title=title))
+
+.. testoutput::
+
+    Middle column is fixed width.
+    ------------------------
+    left      mid      right
+    col       col      col
+    ------------------------
+    A          1       x
+    B          2       y
+    C          3       z
+    ------------------------
 
 Selecting attributes or elements
 --------------------------------
@@ -101,7 +139,7 @@ the element indexed by [1] from a sequence.
     headings = ['x\nattrib.', '[1]\nindex']
     formats = ['(sformat){.x}', '(sformat){[1]}']
 
-    t7 = monotable.MonoTable(headings, formats)
+    t8 = monotable.MonoTable(headings, formats)
 
     class MyCell:
         def __init__(self, x, y):
@@ -111,7 +149,7 @@ the element indexed by [1] from a sequence.
     cells = [[MyCell(1, 91), ['a', 'bb']],
              [MyCell(2, 92), ['c', 'dd']]]
 
-    print(t7.table(cells, title='<Select attribute/index.'))
+    print(t8.table(cells, title='<Select attribute/index.'))
 
 .. testoutput::
 
@@ -144,9 +182,9 @@ the element indexed by [1] from a sequence.
 .. testcode::
 
     # Continues previous example.
-    t7.formats = ['>(sformat){.x}', '(sformat){[1]}']
-    t7.headings = ['<x\nattrib.', '[1]\nindex']
-    print(t7.table(cells, title='<Select attribute/index.'))
+    t8.formats = ['>(sformat){.x}', '(sformat){[1]}']
+    t8.headings = ['<x\nattrib.', '[1]\nindex']
+    print(t8.table(cells, title='<Select attribute/index.'))
 
 .. testoutput::
 
@@ -183,7 +221,7 @@ strings are silently ignored.
     # specify sep=' | ' between 1st and 2nd columns for vertical rule
     formats = ['(sep= | )']
 
-    t8 = monotable.MonoTable(headings, formats)
+    t9 = monotable.MonoTable(headings, formats)
 
     cells = [['time', '12:45'],
              ['place', 'home'],
@@ -191,7 +229,7 @@ strings are silently ignored.
              ['sound', 'bell'],
              ['volume']]          # short row is extended with empty string
 
-    print(t8.table(cells))
+    print(t9.table(cells))
 
 .. testoutput::
 
@@ -223,7 +261,7 @@ markup.
         guideline_chars = '==='
 
     headings = ['option name', 'format function', 'description']
-    t9 = SeparatedMonoTable(headings)
+    t10 = SeparatedMonoTable(headings)
 
     cells = [['mformat', 'monotable.plugin.mformat', 'mapping with str.format()'],
              ['pformat', 'monotable.plugin.pformat', 'printf style'],
@@ -231,7 +269,7 @@ markup.
              ['tformat', 'monotable.plugin.tformat', 'string.Template()'],
              ['function-name', '\\', 'user defined function']]
 
-    print(t9.table(cells))
+    print(t10.table(cells))
 
 .. testoutput::
 
@@ -270,14 +308,14 @@ string.Template.substitute().
 
     headings = ['an\nint', 'Formatted by\nstr.Template()']
     formats = ['', '(tformat)name= $name\nage= $age\ncolor= $favorite_color']
-    t10 = monotable.MonoTable(headings, formats)
+    t11 = monotable.MonoTable(headings, formats)
 
     cells = [[2345,
               dict(name='Row Zero', age=888, favorite_color='blue')],
              [6789,
               dict(name='Row One', age=999, favorite_color='No......')]]
 
-    print(t10.bordered_table(cells, title='A multi-line\nTitle.'))
+    print(t11.bordered_table(cells, title='A multi-line\nTitle.'))
 
 .. testoutput::
 

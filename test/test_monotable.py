@@ -569,11 +569,11 @@ def test_no_option_spec_delims():
     """
     # Note- Does not test entire exception message.
 
-    tbl = monotable.MonoTable(headings=[], formats=['!max=10!s'])
+    tbl = monotable.MonoTable(headings=[], formats=['!width=10!s'])
     tbl.option_spec_delimiters = ''   # disable
     cells = [['A']]
 
-    msg = 'MonoTableCellError: cell[0][0], format_spec= !max=10!s'
+    msg = 'MonoTableCellError: cell[0][0], format_spec= !width=10!s'
     with pytest.raises(monotable.MonoTableCellError) as exc_info:
         _ = tbl.table(cells)
     assert str(exc_info.value).startswith(msg)
@@ -582,7 +582,7 @@ def test_no_option_spec_delims():
 def test_override_option_spec_delims():
     """Test formatting with overridden option_spec_delimiters."""
 
-    tbl = monotable.MonoTable(headings=[], formats=['!max=10!s'])
+    tbl = monotable.MonoTable(headings=[], formats=['!width=10!s'])
     tbl.option_spec_delimiters = '!;!'
     cells = [['A']]
     text = tbl.table(cells)

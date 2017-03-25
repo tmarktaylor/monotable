@@ -42,6 +42,7 @@ please see :ref:`configuring-label`.
     width set for the column.
   - A formatted cell can be truncated to a width set for
     the column. Omission of text is indicated. |more_marker|
+  - The column width can be fixed.  Short cells will be padded and justified.
   - The number of vertical lines in a cell can be limited. |max_cell_height|
     Omission of text is indicated.
   - Heading and cell vertical alignment is configurable. |heading_valign|

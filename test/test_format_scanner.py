@@ -144,14 +144,17 @@ def test_allowed_format_functions_user_hides_predefined():
 def test_allowed_options(format_scanner):
     first_part_expected_options = '\n'.join([
         'Options are enclosed by "(" and ")".  Options are separated by ";".',
-        'For example: "(max=22;sep=   )"',
+        'For example: "(width=22;sep=   )"',
         'Case is significant. Whitespace is not allowed except',
         'after =.  Allowed options are:',
-        '  wrap=N  - wrap/rewrap to width of N columns. N > 0.',
-        '  max=N   - truncate to max width of N columns. N > 0.',
+        '  width=N - column width is at most N columns. N > 0.',
+        '  fixed   - column width is exactly width=N columns.',
+        '            Use to qualify width=N option.',
+        '  wrap    - wrap/rewrap to width=N.',
+        '            Use to qualify width=N option.',
         '  sep=ccc - characters after sep= are the column separator.',
         ''
-        ])
+    ])
 
     # The test checks for match of just the beginning of each string.
     expected_format_functions = [
@@ -239,11 +242,11 @@ def test_parse_nested_start_end_char_pairs(format_scanner):
 def test_init_parse_all_good_options():
     """Prove a complex valid format_str produces expected attributes."""
 
-    format_str = '(max=22;wrap=19;sep= | ;pformat){:2.7d}'
+    format_str = '(width=22;wrap;sep= | ;pformat){:2.7d}'
     fs = monotable.scanner.FormatScanner(format_str, MONOTABLE_CONFIG)
     assert fs.error_text == ''
-    assert fs.max == 22
-    assert fs.wrap == 19
+    assert fs.width == 22
+    assert fs.wrap == True
     assert fs.sep == ' | '
     assert fs.format_func == monotable.plugin.pformat
 
@@ -252,17 +255,26 @@ def test_init_parse_all_good_options():
 # with various options and spacing.  These are used to to show that
 # parsing succeeds.
 good_format_str_list = [
+    '()',
     # Valid even when missing option_spec end delimiter
-    '(max=22;wrap=19{:2.7d}',
-
-    '(max=3;wrap=19;sep= | ;pformat){:2.7d}',
-    '( max =3)',
-    '( max= 3)',
-    '( max = 3)',
-    '( max  = 3 )',
-    '(  max  =  3)'
-    '( wrap = 4)',
-    '(  wrap = 4 )',
+    '(width=22;wrap{:2.7d}',
+    '(width=3;wrap;sep= | ;pformat){:2.7d}',
+    '( width =3)',
+    '( width= 3)',
+    '( width = 3)',
+    '( width  = 3 )',
+    '(  width  =  3)'
+    '( width = 4;wrap)',
+    '(  width = 4; wrap )',
+    '(width=22;fixed{:2.7d}',
+    '(width=3;fixed;sep= | ;pformat){:2.7d}',
+    '( width =3)',
+    '( width= 3)',
+    '( width = 3)',
+    '( width  = 3 )',
+    '(  width  =  3)'
+    '( width = 4;fixed)',
+    '(  width = 4; fixed )',
     '(sep=)',
     '( sep=)',
     '(  sep= )',
@@ -274,7 +286,15 @@ good_format_str_list = [
     '(mformat )',
     '(tformat )',
     '( tformat)',
-    '(max = 3 ; wrap= 19 ;sep= | ;   pformat){:2.7d}']
+    '(width = 3 ; wrap ;sep= | ;   pformat){:2.7d}'
+
+    # fixed without width=N is silently ignored
+    '(fixed)',
+    # wrap without width=N is silently ignored
+    '(wrap)',
+
+    '(wrap;fixed)',
+    ]
 
 
 @pytest.mark.parametrize("a_good_format_str", good_format_str_list)
@@ -289,53 +309,52 @@ def test_init_parse_extra_spacing(a_good_format_str):
 # with various typos in the options.
 bad_format_str_list = [
     # comma is a bad delimiter
-    '(max=22;wrap=19,sep= | ;pformat){:2.7d}',
+    '(width=22;wrap,sep= | ;pformat){:2.7d}',
 
     # no allowed options
     '(bogus)format_str',
 
-    # bad option name mable, wrap option has no =value
+    # bad option name mable
     '(mable=22;wrap){:2.7d}',
 
-    # wrap option has no '='
-    '(wrap){:2.7d}',
+    # width option has no '='
+    '(width){:2.7d}',
 
-    # wrap option has no value
-    '(wrap=){:2.7d}',
+    # width option has no value
+    '(width=){:2.7d}',
 
-    # wrap option has bad value 0
-    '(wrap=0){:2.7d}',
+    # width option has bad value 0
+    '(width=0){:2.7d}',
 
-    # wrap option has bad value (negative)
-    '(wrap=-1){:2.7d}',
-
-    # max option has no '='
-    '(max){:2.7d}',
-
-    # max option has no value
-    '(max=){:2.7d}',
-
-    # max option has bad value 0
-    '(max=0){:2.7d}',
-
-    # max option has bad value (negative)
-    '(max=-1){:2.7d}',
+    # width option has bad value (negative)
+    '(width=-1){:2.7d}',
 
     # sep option has no '='
     '(sep){:2.7d}',
 
     # extra '='
-    '(max=4=){:2.7d}',
+    '(width=4=){:2.7d}',
 
-    # more than one max
-    '(max=3;max=4){:2.7d}',
+    # more than one width
+    '(width=3;width=4){:2.7d}',
 
-    # the option in all '='
-    '(max=3;=====){:2.7d}',
+    # format function with = value
+    '(mformat=2){:2.7d}',
+
+    # the option is all '='
+    '(width=3;=====){:2.7d}',
 
     # more than one format function
-    '(tformat;sformat){:2.7d}']
+    '(tformat;sformat){:2.7d}',
 
+    # illegal fixed arg
+    '(width=10;fixed = 2)',
+    '(fixed=1)',
+
+    # illegal wrap arg
+    '(wrap=A;width=10)',
+    '(wrap=1)',
+    ]
 
 @pytest.mark.parametrize("a_bad_format_str", bad_format_str_list)
 def test_parse_assorted_bad_options(a_bad_format_str):
@@ -348,34 +367,35 @@ def valid_options_shuffled_helper(fs):
 
     assert fs.error_text == ''
     assert fs.align == LEFT
-    assert fs.wrap == 5
-    assert fs.max == 10
+    assert fs.width == 10
+    assert fs.fixed == True
+    assert fs.wrap == True
     assert fs.sep == 'ZZZ'
 
 
 # List of good format_str where the option_spec part has the same
 # valid options, just in different orders.
 shuffled_option_list = [
-    '<( sep =ZZZ;wrap =5;max= 10;pformat)my_format_spec',
-    '<( sep =ZZZ;wrap =5;pformat;max= 10)my_format_spec',
-    '<(max= 10;pformat;wrap =5; sep =ZZZ)my_format_spec',
-    '<( sep =ZZZ;max= 10;wrap =5;pformat)my_format_spec',
-    '<(pformat;wrap =5;max= 10; sep =ZZZ)my_format_spec',
-    '<( sep =ZZZ;pformat;wrap =5;max= 10)my_format_spec',
-    '<(pformat;max= 10; sep =ZZZ;wrap =5)my_format_spec',
-    '<(pformat;wrap =5; sep =ZZZ;max= 10)my_format_spec',
-    '<(wrap =5;pformat; sep =ZZZ;max= 10)my_format_spec',
-    '<(pformat; sep =ZZZ;wrap =5;max= 10)my_format_spec',
-    '<( pformat;max= 10;wrap =5; sep =ZZZ)my_format_spec',
-    '<(max= 10; sep =ZZZ;wrap =5;pformat)my_format_spec',
-    '<( wrap =5; sep =ZZZ;max= 10;pformat)my_format_spec',
-    '<( sep =ZZZ;max= 10;pformat;wrap =5)my_format_spec',
-    '<( sep =ZZZ;wrap =5;pformat;max= 10)my_format_spec',
-    '<(wrap =5;pformat; sep =ZZZ;max= 10)my_format_spec',
-    '<(pformat; sep =ZZZ;max= 10;wrap =5)my_format_spec',
-    '<( pformat;max= 10; sep =ZZZ;wrap =5)my_format_spec',
-    '<( wrap =5;pformat; sep =ZZZ;max= 10)my_format_spec',
-    '<(max= 10; sep =ZZZ;pformat;wrap =5)my_format_spec']
+    '<( sep =ZZZ;wrap;width= 10;pformat;fixed)my_format_spec',
+    '<( sep =ZZZ;fixed;wrap;pformat;width= 10)my_format_spec',
+    '<(width= 10;pformat;wrap;fixed; sep =ZZZ)my_format_spec',
+    '<( sep =ZZZ;width= 10;wrap;fixed;pformat)my_format_spec',
+    '<(pformat;wrap;fixed;width= 10; sep =ZZZ)my_format_spec',
+    '<( sep =ZZZ;pformat;fixed;wrap;width= 10)my_format_spec',
+    '<(fixed;pformat;width= 10; sep =ZZZ;wrap)my_format_spec',
+    '<(pformat;wrap; sep =ZZZ;fixed;width= 10)my_format_spec',
+    '<(wrap;pformat;fixed; sep =ZZZ;width= 10)my_format_spec',
+    '<(pformat;fixed; sep =ZZZ;wrap;width= 10)my_format_spec',
+    '<( pformat;width= 10;wrap; sep =ZZZ;fixed)my_format_spec',
+    '<(fixed;width= 10; sep =ZZZ;wrap;pformat)my_format_spec',
+    '<( wrap; sep =ZZZ;fixed;width= 10;pformat)my_format_spec',
+    '<( sep =ZZZ;fixed;width= 10;pformat;wrap)my_format_spec',
+    '<( sep =ZZZ;wrap;pformat;width= 10;fixed)my_format_spec',
+    '<(wrap;pformat; sep =ZZZ;fixed;width= 10)my_format_spec',
+    '<(pformat;fixed; sep =ZZZ;width= 10;wrap)my_format_spec',
+    '<( pformat;width= 10; sep =ZZZ;fixed;wrap)my_format_spec',
+    '<( wrap;pformat; sep =ZZZ;width= 10;fixed)my_format_spec',
+    '<(width= 10; sep =ZZZ;fixed;pformat;wrap)my_format_spec']
 
 
 @pytest.mark.parametrize("a_shuffled_option_format_str",

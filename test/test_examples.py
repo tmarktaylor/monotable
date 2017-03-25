@@ -245,11 +245,11 @@ def test_horizontal_and_vertical_guidelines_and_indent():
     assert text == expected
 
 
-def test_max_format_option():
-    """Limit the width of a column using max format option."""
+def test_width_format_option():
+    """Limit the width of a column using width format option."""
 
     headings = ['Id Number', 'Duties', 'Start Date']
-    formats = ['', '(max=15)']
+    formats = ['', '(width=15)']
     t = monotable.MonoTable(headings, formats)
     cells = [[1, 'President and CEO', '06/02/2016'],
              [2, 'Raise capital', '06/10/2016'],
@@ -268,8 +268,85 @@ def test_max_format_option():
     assert text == expected
 
 
+def test_width_fixed_format_option():
+    """Fix the width of a column using width format option.
+
+    Look for 5 extra spaces after 1234567890123 and Raise capital."""
+
+    headings = ['Id Number', 'Duties', 'Start Date']
+    formats = ['', '(width=18;fixed)']
+    t = monotable.MonoTable(headings, formats)
+    cells = [[1, '1234567890123', '06/02/2016'],
+             [2, 'Raise capital', '06/10/2016'],
+             [3, 'Oversee day', '06/21/2016']]
+    text = t.table(cells, title='Fixed center column to 15 characters.')
+    expected = '\n'.join([
+        "  Fixed center column to 15 characters.",
+        "-----------------------------------------",
+        "Id Number  Duties              Start Date",
+        "-----------------------------------------",
+        "        1  1234567890123       06/02/2016",
+        "        2  Raise capital       06/10/2016",
+        "        3  Oversee day         06/21/2016",
+        "-----------------------------------------",
+    ])
+    assert text == expected
+
+
+def test_width_fixed_format_option_with_none_and_missing_cells():
+    """Fix the width of a column using width and fixed format options.
+
+    Show that cell of value None and the empty cells added to a
+    row that was missing cells are handled.
+    Look for 5 extra spaces before 1234567890123 ."""
+
+    headings = ['Id Number', 'Duties', 'Start Date']
+    formats = ['', '>(width=18;fixed)']
+    t = monotable.MonoTable(headings, formats)
+    cells = [[1, '1234567890123', '06/02/2016'],
+             [2, None, '06/10/2016'],
+             [3]]
+    text = t.table(cells, title='Fixed center column to 15 characters.')
+    expected = '\n'.join([
+        "  Fixed center column to 15 characters.",
+        "-----------------------------------------",
+        "Id Number              Duties  Start Date",
+        "-----------------------------------------",
+        "        1       1234567890123  06/02/2016",
+        "        2                      06/10/2016",
+        "        3",
+        "-----------------------------------------",
+    ])
+    assert text == expected
+
+
+def test_width_fixed_right_justified_format_option():
+    """Fix the width of a column using width and fixed format options.
+
+    Look for 5 extra spaces before 1234567890123 and Raise capital."""
+
+    headings = ['Id Number', 'Duties', 'Start Date']
+    formats = ['', '>(width=18;fixed)']
+    t = monotable.MonoTable(headings, formats)
+    cells = [[1, '1234567890123', '06/02/2016'],
+             [2, 'Raise capital', '06/10/2016'],
+             [3, 'Oversee day', '06/21/2016']]
+    text = t.table(cells, title='Fixed center column to 15 characters.')
+    expected = '\n'.join([
+        "  Fixed center column to 15 characters.",
+        "-----------------------------------------",
+        "Id Number              Duties  Start Date",
+        "-----------------------------------------",
+        "        1       1234567890123  06/02/2016",
+        "        2       Raise capital  06/10/2016",
+        "        3         Oversee day  06/21/2016",
+        "-----------------------------------------",
+    ])
+    assert text == expected
+
+
 def test_wrap_format_option():
-    """Limit the width of a column using wrap format option.
+    """Limit the width of a column using width and wrap format options.
 
     Note that the center column actually occupies 11 characters since no
     lines in the column wrapped to the full 12 characters.
@@ -278,7 +355,7 @@ def test_wrap_format_option():
     """
 
     headings = ['Id Number', 'Duties', 'Start Date']
-    formats = ['', '(wrap=12)']
+    formats = ['', '(width=12;wrap)']
     t = monotable.MonoTable(headings, formats)
     cells = [[1, 'President and CEO', '06/02/2016'],
              [2, 'Raise capital', '06/10/2016'],
@@ -302,6 +379,127 @@ def test_wrap_format_option():
     assert text == expected
 
 
+def test_fixed_wrap_format_option():
+    """Limit the width of a column using width and wrap format options.
+
+    Note that without the fixed option the center column wraps to 9
+    characters.  Three spaces were added to pad out to 12 characters.
+    """
+
+    headings = ['Id Number', '123456789', 'Start Date']
+    formats = ['', '(width=12;wrap;fixed)']
+    t = monotable.MonoTable(headings, formats)
+    cells = [[1, 'President President', '06/02/2016'],
+             [2, 'Raise capital', '06/10/2016'],
+             [3, 'Oversee Oversee', '06/21/2016']]
+    text = t.table(cells,
+                   title='Wrap center column to a fixed width 12 characters.')
+    expected = '\n'.join([
+        "Wrap center column to a fixed width 12 characters.",
+        "-----------------------------------",
+        "Id Number  123456789     Start Date",
+        "-----------------------------------",
+        "        1  President     06/02/2016",
+        "           President",
+        "        2  Raise         06/10/2016",
+        "           capital",
+        "        3  Oversee       06/21/2016",
+        "           Oversee",
+        "-----------------------------------",
+    ])
+    assert text == expected
+
+
+def test_fixed_wrap_right_justified_format_option():
+    """Limit the width of a column using width and wrap format options.
+
+    Note that without the fixed option the center column wraps to 9
+    characters.  Three spaces were added at the start of the column
+    to pad out to 12 characters.
+    """
+
+    headings = ['Id Number', '123456789', 'Start Date']
+    formats = ['', '>(width=12;wrap;fixed)']
+    t = monotable.MonoTable(headings, formats)
+    cells = [[1, 'President President', '06/02/2016'],
+             [2, 'Raise capital', '06/10/2016'],
+             [3, 'Oversee Oversee', '06/21/2016']]
+    text = t.table(cells,
+                   title=('Wrap center column to a fixed width 12 '
+                          'characters.  right.'))
+    expected = '\n'.join([
+        "Wrap center column to a fixed width 12 characters.  right.",
+        "-----------------------------------",
+        "Id Number     123456789  Start Date",
+        "-----------------------------------",
+        "        1     President  06/02/2016",
+        "              President",
+        "        2         Raise  06/10/2016",
+        "                capital",
+        "        3       Oversee  06/21/2016",
+        "                Oversee",
+        "-----------------------------------",
+    ])
+    print(text)
+    assert text == expected
+
+
+def test_width_fixed_format_option_missing_cells():
+    """Do fixed width on a column that is missing cells.
+
+    Leave out the heading too and center justify.  Result should be an
+    all space column that is 15 spaces wide.
+    """
+
+    headings = ['Id Number', 'Duties', 'Start Date']
+    formats = ['', '(width=15)', '^(width=15;fixed)']
+    t = monotable.MonoTable(headings, formats)
+    # third column of cells is missing
+    cells = [[1, 'President and CEO'],
+             [2, 'Raise capital'],
+             [3, 'Oversee day to day operations']]
+    text = t.table(cells, title='<Limit center column to 15 characters.')
+    expected = '\n'.join([
+        "Limit center column to 15 characters.",
+        "-------------------------------------------",
+        "Id Number  Duties              Start Date",
+        "-------------------------------------------",
+        "        1  President an...",
+        "        2  Raise capital",
+        "        3  Oversee day ...",
+        "-------------------------------------------",
+    ])
+    assert text == expected
+
+
+def test_width_fixed_format_option_only_none_cells():
+    """Do fixed width on a column that has only None.
+
+    Leave out the heading too and center justify.  Result should be an
+    all space column that is 15 spaces wide.
+    """
+
+    headings = ['Id Number', 'Duties']
+    formats = ['', '(width=15)', '^(width=15;fixed)']
+    t = monotable.MonoTable(headings, formats)
+    # third column of cells is None
+    cells = [[1, 'President and CEO', None],
+             [2, 'Raise capital', None],
+             [3, 'Oversee day to day operations', None]]
+    text = t.table(cells, title='<Limit center column to 15 characters.')
+    expected = '\n'.join([
+        "Limit center column to 15 characters.",
+        "-------------------------------------------",
+        "Id Number  Duties",
+        "-------------------------------------------",
+        "        1  President an...",
+        "        2  Raise capital",
+        "        3  Oversee day ...",
+        "-------------------------------------------",
+    ])
+    assert text == expected
+
+
 def test_max_cell_height():
     """Limit the maximum height of cells in the previous table.
 
@@ -311,7 +509,7 @@ def test_max_cell_height():
     """
 
     headings = ['Id Number', 'Duties', 'Start Date']
-    formats = ['', '(wrap=12)']
+    formats = ['', '(width=12;wrap)']
     t = monotable.MonoTable(headings, formats)
     t.max_cell_height = 2              # override class var
     cells = [[1, 'President and CEO', '06/02/2016'],
@@ -341,7 +539,7 @@ def test_bordered_format():
     """Add borders to the table from test_max_cell_height()."""
 
     headings = ['Id Number', 'Duties', 'Start Date']
-    formats = ['', '(wrap=12)']
+    formats = ['', '(width=12;wrap)']
     cells = [[1, 'President and CEO', '06/02/2016'],
              [2, 'Raise capital', '06/10/2016'],
              [3, 'Oversee day to day operations', '06/21/2016']]
@@ -557,10 +755,10 @@ def test_override_align_spec_chars():
     assert text == expected
 
 
-def test_override_title_wrap_spec():
-    """Change the class var wrap_spec on an instance.
+def test_override_title_wrap_spec_char():
+    """Change the class var wrap_spec_char on an instance.
 
-    wrap_spec selects textwrap for the title.
+    The [wrap_spec] in the title selects textwrap.
     The table title is interpreted as [align_spec][wrap_spec]string.
     """
 
@@ -568,9 +766,11 @@ def test_override_title_wrap_spec():
     headings = ['an int', 'a string']
     t = monotable.MonoTable(headings)
     t.wrap_spec_char = '$'
-    text = t.table(cells, title='<$User wrap_spec changed on an instance.')
+    text = t.table(cells,
+                   title='<$User wrap_spec_char changed on an instance.')
     expected = '\n'.join([
-        "User wrap_spec",
+        "User",
+        "wrap_spec_char",
         "changed on an",
         "instance.",
         "----------------",
@@ -788,8 +988,8 @@ def test_override_more_marker_override_max_cell_height_option_max_width():
 
     Change the more_marker to '**'.
     Limit cell height to 2 lines.  Limit column 2 width to 2 characters.
-    Note that a column width is max(widest heading line, max=N).  In other
-    words a wide heading for a column supercedes a max=N specified width.
+    Note that a column width is max(widest heading line, width=N).  In other
+    words a wide heading for a column supercedes a width=N specified width.
     Bottom center cell first line is truncated to 3 characters.  The 4
     cells in the first and second columns are limited to two line height.
     """
@@ -802,7 +1002,7 @@ def test_override_more_marker_override_max_cell_height_option_max_width():
              [monotable.HR],
              ['A\nfour\nline\ncell', 'three\nline\ncell', 'two line\ncell']]
     headings = ['4 line', '3', '2 line']
-    formats = ['', '(max=3)', '']
+    formats = ['', '(width=3)', '']
 
     t = CustomMonoTable(headings, formats)
     text = t.table(cells, title="max_cell_height=2, more_marker='**'")
@@ -971,7 +1171,7 @@ def test_tile_four_tables_together():
     taf = ta.table(cells, title='vertical align CENTER_BOTTOM')
 
     headings = ['4 line', '3', '2 line']
-    formats = ['', '(max=3)', '']
+    formats = ['', '(width=3)', '']
 
     class CustomMonoTable(monotable.MonoTable):
         more_marker = '**'

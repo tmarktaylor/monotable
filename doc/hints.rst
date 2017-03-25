@@ -2,8 +2,8 @@ Hints
 =====
 
 - Text wrapping wraps text to a maximum width, but it can be less.
-- Headings are not affected by max and wrap format options.  A wider heading
-  will take precedence.
+- Headings are not affected by width, fixed, and wrap format options.
+  A wider heading will take precedence.
 - Check spelling carefully when overriding a class variable.  Misspelling
   will be siliently ignored.
 - Auto-alignment always looks at the type of the cell.
