@@ -39,6 +39,8 @@
    https://github.com/tmarktaylor/monotable/issues
 .. _Python Package Index/monotable:
    https://pypi.python.org/pypi/monotable
+.. _Master branch build status:
+   https://github.com/tmarktaylor/monotable/blob/master/README.md
 
 Introduction
 ============
@@ -103,6 +105,7 @@ Links to License, Docs, Repos, Issues, PYPI page
 - `Repository`_
 - `Issue Tracker`_
 - `Python Package Index/monotable`_
+- `Master branch build status`_
 
 Description
 -----------
