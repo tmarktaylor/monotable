@@ -12,6 +12,7 @@ MANIFEST
 .tox
 .cache
 .coverage
+.pypirc
 htmlcov/
 
 # PyCharm

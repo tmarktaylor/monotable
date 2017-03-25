@@ -12,4 +12,4 @@ include doc/*.txt
 include doc/make.bat
 include doc/Makefile
 include doc/_static/*
-recursive-exclude doc/_build *.*
+prune doc/_build
