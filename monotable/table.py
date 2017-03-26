@@ -210,7 +210,7 @@ class MonoTable:
     Python built in function staticmethod() like this:
 
     >>> import monotable
-    >>> def your_user_defined_format_function():
+    >>> def your_user_defined_format_function(value, format_spec):
     ...    pass
     >>> class SubclassMonoTable(monotable.MonoTable):
     ...     format_func = staticmethod(your_user_defined_format_function)
