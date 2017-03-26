@@ -224,6 +224,12 @@ class MonoTable:
     >>>
     >>> tbl = monotable.MonoTable()
     >>> tbl.format_func = monotable.plugin.sformat
+
+    .. _Docs Here:
+       https://docs.python.org/3/howto/descriptor.html#functions-and-methods
+
+    Reading Python functions and methods `Docs Here`_ helps explain when
+    to use @staticmethod.
     """
 
     format_exc_callback = staticmethod(monotable.plugin.raise_it)
@@ -251,6 +257,11 @@ class MonoTable:
     >>> tbl = monotable.MonoTable()
     >>> tbl.format_exc_callback = monotable.plugin.ignore_it
 
+    .. _Docs Here:
+       https://docs.python.org/3/howto/descriptor.html#functions-and-methods
+
+    Reading Python functions and methods `Docs Here`_ helps explain when
+    to use @staticmethod.
     """
 
     default_float_format_spec = '.6f'
@@ -1189,7 +1200,7 @@ class _InternalGuideline(MonoBlock):
     """
     Internal indication to insert a horizontal rule instead of a row of cells.
 
-    A row that starts with a this instance is omitted from the
+    A row that starts with this instance is omitted from the
     table and a heading guideline is formatted in its place.
     This is a subclass of MonoBlock so that it can pass through
     the justify steps as if it were a typical formatted cell.

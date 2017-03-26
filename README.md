@@ -7,7 +7,7 @@ plug-in format functions, column width control.
 [![PyPI](https://img.shields.io/pypi/v/monotable.svg)](https://pypi.python.org/pypi/monotable)
 [![PyPI Python Versions](https://img.shields.io/pypi/pyversions/monotable.svg)](https://pypi.python.org/pypi/monotable)
 
-[Python Package Index](https://pypi.python.org/pypi/monotable)
+[Python Package Index/monotable](https://pypi.python.org/pypi/monotable)
 
 [Introduction on GitHub](https://github.com/tmarktaylor/monotable/blob/master/README.rst)
 
