@@ -155,9 +155,15 @@ More features are described in the documentation section
 .. Contributors
 .. ============
 
-.. Reserved for change log
-.. Recent Changes
-.. ==============
+Recent Changes
+==============
+1.0.1
+    MANIFEST.in and doc fixes.
+
+1.0.0
+    Initial upload.
+
+
 
 Examples
 ========
