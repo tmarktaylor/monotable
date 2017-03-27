@@ -7,6 +7,28 @@ from codecs import open
 from os import path
 from setuptools import setup
 
+def make_badge_text():
+    """Generate reStructuredText for license and python.org badges."""
+    badge_directives = [
+        ".. |apache| image:: https://img.shields.io/pypi/l/monotable.svg",
+        "   :target: http://www.apache.org/licenses/LICENSE-2.0",
+        "   :alt: License: Apache 2.0",
+        "",
+        ".. |py_versions| image::",
+        "    https://img.shields.io/pypi/pyversions/monotable.svg",
+        "    :target: https://pypi.python.org/pypi/monotable",
+        "    :alt: Python versions supported",
+        "",
+        ".. |pypi_version| image::",
+        "   https://img.shields.io/pypi/v/monotable.svg",
+        "   :target: https://pypi.python.org/pypi/monotable",
+        "   :alt: PyPI version",
+        "",
+        "|apache| |pypi_version| |py_versions|",
+        "",
+        ]
+    return '\n'.join(badge_directives)
+
 
 def replace_doctest_directives(text):
     """Replace some sphinx.doctest directives with reST compatible ones.
@@ -16,7 +38,6 @@ def replace_doctest_directives(text):
     text = text.replace('.. testcode::', '.. code:: python')
     text = text.replace('.. testoutput::', '.. code::')
     return text
-
 
 def replace_line_endings(text):
     """Replace line endings in string text with Python '\n'."""
@@ -36,8 +57,13 @@ def replace_line_endings(text):
 def make_long_description():
     """Read and process file README.rst to create the long description.
 
+    README.rst is used for both the PYPI long description and the
+    Sphinx documentation.  This was done to achieve both:
+        1. Sphinx doctest tests the examples in README.rst.
+        2. Syntax coloring of the examples in README.rst.
+
     To preview the long-description locally requires
-    pip install sphinx
+        pip install sphinx
     which installs sphinx including the script rst2html.py.
     Then run a shell command something like this:
     python setup.py --long-description |
@@ -46,6 +72,9 @@ def make_long_description():
     here = path.abspath(path.dirname(__file__))
     with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
         text = f.read()
+        # prepend badge directives
+        # This is done to keep the badge directives out of the Sphinx docs.
+        text = '\n'.join([make_badge_text(), text])
         text = replace_doctest_directives(text)
         return replace_line_endings(text)
 

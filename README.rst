@@ -3,18 +3,6 @@
 .. The doctest directives here are replaced when setup.py creates
 .. the setup() argument long_description.
 
-.. |apache| image:: https://img.shields.io/pypi/l/monotable.svg
-   :target: http://www.apache.org/licenses/LICENSE-2.0
-   :alt: License: Apache 2.0
-
-.. |py_versions| image:: https://img.shields.io/pypi/pyversions/monotable.svg
-    :target: https://pypi.python.org/pypi/monotable
-    :alt: Python versions supported
-
-.. |pypi_version| image:: https://img.shields.io/pypi/v/monotable.svg
-   :target: https://pypi.python.org/pypi/monotable
-   :alt: PyPI version
-
 .. _Format Specification Mini-Language:
    https://docs.python.org
    /3/library/string.html#format-specification-mini-language
@@ -39,13 +27,11 @@
    https://github.com/tmarktaylor/monotable/issues
 .. _Python Package Index/monotable:
    https://pypi.python.org/pypi/monotable
-.. _Master branch build status:
+.. _Master branch build status, coverage, testing:
    https://github.com/tmarktaylor/monotable/blob/master/README.md
 
 Introduction
 ============
-
-| |apache| |pypi_version| |py_versions|
 
 monotable is a Python library that generates an ASCII table from
 tabular data that looks *pretty* when printed in a monospaced font.
@@ -105,7 +91,7 @@ Links to License, Docs, Repos, Issues, PYPI page
 - `Repository`_
 - `Issue Tracker`_
 - `Python Package Index/monotable`_
-- `Master branch build status`_
+- `Master branch build status, coverage, testing`_
 
 Description
 -----------

@@ -23,8 +23,11 @@ Here are some suggestions:
     means).
 
 - Handle ANSI escape terminal color sequences.  Please keep in mind colors
-  should be preserved when a cell is text wrapped, truncated, or padded
-  by the **width**, **fixed**, and **wrap** format options.
+  should be preserved when a cell is:
+
+  - max_cell_height limited.
+  - text wrapped, truncated, or padded by the **width**, **fixed**,
+    and **wrap** format options.
 
 Developing
 ==========

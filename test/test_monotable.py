@@ -31,19 +31,30 @@ def test_consistent_version_strings():
     """
     version = monotable.__version__    # authoritative
 
+    # index.rst
+    # example:
+    # Welcome to monotable version 1.0.1.
+    index_text = read_file('..', 'doc', 'index.rst')
+    t = r"Welcome to monotable version (.*).$"
+    match = re.search(t, index_text, re.M)
+    assert match.group(1) == version
+
     # setup.py
-    # version='0.1.0',
+    # example: version='0.1.0',
     setup_text = read_file('..', 'setup.py')
     match = re.search(r" *version=['\"]([^'\"]*)['\"]", setup_text, re.M)
     assert match.group(1) == version
 
     # conf.py
+    # example:
     # # The short X.Y version.
     # version = u'0.1.0'
     conf_text = read_file('..', 'doc', 'conf.py')
     match = re.search(r"^version = u['\"]([^'\"]*)['\"]", conf_text, re.M)
     assert match.group(1) == version
 
+    # conf.py
+    # example:
     # # The full version, including alpha/beta/rc tags.
     # release = u'0.1.0'
     match = re.search(r"^release = u['\"]([^'\"]*)['\"]", conf_text, re.M)
