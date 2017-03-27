@@ -13,8 +13,8 @@ plug-in format functions, column width control.
 
 ### master branch status
 
-[![Documentation Status](https://readthedocs.org/projects/monotable/badge/?version=latest)](http://monotable.readthedocs.io/en/latest/?badge=latest) on [Read the Docs](https://readthedocs.org)
+[![Documentation Status](https://readthedocs.org/projects/monotable/badge/?version=latest)](https://monotable.readthedocs.io/en/latest/?badge=latest) on [Read the Docs](https://readthedocs.org)
 
 [![Build Status](https://travis-ci.org/tmarktaylor/monotable.svg?branch=master)](https://travis-ci.org/tmarktaylor/monotable) on [Travis CI](https://travis-ci.org/)
 
-[![Code Coverage](http://codecov.io/gh/tmarktaylor/monotable/coverage.svg?branch=master)](http://codecov.io/gh/tmarktaylor/monotable?branch=master)
+[![Code Coverage](https://codecov.io/gh/tmarktaylor/monotable/coverage.svg?branch=master)](https://codecov.io/gh/tmarktaylor/monotable?branch=master)

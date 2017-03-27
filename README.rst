@@ -28,9 +28,9 @@
 .. _Apache 2.0:
    http://www.apache.org/licenses/LICENSE-2.0
 .. _Documentation:
-   http://monotable.readthedocs.io/en/latest//index.html
+   https://monotable.readthedocs.io/en/latest//index.html
 .. _More Examples:
-   http://monotable.readthedocs.io/en/latest/more_examples.html
+   https://monotable.readthedocs.io/en/latest/more_examples.html
 .. _Read the Docs:
    https://readthedocs.org
 .. _Repository:
@@ -45,7 +45,7 @@
 Introduction
 ============
 
-|apache| |pypi_version| |py_versions|
+| |apache| |pypi_version| |py_versions|
 
 monotable is a Python library that generates an ASCII table from
 tabular data that looks *pretty* when printed in a monospaced font.
