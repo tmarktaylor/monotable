@@ -246,7 +246,7 @@ def test_init_parse_all_good_options():
     fs = monotable.scanner.FormatScanner(format_str, MONOTABLE_CONFIG)
     assert fs.error_text == ''
     assert fs.width == 22
-    assert fs.wrap == True
+    assert fs.wrap is True
     assert fs.sep == ' | '
     assert fs.format_func == monotable.plugin.pformat
 
@@ -356,6 +356,7 @@ bad_format_str_list = [
     '(wrap=1)',
     ]
 
+
 @pytest.mark.parametrize("a_bad_format_str", bad_format_str_list)
 def test_parse_assorted_bad_options(a_bad_format_str):
     fs = monotable.scanner.FormatScanner(a_bad_format_str, MONOTABLE_CONFIG)
@@ -368,8 +369,8 @@ def valid_options_shuffled_helper(fs):
     assert fs.error_text == ''
     assert fs.align == LEFT
     assert fs.width == 10
-    assert fs.fixed == True
-    assert fs.wrap == True
+    assert fs.fixed is True
+    assert fs.wrap is True
     assert fs.sep == 'ZZZ'
 
 

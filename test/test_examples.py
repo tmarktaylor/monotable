@@ -73,6 +73,7 @@ def test_an_attribute_and_an_index_with_instance_assigned_format_func():
        ])
     assert text == expected
 
+
 def test_datetime():
     """Test formatting datetime object.
 

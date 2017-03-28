@@ -82,8 +82,8 @@ class FormatScanner:
     >>> assert formatobj.format_func == my_format_func
     >>> assert formatobj.format_spec == '.0f'
     >>> assert formatobj.width == 17
-    >>> assert formatobj.fixed == False
-    >>> assert formatobj.wrap == True
+    >>> assert formatobj.fixed is False
+    >>> assert formatobj.wrap is True
     >>> assert formatobj.sep == ' | '          # overrides config.sep
 
     Instance variables for user read access:
@@ -305,16 +305,6 @@ class FormatScanner:
             self.error_text = '\n'.join(error_messages)
 
     @staticmethod
-    def _option_and_arg(option):
-        split_option = option.split('=')
-        if len(split_option) == 1:
-            return split_option[0].strip(), None
-        elif len(split_option) == 2:
-            return split_option[0].strip(), split_option[1]
-        else:
-            return None, None
-
-    @staticmethod
     def _scan_gt_value(text):
         """
         Scan text for integer value N. Returns N if an int > 0, else None.
@@ -331,6 +321,16 @@ class FormatScanner:
             return None
         else:
             return int_value
+
+    @staticmethod
+    def _option_and_arg(option):
+        split_option = option.split('=')
+        if len(split_option) == 1:
+            return split_option[0].strip(), None
+        elif len(split_option) == 2:
+            return split_option[0].strip(), split_option[1]
+        else:
+            return None, None
 
     def _allowed_format_functions(self):
         lines = []

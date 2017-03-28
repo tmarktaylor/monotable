@@ -7,6 +7,7 @@ from codecs import open
 from os import path
 from setuptools import setup
 
+
 def make_badge_text():
     """Generate reStructuredText for license and python.org badges."""
     badge_directives = [
@@ -38,6 +39,7 @@ def replace_doctest_directives(text):
     text = text.replace('.. testcode::', '.. code:: python')
     text = text.replace('.. testoutput::', '.. code::')
     return text
+
 
 def replace_line_endings(text):
     """Replace line endings in string text with Python '\n'."""

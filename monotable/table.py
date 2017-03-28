@@ -817,7 +817,6 @@ class MonoTable:
                     # pad out to the width=N value.  This will also truncate
                     # any too long lines duplicating downstream logic.
 
-
                 if align == NOT_SPECIFIED:
                     align = self._halign_suggestion(item)
 

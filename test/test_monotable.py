@@ -64,7 +64,6 @@ def test_consistent_version_strings():
     match = re.search(r"^release = u['\"]([^'\"]*)['\"]", conf_text, re.M)
     assert match.group(1) == auth_version
 
-
     # make sure we properly match possible future versions.
     v1 = 'monotable version 10.0.1.'
     m1 = versionref.search(v1)
@@ -85,15 +84,16 @@ def test_consistent_version_strings():
     # make sure we don't match bogus version strings.
     v5 = 'monotable version 12.34.56'  # no period
     m5 = versionref.search(v5)
-    assert m5 == None
+    assert m5 is None
 
     v6 = 'monotable version .34.56'  # missing major version
     m6 = versionref.search(v6)
-    assert m6 == None
+    assert m6 is None
 
     v7 = 'monotable version 1.Z.56'  # non numeric
     m7 = versionref.search(v7)
-    assert m7 == None
+    assert m7 is None
+
 
 #
 # Test handling of empty lists and default constructor arguments.

@@ -168,7 +168,7 @@ if not on_rtd:
 # tmarktaylor:
 # When this was '_static' Sphinx build on Travis CI failed since the
 # github repos does not have a doc/_static folder.
-html_static_path = []  #  ['_static']
+html_static_path = []  # ['_static']
 
 # Add any extra paths that contain custom files (such as robots.txt or
 # .htaccess) here, relative to this directory. These files are copied
