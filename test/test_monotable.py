@@ -29,7 +29,7 @@ def test_consistent_version_strings():
 
     Whitespace around the equals sign in the version statement IS significant.
     """
-    version = monotable.__version__    # authoritative
+    auth_version = monotable.__version__    # authoritative
 
     # -------------------------------------------------------
     # index.rst
@@ -37,9 +37,33 @@ def test_consistent_version_strings():
     # monotable version 1.0.1.
     # Note the final period is required.
     index_text = read_file('..', 'doc', 'index.rst')
-    versionref = re.compile(r"monotable version (\d+\.\d+\.\d+)\.$", re.M)
+    versionref = re.compile(r"monotable version (\d+\.\d+\.\d+)\.", re.M)
     match = versionref.search(index_text)
-    assert match.group(1) == version
+    assert match.group(1) == auth_version
+
+    # -------------------------------------------------------
+    # setup.py
+    # example: version='0.1.0',
+    setup_text = read_file('..', 'setup.py')
+    match = re.search(r" *version=['\"]([^'\"]*)['\"]", setup_text, re.M)
+    assert match.group(1) == auth_version
+
+    # -------------------------------------------------------
+    # conf.py
+    # example:
+    # # The short X.Y version.
+    # version = u'0.1.0'
+    conf_text = read_file('..', 'doc', 'conf.py')
+    match = re.search(r"^version = u['\"]([^'\"]*)['\"]", conf_text, re.M)
+    assert match.group(1) == auth_version
+
+    # conf.py
+    # example:
+    # # The full version, including alpha/beta/rc tags.
+    # release = u'0.1.0'
+    match = re.search(r"^release = u['\"]([^'\"]*)['\"]", conf_text, re.M)
+    assert match.group(1) == auth_version
+
 
     # make sure we properly match possible future versions.
     v1 = 'monotable version 10.0.1.'
@@ -70,30 +94,6 @@ def test_consistent_version_strings():
     v7 = 'monotable version 1.Z.56'  # non numeric
     m7 = versionref.search(v7)
     assert m7 == None
-
-
-    # -------------------------------------------------------
-    # setup.py
-    # example: version='0.1.0',
-    setup_text = read_file('..', 'setup.py')
-    match = re.search(r" *version=['\"]([^'\"]*)['\"]", setup_text, re.M)
-    assert match.group(1) == version
-
-    # -------------------------------------------------------
-    # conf.py
-    # example:
-    # # The short X.Y version.
-    # version = u'0.1.0'
-    conf_text = read_file('..', 'doc', 'conf.py')
-    match = re.search(r"^version = u['\"]([^'\"]*)['\"]", conf_text, re.M)
-    assert match.group(1) == version
-
-    # conf.py
-    # example:
-    # # The full version, including alpha/beta/rc tags.
-    # release = u'0.1.0'
-    match = re.search(r"^release = u['\"]([^'\"]*)['\"]", conf_text, re.M)
-    assert match.group(1) == version
 
 #
 # Test handling of empty lists and default constructor arguments.
