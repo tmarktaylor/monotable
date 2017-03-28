@@ -304,6 +304,7 @@ class FormatScanner:
             error_messages.extend(self._allowed_options())
             self.error_text = '\n'.join(error_messages)
 
+    @staticmethod
     def _option_and_arg(option):
         split_option = option.split('=')
         if len(split_option) == 1:
@@ -312,8 +313,8 @@ class FormatScanner:
             return split_option[0].strip(), split_option[1]
         else:
             return None, None
-    _option_and_arg = staticmethod(_option_and_arg)
 
+    @staticmethod
     def _scan_gt_value(text):
         """
         Scan text for integer value N. Returns N if an int > 0, else None.
@@ -330,8 +331,6 @@ class FormatScanner:
             return None
         else:
             return int_value
-    _scan_gt_value = staticmethod(_scan_gt_value)
-
 
     def _allowed_format_functions(self):
         lines = []
