@@ -39,7 +39,7 @@ class TestConsistentVersionStrings:
         match = re.search(r" *version=['\"]([^'\"]*)['\"]", setup_text, re.M)
         assert match.group(1) == self.auth_version
 
-    def test_setup_py_version_and_release(self):
+    def test_conf_py_version_and_release(self):
         # -------------------------------------------------------
         # conf.py
         # example:
