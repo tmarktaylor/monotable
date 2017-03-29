@@ -91,20 +91,18 @@ class MonoTable:
     Cells that inherit from numbers.Number are *Auto-Aligned* to the right
     and all other cell types are auto aligned to the left.
 
-    align_spec
-        One of the characters '<', '^', '>'.  The characters
+    Definitions:
+
+    :align_spec: One of the characters '<', '^', '>'.  The characters
         indicate left, center, and right justification.
         To configure, override the class variable
         :py:attr:`~MonoTable.align_spec_chars`.
 
-    Heading String
-        [align_spec]string
+    :Heading String: [align_spec]string
 
-    Format String
-        [align_spec][option_spec][format_spec]
-
-    Title String
-        [align_spec][wrap_spec]string
+    :Format String: [align_spec][option_spec][format_spec]
+    
+    :Title String: [align_spec][wrap_spec]string
 
     * The format string syntax is described by the
       :py:meth:`~MonoTable.__init__` argument **formats** below.
@@ -122,13 +120,11 @@ class MonoTable:
 
     * The title is auto-aligned to center.
 
-    :note:
-        The align_spec prefix may be omitted, but is required if the
+    :note: The align_spec prefix may be omitted, but is required if the
         rest of the string starts with one of the align_spec_chars.
         Or the user can put in any empty option_spec for example '()'.
 
-    :note:
-        align_spec scanning/parsing can be disabled by setting the
+    :note: align_spec scanning/parsing can be disabled by setting the
         class variable :py:attr:`~MonoTable.align_spec_chars` to
         the empty string.
 
