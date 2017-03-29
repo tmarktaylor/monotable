@@ -20,8 +20,8 @@ def read_file(*path_components):
         return f.read()
 
 
-def test_consistent_version_strings():
-    """Verify all same release version string.
+class TestConsistentVersionStrings:
+    """Verify same release version string in all places.
 
     Obtain the version string from various places in the source tree
     and check that they are all the same.
@@ -31,68 +31,71 @@ def test_consistent_version_strings():
     """
     auth_version = monotable.__version__    # authoritative
 
-    # -------------------------------------------------------
-    # index.rst
-    # example:
-    # monotable version 1.0.1.
-    # Note the final period is required.
-    index_text = read_file('..', 'doc', 'index.rst')
-    versionref = re.compile(r"monotable version (\d+\.\d+\.\d+)\.", re.M)
-    match = versionref.search(index_text)
-    assert match.group(1) == auth_version
+    def test_setup_py_version(self):
+        # -------------------------------------------------------
+        # setup.py
+        # example: version='0.1.0',
+        setup_text = read_file('..', 'setup.py')
+        match = re.search(r" *version=['\"]([^'\"]*)['\"]", setup_text, re.M)
+        assert match.group(1) == self.auth_version
 
-    # -------------------------------------------------------
-    # setup.py
-    # example: version='0.1.0',
-    setup_text = read_file('..', 'setup.py')
-    match = re.search(r" *version=['\"]([^'\"]*)['\"]", setup_text, re.M)
-    assert match.group(1) == auth_version
+    def test_setup_py_version_and_release(self):
+        # -------------------------------------------------------
+        # conf.py
+        # example:
+        # # The short X.Y version.
+        # version = u'0.1.0'
+        conf_text = read_file('..', 'doc', 'conf.py')
+        match = re.search(r"^version = u['\"]([^'\"]*)['\"]", conf_text, re.M)
+        assert match.group(1) == self.auth_version
 
-    # -------------------------------------------------------
-    # conf.py
-    # example:
-    # # The short X.Y version.
-    # version = u'0.1.0'
-    conf_text = read_file('..', 'doc', 'conf.py')
-    match = re.search(r"^version = u['\"]([^'\"]*)['\"]", conf_text, re.M)
-    assert match.group(1) == auth_version
+        # conf.py
+        # example:
+        # # The full version, including alpha/beta/rc tags.
+        # release = u'0.1.0'
+        match = re.search(r"^release = u['\"]([^'\"]*)['\"]", conf_text, re.M)
+        assert match.group(1) == self.auth_version
 
-    # conf.py
-    # example:
-    # # The full version, including alpha/beta/rc tags.
-    # release = u'0.1.0'
-    match = re.search(r"^release = u['\"]([^'\"]*)['\"]", conf_text, re.M)
-    assert match.group(1) == auth_version
+    def test_index_rst_version(self):
+        # -------------------------------------------------------
+        # index.rst
+        # example:
+        # monotable version 1.0.1.
+        # Note the final period is required.
+        index_text = read_file('..', 'doc', 'index.rst')
+        versionref = re.compile(r"monotable version (\d+\.\d+\.\d+)\.", re.M)
+        match = versionref.search(index_text)
+        assert match.group(1) == self.auth_version
 
-    # make sure we properly match possible future versions.
-    v1 = 'monotable version 10.0.1.'
-    m1 = versionref.search(v1)
-    assert m1.group(1) == '10.0.1'
+        """make sure we properly match possible future versions."""
+        v1 = 'monotable version 10.0.1.'
+        m1 = versionref.search(v1)
+        assert m1.group(1) == '10.0.1'
 
-    v2 = 'monotable version 1.11.1.'
-    m2 = versionref.search(v2)
-    assert m2.group(1) == '1.11.1'
+        v2 = 'monotable version 1.11.1.'
+        m2 = versionref.search(v2)
+        assert m2.group(1) == '1.11.1'
 
-    v3 = 'monotable version 1.0.11.'
-    m3 = versionref.search(v3)
-    assert m3.group(1) == '1.0.11'
+        v3 = 'monotable version 1.0.11.'
+        m3 = versionref.search(v3)
+        assert m3.group(1) == '1.0.11'
 
-    v4 = 'monotable version 12.34.56.'
-    m4 = versionref.search(v4)
-    assert m4.group(1) == '12.34.56'
+        v4 = 'monotable version 12.34.56.'
+        m4 = versionref.search(v4)
+        assert m4.group(1) == '12.34.56'
 
-    # make sure we don't match bogus version strings.
-    v5 = 'monotable version 12.34.56'  # no period
-    m5 = versionref.search(v5)
-    assert m5 is None
+        # make sure we don't match bogus version strings.
+        v5 = 'monotable version 12.34.56'  # no period
+        m5 = versionref.search(v5)
+        assert m5 is None
 
-    v6 = 'monotable version .34.56'  # missing major version
-    m6 = versionref.search(v6)
-    assert m6 is None
+        v6 = 'monotable version .34.56'  # missing major version
+        m6 = versionref.search(v6)
+        assert m6 is None
 
-    v7 = 'monotable version 1.Z.56'  # non numeric
-    m7 = versionref.search(v7)
-    assert m7 is None
+        v7 = 'monotable version 1.Z.56'  # non numeric
+        m7 = versionref.search(v7)
+        assert m7 is None
 
 
 #
