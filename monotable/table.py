@@ -174,7 +174,8 @@ class MonoTable:
     * If cell is None an empty string is formatted.
       Configure by overriding class variable
       :py:attr:`~MonoTable.format_none_as`.
-    * If a cell is float and format_spec is an empty string, the cells
+    * If a cell is type float, and format_spec is an empty string, and the
+      format function is <built-in function format>, the cell
       is formatted using class variable :py:attr:`~default_float_format_spec`.
     * Internally, if a cell is a MonoBlock the formatting engine is skipped.
 

@@ -143,10 +143,10 @@ More features are described in the documentation section
 
 Recent Changes
 ==============
-Version 1.0.1 -- 2017-03-26
+1.0.1 -- 2017-03-26
     MANIFEST.in and doc fixes.
 
-Version 1.0.0 -- 2017-03-25
+1.0.0 -- 2017-03-25
     Initial upload.
 
 

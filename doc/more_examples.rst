@@ -173,10 +173,10 @@ the element indexed by [1] from a sequence.
   auto-align senses the cell type which is class MyCell.  Only cells that
   inherit from numbers.Number are auto-aligned to the right.  MyCell does not
   inherit from numbers.Number.
-- You override auto-alignment on the first
+- You can override auto-alignment on the first
   column by adding the align_spec ``'>'`` at the start of the format string.
 - Since the heading auto-aligns to the alignment of the cell in the
-  first row, you also need to override auto-alignment on the first
+  first row, you can also override auto-alignment on the first
   heading to keep it left aligned.
 
 .. testcode::
