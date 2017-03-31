@@ -880,7 +880,7 @@ def test_override_separated_guidelines_no_bottom_guideline():
     assert text == expected
 
 
-def test_omit_top_and_botom_guidelines():
+def test_omit_top_and_bottom_guidelines():
     """Override guideline_chars to omit top and bottom guidelines."""
 
     class CustomMonoTable(monotable.MonoTable):
@@ -990,7 +990,7 @@ def test_override_more_marker_override_max_cell_height_option_max_width():
     Change the more_marker to '**'.
     Limit cell height to 2 lines.  Limit column 2 width to 2 characters.
     Note that a column width is max(widest heading line, width=N).  In other
-    words a wide heading for a column supercedes a width=N specified width.
+    words a wide heading for a column supersedes a width=N specified width.
     Bottom center cell first line is truncated to 3 characters.  The 4
     cells in the first and second columns are limited to two line height.
     """

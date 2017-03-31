@@ -136,7 +136,7 @@ class MonoTable:
 
         * The user can specify a different default format function for the
           table by overriding the class variable
-          :py:attr:`~MonoTable.format_func`.  Be sure to use staticmethod().
+          :py:attr:`~MonoTable.format_func`.
         * In option_spec the user can specify a format function for
           a column which takes precedence over the table default format
           function.
@@ -203,30 +203,30 @@ class MonoTable:
     This function is selected for cell formatting except when
     a column format string option_spec specifies a format function.
 
+    These :ref:`format-functions-label` can be used here.
+
     When overriding in a subclass definition use the result of
     Python built in function staticmethod() like this:
 
     >>> import monotable
+    >>> headings = []
+    >>> formats = []
     >>> def your_user_defined_format_function(value, format_spec):
     ...    pass
     >>> class SubclassMonoTable(monotable.MonoTable):
     ...     format_func = staticmethod(your_user_defined_format_function)
+    >>> tbl = SubclassMonoTable(headings, formats)
     >>>
-    >>> # Or this...
+    >>> # When overriding on an instance do not use staticmethod like this:
     >>>
-    >>> class SubclassMonoTable(monotable.MonoTable):
-    ...     format_func = staticmethod(monotable.plugin.sformat)
-    >>>
-    >>> # When overriding on an instance do not use staticmethod.
-    >>>
-    >>> tbl = monotable.MonoTable()
-    >>> tbl.format_func = monotable.plugin.sformat
+    >>> tbl = monotable.MonoTable(headings, formats)
+    >>> tbl.format_func = your_user_defined_format_function
 
     .. _Docs Here:
        https://docs.python.org/3/howto/descriptor.html#functions-and-methods
 
     Reading Python functions and methods `Docs Here`_ helps explain when
-    to use @staticmethod.
+    to use built in function staticmethod().
     """
 
     format_exc_callback = staticmethod(monotable.plugin.raise_it)
@@ -235,30 +235,10 @@ class MonoTable:
     The function takes the argument MonoTableCellError and
     (if returning) returns the string to be returned by format_func.
 
-    When overriding in a subclass definition use the result of
-    Python built in function staticmethod() like this:
+    These :ref:`callbacks-label` can be used here.
 
-    >>> import monotable
-    >>> def your_exc_callback_function(exc):
-    ...    pass
-    >>> class SubclassMonoTable(monotable.MonoTable):
-    ...     format_exc_callback = staticmethod(your_exc_callback_function)
-    >>>
-    >>> # Or this...
-    >>>
-    >>> class SubclassMonoTable(monotable.MonoTable):
-    ...     format_exc_callback = staticmethod(monotable.plugin.ignore_it)
-    >>>
-    >>> # When overriding on an instance do not use staticmethod.
-    >>>
-    >>> tbl = monotable.MonoTable()
-    >>> tbl.format_exc_callback = monotable.plugin.ignore_it
-
-    .. _Docs Here:
-       https://docs.python.org/3/howto/descriptor.html#functions-and-methods
-
-    Reading Python functions and methods `Docs Here`_ helps explain when
-    to use @staticmethod.
+    Please see advice at :py:attr:`~MonoTable.format_func`
+    about when to use staticmethod().
     """
 
     default_float_format_spec = '.6f'
@@ -331,12 +311,12 @@ class MonoTable:
     """
 
     guideline_chars = '---'
-    """String of 0 to 3 characters to specify guideline apperance.
+    """String of 0 to 3 characters to specify guideline appearance.
 
     The first character is used for the top guideline.
     The second and third characters are used for the heading guideline
     and bottom guideline.  If the character is a space the
-    guideline is omitted.  The empty string supresses all guidelines.
+    guideline is omitted.  The empty string suppresses all guidelines.
     """
 
     heading_valign = monotable.alignment.BOTTOM

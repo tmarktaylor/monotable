@@ -19,7 +19,7 @@ Vertical Alignment Constants
 
 For convenience these names are copied to the monotable namespace by
 __init__.py.  They are unique int enumeration values.
-They are accesible as::
+They are accessible as::
 
    monotable.TOP
    montable.CENTER_TOP

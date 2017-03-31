@@ -60,14 +60,14 @@ class FormatScanner:
     ...    pass
 
     >>> align_spec = '<'
-    >>> option_spec = '(width=17;wrap;sep= | ;myformat)'
+    >>> option_spec = '(width=17;wrap;sep= | ;my_format)'
     >>> format_spec = '.0f'
     >>> format_str = align_spec + option_spec + format_spec
     >>> config = monotable.scanner.MonoTableConfig(
     ...         align_spec_chars='<^>',
     ...         sep='  ',
     ...         format_func=format,            # <built-in function format>
-    ...         format_func_map= {'myformat': my_format_func},
+    ...         format_func_map= {'my_format': my_format_func},
     ...         option_spec_delimiters='(;)')
 
     >>> formatobj = monotable.scanner.FormatScanner(format_str, config)
@@ -351,7 +351,7 @@ class FormatScanner:
                  '  width=N - column width is at most N columns. N > 0.',
                  '  fixed   - column width is exactly width=N columns.',
                  '            Use to qualify width=N option.',
-                 '  wrap    - wrap/rewrap to width=N.',
+                 '  wrap    - wrap/re-wrap to width=N.',
                  '            Use to qualify width=N option.',
                  '  sep=ccc - characters after sep= are the column separator.',
                  ]

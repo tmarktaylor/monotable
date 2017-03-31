@@ -150,7 +150,7 @@ def test_allowed_options(format_scanner):
         '  width=N - column width is at most N columns. N > 0.',
         '  fixed   - column width is exactly width=N columns.',
         '            Use to qualify width=N option.',
-        '  wrap    - wrap/rewrap to width=N.',
+        '  wrap    - wrap/re-wrap to width=N.',
         '            Use to qualify width=N option.',
         '  sep=ccc - characters after sep= are the column separator.',
         ''

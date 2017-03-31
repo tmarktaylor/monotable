@@ -5,7 +5,7 @@ Hints
 - Headings are not affected by width, fixed, and wrap format options.
   A wider heading will take precedence.
 - Check spelling carefully when overriding a class variable.  Misspelling
-  will be siliently ignored.
+  will be silently ignored.
 - Auto-alignment always looks at the type of the cell.
   When reading keys from a cell that is a dictionary
   auto-alignment is determined by the type of the cell and not the

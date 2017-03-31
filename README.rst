@@ -272,17 +272,17 @@ in the option_spec.
     import monotable
 
     # User defined format function.
-    def fullfill_menu_request(value, spec):
+    def fulfill_menu_request(value, spec):
         _, _ = value, spec          # avoid unused variable nag
         return 'Spam!'              # ignore both args
 
     # Configure MonoTable subclass with the dictionary
     # of user defined format functions.
     class FormatFuncsMonoTable(monotable.MonoTable):
-        format_func_map = {'fullfill_menu_request': fullfill_menu_request}
+        format_func_map = {'fulfill_menu_request': fulfill_menu_request}
 
     headings = ['Id Number', 'Duties', 'Meal\nPreference']
-    formats = ['', '', '(fullfill_menu_request)']
+    formats = ['', '', '(fulfill_menu_request)']
     t4 = FormatFuncsMonoTable(headings, formats)
 
     cells = [[1, 'President and CEO', 'steak'],
@@ -303,7 +303,7 @@ in the option_spec.
             3  Oversee day to day operations  Spam!
     ----------------------------------------------------
 
-- The user defined format function **fullfill_menu_request()**
+- The user defined format function **fulfill_menu_request()**
   ignores the arguments and returns the string 'Spam!'.
 - Keys in the dictionary **my_format_func_map** become option names
   that can be used in an option_spec.
@@ -315,7 +315,7 @@ in the option_spec.
 .. testcode::
 
   t4 = monotable.MonoTable(headings, formats)
-  t4.format_func_map = {'fullfill_menu_request': fullfill_menu_request}
+  t4.format_func_map = {'fulfill_menu_request': fulfill_menu_request}
 
 - The Duties column auto-aligns to the left since the cells
   are strings.

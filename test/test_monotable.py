@@ -262,7 +262,7 @@ def test_one_column_bordered_table():
 # Show the callers args are not modified.
 #
 # Show that a cellgrid that is not a sequence of sequences is handled
-# properly if it is an interable of iterables.
+# properly if it is an iterable of iterables.
 # Show error handling for a row that can't be iterated.
 #
 def test_cellgrid_is_tuples():
