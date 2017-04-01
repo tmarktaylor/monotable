@@ -101,7 +101,7 @@ class MonoTable:
     :Heading String: [align_spec]string
 
     :Format String: [align_spec][option_spec][format_spec]
-    
+
     :Title String: [align_spec][wrap_spec]string
 
     * The format string syntax is described by the

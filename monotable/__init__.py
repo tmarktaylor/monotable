@@ -18,14 +18,15 @@
 
 """ASCII table: per column format specs, plug-in format functions, multi-line.
 """
+# The # noqa: F401 prevents flake8 F401 imported but unused warnings
 
-from monotable.table import MonoTable
-from monotable.table import MonoTableCellError
-from monotable.table import HR
+from monotable.table import MonoTable    # noqa: F401
+from monotable.table import MonoTableCellError    # noqa: F401
+from monotable.table import HR    # noqa: F401
 
-from monotable.alignment import TOP
-from monotable.alignment import BOTTOM
-from monotable.alignment import CENTER_BOTTOM
-from monotable.alignment import CENTER_TOP
+from monotable.alignment import TOP    # noqa: F401
+from monotable.alignment import BOTTOM    # noqa: F401
+from monotable.alignment import CENTER_BOTTOM    # noqa: F401
+from monotable.alignment import CENTER_TOP    # noqa: F401
 
 __version__ = '1.0.1'
