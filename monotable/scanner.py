@@ -243,52 +243,17 @@ class FormatScanner:
 
         option_list = option_spec.split(self._between)
 
-        for option in option_list:
-            name, arg = self._option_and_arg(option)
-            if name == 'width':
-                value = self._scan_gt_value(arg)
-                if value is not None:
-                    self.width = value
-                    option_list.remove(option)
-                    break
-
-        for option in option_list:
-            name, arg = self._option_and_arg(option)
-            if name == 'fixed':
-                if arg is None:
-                    self.fixed = True
-                    option_list.remove(option)
-                    break
-
-        for option in option_list:
-            name, arg = self._option_and_arg(option)
-            if name == 'wrap':
-                if arg is None:
-                    self.wrap = True
-                    option_list.remove(option)
-                    break
+        # scan for each option, process, and remove from option_list
+        self._scan_width(option_list)
+        self._scan_fixed(option_list)
+        self._scan_wrap(option_list)
+        self._scan_sep(option_list)
+        self._scan_format_func(option_list)
 
         # silently ignore fixed or wrap options if no width=N option
         if self.width is None:
             self.wrap = False
             self.fixed = False
-
-        for option in option_list:
-            name, arg = self._option_and_arg(option)
-            if name == 'sep':
-                # Keep rest after '='.  OK if empty string after '='.
-                if arg is not None:
-                    self.sep = arg
-                    option_list.remove(option)
-                    break
-
-        for option in option_list:
-            name, arg = self._option_and_arg(option)
-            if name in self._format_functions:
-                if arg is None:
-                    self.format_func = self._format_functions[name]
-                    option_list.remove(option)
-                break
 
         if len(option_list) > 0:
             # All the allowed option expressions have been removed from
@@ -304,8 +269,61 @@ class FormatScanner:
             error_messages.extend(self._allowed_options())
             self.error_text = '\n'.join(error_messages)
 
+    def _scan_width(self, option_list):
+        """Scan option_list for width option and arg, remove if found."""
+        for option in option_list:
+            name, arg = self._option_and_arg(option)
+            if name == 'width':
+                value = self._scan_gt_value(arg)
+                if value is not None:
+                    self.width = value
+                    option_list.remove(option)
+                    break
+
+    def _scan_fixed(self, option_list):
+        """Scan option_list for fixed option, remove if found."""
+        for option in option_list:
+            name, arg = self._option_and_arg(option)
+            if name == 'fixed':
+                if arg is None:
+                    self.fixed = True
+                    option_list.remove(option)
+                    break
+
+    def _scan_wrap(self, option_list):
+        """Scan option_list for wrap option, remove if found."""
+        for option in option_list:
+            name, arg = self._option_and_arg(option)
+            if name == 'wrap':
+                if arg is None:
+                    self.wrap = True
+                    option_list.remove(option)
+                    break
+
+    def _scan_sep(self, option_list):
+        """Scan option_list for sep option and arg, remove if found."""
+        for option in option_list:
+            name, arg = self._option_and_arg(option)
+            if name == 'sep':
+                # Keep rest after '='.  OK if empty string after '='.
+                if arg is not None:
+                    self.sep = arg
+                    option_list.remove(option)
+                    break
+
+    def _scan_format_func(self, option_list):
+        """Scan option_list for a format function, remove if found."""
+        for option in option_list:
+            name, arg = self._option_and_arg(option)
+            if name in self._format_functions:
+                if arg is None:
+                    self.format_func = self._format_functions[name]
+                    option_list.remove(option)
+                break
+
     @staticmethod
     def _option_and_arg(option):
+        """Split up a format option to an option name and arg."""
         split_option = option.split('=')
         if len(split_option) == 1:
             return split_option[0].strip(), None

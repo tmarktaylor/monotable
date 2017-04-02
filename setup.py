@@ -44,9 +44,11 @@ def replace_doctest_directives(text):
 def replace_line_endings(text):
     """Replace line endings in string text with Python '\n'."""
     # This code fixes a problem where the local file
-    # .tox\py36\Lib\site-packages\monotable-0.1.0.dist-info\DESCRIPTION.rst
+    # .tox\installonly\Lib\site-packages\monotable-0.1.0.dist-info\
+    # DESCRIPTION.rst
     # was truncated to 4 lines with the last 3 whitespace.
-    # Observed problem when invoking tox (2.5.0) from Python 2.7.13 on win32.
+    # Observed problem when invoking tox (2.5.0) from Python 2.7.13 on windows.
+    # The file DESCRIPTION.rst has Unix-LF line endings.
     # The file README.rst has DOS\Windows line endings.
     # These line endings were still in the the string long_description.
     # Not sure why.

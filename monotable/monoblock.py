@@ -193,6 +193,7 @@ class MonoBlock:
 
         if self.height == height:
             return
+
         if self.height > height:  # truncate?
             # yes- truncate to height
             # right justify more_marker into the last remaining line

@@ -739,79 +739,19 @@ class MonoTable:
             format_spec = formatobj.format_spec
 
             # create TextWrapper instance for the column if needed.
-            if formatobj.wrap:
-                text_wrapper = textwrap.TextWrapper(
-                    width=formatobj.width,
-                    break_long_words=True)
-            else:
-                text_wrapper = None
+            text_wrapper = self._make_text_wrapper(formatobj)
 
             for row_index, item in enumerate(cell_column):
-                if isinstance(item, _HR):
-                    # The _HR instance is replaced with an _InternalGuideline.
-                    # The formatting steps are skipped.
-                    # _InternalGuideline is a subclass of MonoBlock so that
-                    # it can participate in justification steps later on.
-                    # This is done to avoid writing extra code to pass
-                    # _InternalGuideline cells around the justify logic.
-                    # A row starting with _InternalGuideline is replaced
-                    # when the table is composed from the individual
-                    # rows.
-                    formatted_column.append(_InternalGuideline())
+
+                block1 = self._special_cases(item, formatobj)
+                if block1 is not None:
+                    formatted_column.append(block1)
                     continue
 
-                if item is None:
-                    # Replace None with an empty MonoBlock and
-                    # bypass the formatting steps.
-                    # If column width is fixed, justify the MonoBlock to
-                    # pad out to the width=N value.  This will also truncate
-                    # any too long lines duplicating downstream logic.
-                    t1 = MonoBlock(self.format_none_as, halign=align)
-                    if formatobj.fixed:
-                        t1.hjustify(formatobj.width)
-                    formatted_column.append(t1)
-                    continue
-
-                if isinstance(item, MonoBlock):
-                    t2 = copy.copy(item)
-                    if formatobj.fixed:
-                        t2.hjustify(formatobj.width)
-                    formatted_column.append(t2)
-                    continue
-                    # MonoBlocks enjoy the privilege of bypassing the
-                    # formatting and format option steps.  The skipped steps
-                    # produce a MonoBlock anyway.
-                    #
-                    # A short row in the cellgrid has been extended with one
-                    # or more MonoBlock instances.  Since these bypass the
-                    # formatting and format option steps there is no chance
-                    # of failing these steps.
-                    #
-                    # The copy is made because MonoBlocks are modified
-                    # individually by the justification steps.
-                    #
-                    # If column width is fixed, justify the MonoBlock to
-                    # pad out to the width=N value.  This will also truncate
-                    # any too long lines duplicating downstream logic.
-
-                if align == NOT_SPECIFIED:
-                    align = self._halign_suggestion(item)
-
-                # Special case to set the precision of floating point value
-                # so the decimal point will align in a column of floats.
-                # If formatting a float with BIF format() that has an
-                # empty string format_spec use the class variable value
-                # as the format_spec.
-                if (isinstance(item, float) and
-                        format_spec == '' and
-                        format_func == format and       # BIF format()
-                        self.default_float_format_spec):
-                    format_spec = self.default_float_format_spec
+                format_spec = self._default(item, format_func, format_spec)
 
                 try:
                     text = format_func(item, format_spec)
-                # Catch probable errors but more narrowed than just
-                # catching Exception.
                 except (AttributeError, LookupError, TypeError, ValueError,
                         ArithmeticError, AssertionError):
                     msg = ''.join(
@@ -822,21 +762,105 @@ class MonoTable:
                                              msg)
                     text = self.format_exc_callback(exc)
 
-                if text_wrapper:
+                if text_wrapper is not None:
                     text = text_wrapper.fill(text)
+                if align == NOT_SPECIFIED:
+                    align = self._halign_suggestion(item)
 
-                block = MonoBlock(text, align)
+                block2 = MonoBlock(text, align)
+                self._adjust_width(formatobj, block2)
+                formatted_column.append(block2)
 
-                if formatobj.width is not None:
-                    # truncate too long lines
-                    block.chop_to_fieldsize(formatobj.width, self.more_marker)
-                    if formatobj.fixed:
-                        # pad to width=N too short lines
-                        block.hjustify(formatobj.width)
-
-                formatted_column.append(block)
             formatted_columns.append(formatted_column)
         return formatted_columns
+
+    @staticmethod
+    def _make_text_wrapper(formatobj):
+        """Produce a TextWrapper for formatobj.width or None."""
+        if formatobj.wrap:
+            text_wrapper = textwrap.TextWrapper(
+                width=formatobj.width,
+                break_long_words=True)
+            return text_wrapper
+        else:
+            return None
+
+    def _special_cases(self, item, formatobj):
+        """Handle special cases that make a MonoBlock without format_func."""
+
+        if isinstance(item, _HR):
+            # The _HR instance is replaced with an _InternalGuideline.
+            # The formatting steps are skipped.
+            # _InternalGuideline is a subclass of MonoBlock so that
+            # it can participate in justification steps later on.
+            # This is done to avoid writing extra code to pass
+            # _InternalGuideline cells around the justify logic.
+            # A row starting with _InternalGuideline is replaced
+            # when the table is composed from the individual
+            # rows.
+            return _InternalGuideline()
+
+        elif item is None:
+            # Replace None with an empty MonoBlock and
+            # bypass the formatting steps.
+            # If column width is fixed, justify the MonoBlock to
+            # pad out to the width=N value.  This will also truncate
+            # any too long lines duplicating downstream logic.
+            t1 = MonoBlock(self.format_none_as)
+            if formatobj.fixed:
+                t1.hjustify(formatobj.width)
+            return t1
+
+        elif isinstance(item, MonoBlock):
+            # MonoBlocks enjoy the privilege of bypassing the
+            # formatting and format option steps.  The skipped steps
+            # produce a MonoBlock anyway.
+            #
+            # A short row in the cellgrid has been extended with one
+            # or more MonoBlock instances.  Since these bypass the
+            # formatting and format option steps there is no chance
+            # of failing these steps.
+            #
+            # The copy is made because MonoBlocks are modified
+            # individually by the justification steps.
+            #
+            # If column width is fixed, justify the MonoBlock to
+            # pad out to the width=N value.  This will also truncate
+            # any too long lines duplicating downstream logic.
+            t2 = copy.copy(item)
+            if formatobj.fixed:
+                t2.hjustify(formatobj.width)
+            return t2
+        else:
+            return None
+
+    def _default(self,
+                 item,
+                 format_func,
+                 format_spec):
+        """Return a default format_spec if special case for float."""
+
+        # Special case to set the precision of floating point value
+        # so the decimal point will align in a column of floats.
+        # If formatting a float with BIF format() that has an
+        # empty string format_spec use the class variable value
+        # as the format_spec.
+        if (isinstance(item, float) and
+                format_spec == '' and
+                format_func == format and  # BIF format()
+                self.default_float_format_spec):
+            format_spec = self.default_float_format_spec
+        return format_spec
+
+    def _adjust_width(self, formatobj, block):
+        """Control width of block.  Modifies callers block."""
+
+        if formatobj.width is not None:
+            # truncate too long lines
+            block.chop_to_fieldsize(formatobj.width, self.more_marker)
+            if formatobj.fixed:
+                # pad to width=N too short lines
+                block.hjustify(formatobj.width)
 
     @staticmethod
     def _make_list_of_seps(processed_formats):
