@@ -6,7 +6,7 @@
 monotable Documentation
 =======================
 
-Welcome to monotable version 1.0.1.
+Welcome to monotable version 1.0.2.
 
 ASCII table with per column format specs, multi-line content,
 plug-in format functions, column width control.

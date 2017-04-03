@@ -143,10 +143,14 @@ More features are described in the documentation section
 
 Recent Changes
 ==============
-1.0.1 -- 2017-03-26
+1.0.2 - TODO future
+    Bug fix, incorrect cell auto-alignment exposed by test case
+    test_monotable.test_bordered_format_ignore_it().
+
+1.0.1 - 2017-03-26
     MANIFEST.in and doc fixes.
 
-1.0.0 -- 2017-03-25
+1.0.0 - 2017-03-25
     Initial upload.
 
 

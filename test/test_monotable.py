@@ -442,13 +442,16 @@ class TestMonoTableExceptionCallback:
 
         tbl.format_exc_callback = monotable.plugin.ignore_it
         text = tbl.bordered_table(self.cells)
+        # Each item in column not overriden by an align_spec
+        # is aligned by type(item).
+        # Since cell[1,1] = 'label1', a string, it auto-aligns to the left.
         expected = '\n'.join([
             "+---------+---------+",
             "| column0 | column1 |",
             "+=========+=========+",
             "|       0 |    9999 |",
             "+---------+---------+",
-            "|       1 |     ??? |",
+            "|       1 | ???     |",
             "+---------+---------+",
         ])
         assert text == expected

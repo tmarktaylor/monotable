@@ -732,8 +732,6 @@ class MonoTable:
         for column_index, formatobj, cell_column in inputs:
             formatted_column = []
 
-            align = formatobj.align
-
             # renames to shorten long lines
             format_func = formatobj.format_func
             format_spec = formatobj.format_spec
@@ -764,8 +762,11 @@ class MonoTable:
 
                 if text_wrapper is not None:
                     text = text_wrapper.fill(text)
-                if align == NOT_SPECIFIED:
+
+                if formatobj.align == NOT_SPECIFIED:
                     align = self._halign_suggestion(item)
+                else:
+                    align = formatobj.align
 
                 block2 = MonoBlock(text, align)
                 self._adjust_width(formatobj, block2)
