@@ -501,6 +501,28 @@ def test_width_fixed_format_option_only_none_cells():
     assert text == expected
 
 
+def test_auto_align_mixed_cell_types_in_column():
+    """Check auto alignment when a column has numeric and non-numeric types."""
+
+    headings = ['Number', 'Mixed', 'Non-Number']
+    t = monotable.MonoTable(headings)
+    cells = [[1, 11002233, 'a-string'],
+             [2, 'Spam!', None],
+             [33, 444, 'abc']]
+    text = t.table(cells, 'Different cell types in middle column.')
+    expected = '\n'.join([
+        "Different cell types in middle column.",
+        "----------------------------",
+        "Number     Mixed  Non-Number",
+        "----------------------------",
+        "     1  11002233  a-string",
+        "     2  Spam!",
+        "    33       444  abc",
+        "----------------------------",
+    ])
+    assert text == expected
+
+
 def test_max_cell_height():
     """Limit the maximum height of cells in the previous table.
 

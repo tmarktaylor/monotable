@@ -1,3 +1,6 @@
+.. _Choosing a versioning scheme:
+   https://packaging.python.org/distributing/#choosing-a-versioning-scheme
+
 Contributing
 ============
 
@@ -40,7 +43,10 @@ sphinx.ext.napoleon documentation.
 Tests are executed by pytest.
 
 Versioning complies with Semantic versioning described by
-the Python Packaging User Guide.  The test suite checks that all uses of the
+the Python Packaging User Guide.  Please see section
+`Choosing a versioning scheme`_.
+
+The test suite checks that all uses of the
 version number are the same.  The developer can update the version number
 in __init__.py and then let the test suite failures show the other usages.
 

@@ -52,8 +52,6 @@ def replace_line_endings(text):
     # The file README.rst has DOS\Windows line endings.
     # These line endings were still in the the string long_description.
     # Not sure why.
-    # Suspect a version of BIF open() that did not support universal newline
-    # was being called.
     lines = text.splitlines()
     return '\n'.join(lines)
 

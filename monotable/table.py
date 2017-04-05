@@ -743,6 +743,7 @@ class MonoTable:
 
                 block1 = self._special_cases(item, formatobj)
                 if block1 is not None:
+                    self._adjust_width(formatobj, block1)
                     formatted_column.append(block1)
                     continue
 
@@ -767,7 +768,6 @@ class MonoTable:
                     align = self._halign_suggestion(item)
                 else:
                     align = formatobj.align
-
                 block2 = MonoBlock(text, align)
                 self._adjust_width(formatobj, block2)
                 formatted_column.append(block2)
@@ -802,15 +802,9 @@ class MonoTable:
             return _InternalGuideline()
 
         elif item is None:
-            # Replace None with an empty MonoBlock and
-            # bypass the formatting steps.
-            # If column width is fixed, justify the MonoBlock to
-            # pad out to the width=N value.  This will also truncate
-            # any too long lines duplicating downstream logic.
-            t1 = MonoBlock(self.format_none_as)
-            if formatobj.fixed:
-                t1.hjustify(formatobj.width)
-            return t1
+            # Replace None with a MonoBlock initialized from
+            # format_none_as and bypass the formatting steps.
+            return MonoBlock(self.format_none_as)
 
         elif isinstance(item, MonoBlock):
             # MonoBlocks enjoy the privilege of bypassing the
@@ -824,14 +818,7 @@ class MonoTable:
             #
             # The copy is made because MonoBlocks are modified
             # individually by the justification steps.
-            #
-            # If column width is fixed, justify the MonoBlock to
-            # pad out to the width=N value.  This will also truncate
-            # any too long lines duplicating downstream logic.
-            t2 = copy.copy(item)
-            if formatobj.fixed:
-                t2.hjustify(formatobj.width)
-            return t2
+            return copy.copy(item)
         else:
             return None
 

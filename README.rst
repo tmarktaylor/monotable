@@ -144,14 +144,22 @@ More features are described in the documentation section
 Recent Changes
 ==============
 1.0.2 - TODO future
-    Bug fix, incorrect cell auto-alignment exposed by test case
-    test_monotable.test_bordered_format_ignore_it().
+
+- Bug fix, incorrect cell auto-alignment when mixed types in a column.
+- Extract methods to refactor scanner._scan() and
+  MonoTable._format_cells_as_columns() to reduce McCabe complexity.
+- Remove and re-add files to git index so stored with LFs.
+- For testing do flake8 --max-complexity=10 in tox.ini.
+- Add [testenv:installonly] to tox.ini.
+- Add noqa to prevent flake8 warnings in __init__.py
 
 1.0.1 - 2017-03-26
-    MANIFEST.in and doc fixes.
+
+- MANIFEST.in and doc fixes.
 
 1.0.0 - 2017-03-25
-    Initial upload.
+
+- Initial upload.
 
 
 
