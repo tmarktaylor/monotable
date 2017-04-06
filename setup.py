@@ -20,12 +20,7 @@ def make_badge_text():
         "    :target: https://pypi.python.org/pypi/monotable",
         "    :alt: Python versions supported",
         "",
-        ".. |pypi_version| image::",
-        "   https://img.shields.io/pypi/v/monotable.svg",
-        "   :target: https://pypi.python.org/pypi/monotable",
-        "   :alt: PyPI version",
-        "",
-        "|apache| |pypi_version| |py_versions|",
+        "|apache| |py_versions|",
         "",
         ]
     return '\n'.join(badge_directives)

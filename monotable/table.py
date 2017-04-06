@@ -444,7 +444,7 @@ class MonoTable:
         """Format printable text table.  It is pretty in monospaced font.
 
         Args:
-            cellgrid (Optional[Iterable[Iterable[Any]]]): of Python objects
+            cellgrid (Optional[Iterable[Iterable[object]]]):
                 representing table cells.
 
             title (Optional[str]): ``[align_spec][wrap_spec]string``.
@@ -992,7 +992,7 @@ class MonoTable:
         """Format printable text table with individual cell borders.
 
         Args:
-            cellgrid (Optional[Iterable[Iterable[Any]]]): of Python objects
+            cellgrid (Optional[Iterable[Iterable[object]]]):
                 representing table cells.
 
             title (Optional[str]): ``[align_spec][wrap_spec]string``.
@@ -1108,7 +1108,7 @@ class MonoTable:
         """Format and justify table.  Return rows of the strings.
 
         Args:
-            cellgrid (Optional[Iterable[Iterable[Any]]]): of Python objects
+            cellgrid (Optional[Iterable[Iterable[object]]]):
                 representing table cells.
 
             strip (bool): If True remove leading and trailing spaces.

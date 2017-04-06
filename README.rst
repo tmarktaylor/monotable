@@ -143,15 +143,13 @@ More features are described in the documentation section
 
 Recent Changes
 ==============
-1.0.2 - TODO future
+1.0.2 - 2017-04-06
 
 - Bug fix, incorrect cell auto-alignment when mixed types in a column.
 - Bug fix, format_none_as cell ignoring column format string's align_spec.
-- Refactor to reduce McCabe complexity.
-- For testing do flake8 --max-complexity=10 in tox.ini.
 - Remove and re-add files to git index so stored with LFs.
-- Add [testenv:installonly] to tox.ini.
-- Add noqa to prevent flake8 warnings in __init__.py
+- Add complexity inspections to CI.
+- Refactor 2 functions to reduce McCabe complexity.
 
 1.0.1 - 2017-03-26
 
