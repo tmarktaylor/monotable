@@ -150,6 +150,7 @@ Recent Changes
 - Remove and re-add files to git index so stored with LFs.
 - Add complexity inspections to CI.
 - Refactor 2 functions to reduce McCabe complexity.
+- Code inspection fixes.  Docs and comments fixed.
 
 1.0.1 - 2017-03-26
 
