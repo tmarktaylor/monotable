@@ -62,6 +62,7 @@ please see :ref:`configuring-label`.
   - Cell grid rows may vary in length.
 
 - Cells of type None are handled.  |format_none_as|.
+- None cell values auto-align to the left.
 - Set the default float format_spec for columns that have no format string.
   |default_float_format_spec|
 - Flexible cell format error handling:

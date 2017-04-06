@@ -674,6 +674,66 @@ def test_disable_default_float_format_spec():
     ])
     assert text == expected
 
+def test_override_format_none_as_with_auto_alignment():
+    """Override class variable format_none_as."""
+
+    class CustomMonoTable(monotable.MonoTable):
+        format_none_as = 'NONE!'
+
+    headings = ['number', 'Life\nState']
+    t = CustomMonoTable(headings)
+    cells = [[22334455, 'demised'],
+             [66, 'passed on'],
+             [None, 'is no more'],
+             [9, None],
+             [10, 'ceased to be']]
+    text = t.table(cells, '<format_none_as')
+    expected = '\n'.join([
+        "format_none_as",
+        "----------------------",
+        "          Life",
+        "  number  State",
+        "----------------------",
+        "22334455  demised",
+        "      66  passed on",
+        "NONE!     is no more",
+        "       9  NONE!",
+        "      10  ceased to be",
+        "----------------------",
+    ])
+    assert text == expected
+
+def test_override_format_none_as_with_format_align_specs():
+    """Override class variable format_none_as, force right align.
+
+    Right align the left column, the None cell string should be
+    right aligned.
+    """
+
+    headings = ['number', 'Life\nState']
+    formats = ['>']     # force None cell to right align
+    t = monotable.MonoTable(headings, formats)
+    t.format_none_as = '0-0'
+    cells = [[22334455, 'demised'],
+             [66, 'passed on'],
+             [None, 'is no more'],
+             [9, None],
+             [10, 'ceased to be']]
+    text = t.table(cells, '<format_none_as')
+    expected = '\n'.join([
+        "format_none_as",
+        "----------------------",
+        "          Life",
+        "  number  State",
+        "----------------------",
+        "22334455  demised",
+        "      66  passed on",
+        "     0-0  is no more",
+        "       9  0-0",
+        "      10  ceased to be",
+        "----------------------",
+    ])
+    assert text == expected
 
 def test_heading_left_align_spec_and_format_left_align_spec():
     """Test align_specs.

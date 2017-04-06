@@ -146,10 +146,10 @@ Recent Changes
 1.0.2 - TODO future
 
 - Bug fix, incorrect cell auto-alignment when mixed types in a column.
-- Extract methods to refactor scanner._scan() and
-  MonoTable._format_cells_as_columns() to reduce McCabe complexity.
-- Remove and re-add files to git index so stored with LFs.
+- Bug fix, format_none_as cell ignoring column format string's align_spec.
+- Refactor to reduce McCabe complexity.
 - For testing do flake8 --max-complexity=10 in tox.ini.
+- Remove and re-add files to git index so stored with LFs.
 - Add [testenv:installonly] to tox.ini.
 - Add noqa to prevent flake8 warnings in __init__.py
 

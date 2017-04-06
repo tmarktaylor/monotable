@@ -804,7 +804,12 @@ class MonoTable:
         elif item is None:
             # Replace None with a MonoBlock initialized from
             # format_none_as and bypass the formatting steps.
-            return MonoBlock(self.format_none_as)
+            # Type None auto-aligns to the left since it is not a number.
+            if formatobj.align == NOT_SPECIFIED:
+                align = LEFT
+            else:
+                align = formatobj.align
+            return MonoBlock(self.format_none_as, align)
 
         elif isinstance(item, MonoBlock):
             # MonoBlocks enjoy the privilege of bypassing the
