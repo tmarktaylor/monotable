@@ -5,8 +5,8 @@ Limit column width
 ------------------
 
 Here we employ the option_spec **(width=15)** to limit the width of the second
-column to 15 characters.  The **more_marker** '...' shows where text was
-omitted.
+column to 15 characters or less.  The **more_marker** '...' shows where text
+was omitted.
 
 .. testcode::
 
@@ -86,8 +86,6 @@ The second column is wrapped to a maximum width of 12 characters.
   one character less than the format string (width=12;wrap) specified.  This
   behaviour is a side affect of using Python textwrap to implement the
   format option.
-- If you want the column to be exactly N characters wide, add the fixed
-  format option like this: (width=12;wrap;fixed)
 
 Fix column width
 ----------------
@@ -105,9 +103,9 @@ formatted text will be padded or truncated to the exact width.
     formats = ['', '^(width=11;fixed)']
     t7 = monotable.MonoTable(headings, formats)
 
-    cells = [['A', 1, 'x'],
-             ['B', 2, 'y'],
-             ['C', 3, 'z']]
+    cells = [['A',   1, 'x'],
+             ['B', 222, 'y'],
+             ['C',   3, 'z']]
 
     title = 'Middle column is fixed width.'
 
@@ -121,9 +119,11 @@ formatted text will be padded or truncated to the exact width.
     col       col      col
     ------------------------
     A          1       x
-    B          2       y
+    B         222      y
     C          3       z
     ------------------------
+
+- The align_spec_prefix '^' of the formats[1] center justifies the column.
 
 Selecting attributes or elements
 --------------------------------

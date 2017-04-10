@@ -116,7 +116,7 @@ class MonoTable:
     * Cell alignment is determined by this decision order:
 
         1. align_spec if present in the format string.
-        2. Auto-Alignment for the cell in the first row.
+        2. Auto-Alignment for the cell.
 
     * The title is auto-aligned to center.
 
@@ -129,8 +129,6 @@ class MonoTable:
         the empty string.
 
     There is one format string for each column of cells.
-    Please see description of :py:meth:`~MonoTable.__init__`
-    argument **formats**.
 
     Formatting, by default, is done by ``<built-in function format>``.
 
