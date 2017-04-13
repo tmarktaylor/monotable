@@ -615,7 +615,9 @@ class MonoTable:
                 msg = 'If one row cellgrid, likely missing outer list.'
                 assert False, 'Exception "{}". {}'.format(str(exc), msg)
 
-        num_columns = max([len(headings)] + [len(row) for row in xcellgrid])
+        # Convert from Iterable to List.
+        xheadings = list(headings)
+        num_columns = max([len(xheadings)] + [len(row) for row in xcellgrid])
 
         # extend any short rows in xcellgrid
         for row in xcellgrid:
@@ -623,12 +625,12 @@ class MonoTable:
             # It is OK to extend with same instance of MonoBlock because
             # of special handling later by _format_cells_as_columns().
 
-        # Make copies and convert to list.
         # Extend by more than needed, truncate to len() = num_columns.
-        xheadings = list(headings)
         xheadings.extend([''] * num_columns)
         xheadings = xheadings[:num_columns]
 
+        # Make copy and convert to list.
+        # Extend by more than needed, truncate to len() = num_columns.
         xformats = list(formats)
         xformats.extend([''] * num_columns)
         xformats = xformats[:num_columns]

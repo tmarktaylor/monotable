@@ -63,38 +63,38 @@ class TestConsistentVersionStrings:
         # monotable version 1.0.1.
         # Note the final period is required.
         index_text = read_file('..', 'doc', 'index.rst')
-        versionref = re.compile(r"monotable version (\d+\.\d+\.\d+)\.", re.M)
-        match = versionref.search(index_text)
+        version_re = re.compile(r"monotable version (\d+\.\d+\.\d+)\.", re.M)
+        match = version_re.search(index_text)
         assert match.group(1) == self.auth_version
 
         """make sure we properly match possible future versions."""
         v1 = 'monotable version 10.0.1.'
-        m1 = versionref.search(v1)
+        m1 = version_re.search(v1)
         assert m1.group(1) == '10.0.1'
 
         v2 = 'monotable version 1.11.1.'
-        m2 = versionref.search(v2)
+        m2 = version_re.search(v2)
         assert m2.group(1) == '1.11.1'
 
         v3 = 'monotable version 1.0.11.'
-        m3 = versionref.search(v3)
+        m3 = version_re.search(v3)
         assert m3.group(1) == '1.0.11'
 
         v4 = 'monotable version 12.34.56.'
-        m4 = versionref.search(v4)
+        m4 = version_re.search(v4)
         assert m4.group(1) == '12.34.56'
 
         # make sure we don't match bogus version strings.
         v5 = 'monotable version 12.34.56'  # no period
-        m5 = versionref.search(v5)
+        m5 = version_re.search(v5)
         assert m5 is None
 
         v6 = 'monotable version .34.56'  # missing major version
-        m6 = versionref.search(v6)
+        m6 = version_re.search(v6)
         assert m6 is None
 
         v7 = 'monotable version 1.Z.56'  # non numeric
-        m7 = versionref.search(v7)
+        m7 = version_re.search(v7)
         assert m7 is None
 
 
@@ -103,7 +103,7 @@ class TestConsistentVersionStrings:
 #
 
 
-def test_noheadings_noformats_notitle_emptycells():
+def test_no_headings_no_formats_no_title_empty_cells():
     """No headings, formats, title, and no cells in the cellgrid.
 
     Test with both default argument values and empty lists."""
@@ -128,7 +128,7 @@ def test_noheadings_noformats_notitle_emptycells():
     assert row_strings == [[]]
 
 
-def test_emptyheadings_emptyformats_emptycells():
+def test_empty_headings_empty_formats_empty_cells():
     """Empty headings, empty formats, and no cells in the cellgrid."""
 
     expected_title = 'My Title is a Good Title'
@@ -140,7 +140,7 @@ def test_emptyheadings_emptyformats_emptycells():
     assert text == expected_title
 
 
-def test_emptyheadings_emptyformats_emptycells_notitle():
+def test_empty_headings_empty_formats_empty_cells_no_title():
     """Empty headings, empty formats, no title, and no cells in cellgrid."""
 
     tbl = monotable.MonoTable([], [])
@@ -311,7 +311,7 @@ def test_headings_formats_cells_are_tuples_and_missing_items():
     assert text == expected
 
 
-def test_cell_rows_are_namedtuples():
+def test_cell_rows_are_named_tuples():
     row = namedtuple('Row', ['column0', 'column1', 'column2'])
     cells = (row(column0=1, column1=2, column2=3),
              row(column0=11, column1=12, column2=13))
@@ -351,6 +351,27 @@ def test_add_column_of_row_numbers():
         "  2  D  E  F",
         "  3  G  H  I",
         "------------",
+    ])
+    assert text == expected
+
+
+def test_headings_are_iterable():
+    """Headings is an interable, but not a sequence.  No len()."""
+    headings = iter(('h1', 'h2', 'h3'))
+    cells = (('A', 'B', 'C'), ('D', 'E', 'F'), ('G', 'H', 'I'))
+    tbl = monotable.MonoTable(headings)
+    text = tbl.table(cells, title='Headings\nfrom\nIterable')
+    expected = '\n'.join([
+        " Headings",
+        "   from",
+        " Iterable",
+        "----------",
+        "h1  h2  h3",
+        "----------",
+        "A   B   C",
+        "D   E   F",
+        "G   H   I",
+        "----------",
     ])
     assert text == expected
 
@@ -442,7 +463,7 @@ class TestMonoTableExceptionCallback:
 
         tbl.format_exc_callback = monotable.plugin.ignore_it
         text = tbl.bordered_table(self.cells)
-        # Each item in column not overriden by an align_spec
+        # Each item in column not overridden by an align_spec
         # is aligned by type(item).
         # Since cell[1,1] = 'label1', a string, it auto-aligns to the left.
         expected = '\n'.join([
@@ -595,7 +616,7 @@ def test_bad_option_spec():
     assert str(exc_info.value).startswith('cell column 0, format= ')
 
 
-def test_override_option_spec_delims_bad_option_spec():
+def test_override_option_spec_delimiters_bad_option_spec():
     """
     Change option_spec_delimiters on an instance.
     Use the same char for start and end delimiters.
@@ -613,7 +634,7 @@ def test_override_option_spec_delims_bad_option_spec():
     assert str(exc_info.value).startswith('cell column 0, format= ')
 
 
-def test_no_option_spec_delims():
+def test_no_option_spec_delimiters():
     """
     Disable option spec scanning by setting option_spec_delims to
     empty string.  Format will be interpreted as a format_spec and
@@ -631,7 +652,7 @@ def test_no_option_spec_delims():
     assert str(exc_info.value).startswith(msg)
 
 
-def test_override_option_spec_delims():
+def test_override_option_spec_delimiters():
     """Test formatting with overridden option_spec_delimiters."""
 
     tbl = monotable.MonoTable(headings=[], formats=['!width=10!s'])
