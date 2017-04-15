@@ -29,7 +29,7 @@ import monotable.alignment
 
 # These imports are for PEP484, PYPI package mypy static type checking.
 try:
-    from typing import List, Tuple, Optional, Any
+    from typing import List, Tuple, Optional, Any    # noqa : F401
 except(ImportError):
     pass
 

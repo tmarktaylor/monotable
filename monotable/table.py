@@ -39,9 +39,6 @@ import traceback
 
 import monotable.plugin
 import monotable.scanner
-from monotable.scanner import FormatScanner
-
-from monotable.scanner import FormatScanner
 from monotable.monoblock import MonoBlock
 
 from monotable.alignment import NOT_SPECIFIED
@@ -50,9 +47,9 @@ from monotable.alignment import RIGHT
 
 # These imports are for PEP484, PYPI package mypy static type checking.
 try:
-    from typing import (
-        List, Dict, Tuple, Optional, Callable, Any, Mapping, Sequence, Iterable
-    )
+    from typing import List, Dict, Tuple, Optional, Callable    # noqa : F401
+    from typing import Any, Mapping, Sequence, Iterable    # noqa : F401
+    from monotable.scanner import FormatScanner    # noqa : F401
 except(ImportError):
     pass
 
@@ -238,7 +235,7 @@ class MonoTable:
     to use built in function staticmethod().
     """
 
-    format_exc_callback = staticmethod(monotable.plugin.raise_it)    # type: ignore # todo-
+    format_exc_callback = staticmethod(monotable.plugin.raise_it)    # type: ignore  noqa : E501
     """ Function called when format_func raises an exception.
 
     The function takes the argument MonoTableCellError and
@@ -547,7 +544,7 @@ class MonoTable:
                             formats,     # type: Iterable[str]
                             cellgrid     # type: Iterable[Iterable[object]]
                             ):
-        # type: (...) -> Tuple[List[MonoBlock], List[List[MonoBlock]], List[int], List[str]]
+        # type: (...) -> Tuple[List[MonoBlock], List[List[MonoBlock]], List[int], List[str]]    noqa : E501
         """Format, align, and justify the text table.
 
         headings
@@ -707,7 +704,7 @@ class MonoTable:
             option_spec_delimiters=self.option_spec_delimiters)
 
         for column_index, format_str in enumerate(formats):
-            formatobj = FormatScanner(
+            formatobj = monotable.scanner.FormatScanner(
                 format_str,
                 instance_config
                 )

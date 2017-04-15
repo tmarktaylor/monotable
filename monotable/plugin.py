@@ -38,9 +38,8 @@ import sys
 
 # These imports are for PEP484, PYPI package mypy static type checking.
 try:
-    from typing import Tuple, Union, Any, Mapping, Sequence
-    # todo- is this form preferred?
-    from monotable.table import MonoTableCellError
+    from typing import Tuple, Union, Any, Mapping, Sequence    # noqa : F401
+    from monotable.table import MonoTableCellError    # noqa : F401
 except(ImportError):
     pass
 

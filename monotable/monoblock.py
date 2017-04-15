@@ -32,7 +32,7 @@ from monotable.alignment import CENTER_BOTTOM
 
 
 try:
-    from typing import List, Any
+    from typing import List, Any    # noqa : F401
 except(ImportError):
     pass
 
