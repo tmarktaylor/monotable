@@ -25,6 +25,7 @@ import collections
 import fnmatch
 
 import monotable.plugin
+import monotable.alignment
 
 MonoTableConfig = collections.namedtuple('MonoTableConfig',
                                          ['align_spec_chars',
@@ -315,7 +316,7 @@ class FormatScanner:
         """Scan option_list for a format function, remove if found."""
         for option in option_list:
             name, arg = self._option_and_arg(option)
-            if name in self._format_functions:
+            if name is not None and name in self._format_functions:
                 if arg is None:
                     self.format_func = self._format_functions[name]
                     option_list.remove(option)

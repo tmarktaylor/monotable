@@ -39,7 +39,7 @@ import traceback
 
 import monotable.plugin
 import monotable.scanner
-
+from monotable.scanner import FormatScanner
 from monotable.monoblock import MonoBlock
 
 from monotable.alignment import NOT_SPECIFIED
@@ -683,8 +683,10 @@ class MonoTable:
             option_spec_delimiters=self.option_spec_delimiters)
 
         for column_index, format_str in enumerate(formats):
-            formatobj = monotable.scanner.FormatScanner(format_str,
-                                                        instance_config)
+            formatobj = FormatScanner(
+                format_str,
+                instance_config
+                )
             if formatobj.error_text:
                 fmt = 'cell column {:d}, format= {}\n{}'
                 error_message = fmt.format(
@@ -753,8 +755,7 @@ class MonoTable:
                     text = format_func(item, format_spec)
                 except (AttributeError, LookupError, TypeError, ValueError,
                         ArithmeticError, AssertionError):
-                    msg = ''.join(
-                        traceback.format_exception(*sys.exc_info()))
+                    msg = traceback.format_exc()
                     exc = MonoTableCellError(row_index,
                                              column_index,
                                              formatobj.format_spec,
@@ -778,7 +779,7 @@ class MonoTable:
     @staticmethod
     def _make_text_wrapper(formatobj):
         """Produce a TextWrapper for formatobj.width or None."""
-        if formatobj.wrap:
+        if formatobj.width is not None and formatobj.wrap:
             text_wrapper = textwrap.TextWrapper(
                 width=formatobj.width,
                 break_long_words=True)
@@ -1126,9 +1127,9 @@ class MonoTable:
 
         # convert, format, and justify headings/cells into MonoBlock objects
         (justified_headings, justified_cells,
-            _, _) = self._format_and_justify(self.headings,
-                                             self.formats,
-                                             cellgrid)
+         unused1, unused2) = self._format_and_justify(self.headings,
+                                                      self.formats,
+                                                      cellgrid)
         # Combine the resulting MonoBlocks into a single list.
         # Headings is the first row followed by the cell rows.
         combined = [justified_headings]
@@ -1136,8 +1137,8 @@ class MonoTable:
 
         # Convert to strings/strip.
         rows = []
-        for row in combined:
-            row = [str(item) for item in row]
+        for monoblock_row in combined:
+            row = [str(block) for block in monoblock_row]
             if strip:
                 row = [item.strip() for item in row]
             rows.append(row)
