@@ -235,7 +235,7 @@ class MonoTable:
     to use built in function staticmethod().
     """
 
-    format_exc_callback = staticmethod(monotable.plugin.raise_it)    # type: ignore  noqa : E501
+    format_exc_callback = staticmethod(monotable.plugin.raise_it)    # type: ignore  # noqa : E501
     """ Function called when format_func raises an exception.
 
     The function takes the argument MonoTableCellError and
@@ -544,7 +544,7 @@ class MonoTable:
                             formats,     # type: Iterable[str]
                             cellgrid     # type: Iterable[Iterable[object]]
                             ):
-        # type: (...) -> Tuple[List[MonoBlock], List[List[MonoBlock]], List[int], List[str]]    noqa : E501
+        # type: (...) -> Tuple[List[MonoBlock], List[List[MonoBlock]], List[int], List[str]]   # noqa : E501
         """Format, align, and justify the text table.
 
         headings
@@ -720,9 +720,9 @@ class MonoTable:
         return processed_formats
 
     def _format_cells_as_columns(self,
-        cellgrid,    # type: List[List[object]]
-        processed_formats  # type: List[FormatScanner]
-        ):
+                                 cellgrid,    # type: List[List[object]]
+                                 processed_formats  # type: List[FormatScanner]
+                                 ):
         # type: (...) -> List[List[MonoBlock]]
         """Format each cell of cellgrid by calling the format_func.
 

@@ -36,6 +36,7 @@ try:
 except(ImportError):
     pass
 
+
 class MonoBlock:
     """
     Manages a two dimensional block of text.
