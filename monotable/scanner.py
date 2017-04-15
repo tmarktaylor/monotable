@@ -25,6 +25,13 @@ import collections
 import fnmatch
 
 import monotable.plugin
+import monotable.alignment
+
+# These imports are for PEP484, PYPI package mypy static type checking.
+try:
+    from typing import List, Tuple, Optional, Any
+except(ImportError):
+    pass
 
 MonoTableConfig = collections.namedtuple('MonoTableConfig',
                                          ['align_spec_chars',
@@ -121,6 +128,7 @@ class FormatScanner:
     """
 
     def __init__(self, format_str, config):
+        # type: (str, MonoTableConfig) -> None
         """
         Scan the string per delimiters, return results as instance vars.
 
@@ -183,7 +191,7 @@ class FormatScanner:
             self._format_functions.update(config.format_func_map)
 
         self.error_text = ''
-        self.width = None
+        self.width = None    # type: Optional[int]
         self.fixed = False
         self.wrap = False
         self.sep = config.sep
@@ -192,14 +200,16 @@ class FormatScanner:
             format_str, align_spec_chars)
         if not option_spec_delimiters:
             # no delimiters disables option_spec scanning
-            self.format_spec = option_format_spec
+            self.format_spec = option_format_spec    # type: str
             return
 
         self._start, self._between, self._end = option_spec_delimiters
-        option_spec, self.format_spec = self._parse(option_format_spec)
+        option_spec, self.format_spec = (
+            self._parse(option_format_spec))    # type: Tuple[str, str]
         self._scan(option_spec)
 
     def _parse(self, option_format_spec):
+        # type: (str) -> Tuple[str, str]
         """Split option_format_spec into option_spec and format_spec.
 
         option_format_spec
@@ -222,6 +232,7 @@ class FormatScanner:
         return '', option_format_spec
 
     def _scan(self, option_spec):
+        # type: (str) -> None
         """Scan option_spec string for options and values.
 
         Updates instance variables align, error_text, format_func,
@@ -241,7 +252,7 @@ class FormatScanner:
         if not option_spec:  # anything left to scan?
             return
 
-        option_list = option_spec.split(self._between)
+        option_list = option_spec.split(self._between)    # type: List[str]
 
         # scan for each option, process, and remove from option_list
         self._scan_width(option_list)
@@ -270,6 +281,7 @@ class FormatScanner:
             self.error_text = '\n'.join(error_messages)
 
     def _scan_width(self, option_list):
+        # type: (List[str]) -> None
         """Scan option_list for width option and arg, remove if found."""
         for option in option_list:
             name, arg = self._option_and_arg(option)
@@ -281,6 +293,7 @@ class FormatScanner:
                     break
 
     def _scan_fixed(self, option_list):
+        # type: (List[str]) -> None
         """Scan option_list for fixed option, remove if found."""
         for option in option_list:
             name, arg = self._option_and_arg(option)
@@ -291,6 +304,7 @@ class FormatScanner:
                     break
 
     def _scan_wrap(self, option_list):
+        # type: (List[str]) -> None
         """Scan option_list for wrap option, remove if found."""
         for option in option_list:
             name, arg = self._option_and_arg(option)
@@ -301,6 +315,7 @@ class FormatScanner:
                     break
 
     def _scan_sep(self, option_list):
+        # type: (List[str]) -> None
         """Scan option_list for sep option and arg, remove if found."""
         for option in option_list:
             name, arg = self._option_and_arg(option)
@@ -312,10 +327,11 @@ class FormatScanner:
                     break
 
     def _scan_format_func(self, option_list):
+        # type: (List[str]) -> None
         """Scan option_list for a format function, remove if found."""
         for option in option_list:
             name, arg = self._option_and_arg(option)
-            if name in self._format_functions:
+            if name is not None and name in self._format_functions:
                 if arg is None:
                     self.format_func = self._format_functions[name]
                     option_list.remove(option)
@@ -323,6 +339,7 @@ class FormatScanner:
 
     @staticmethod
     def _option_and_arg(option):
+        # type: (str) -> Tuple[Optional[str], Optional[str]]
         """Split up a format option to an option name and arg."""
         split_option = option.split('=')
         if len(split_option) == 1:
@@ -334,6 +351,7 @@ class FormatScanner:
 
     @staticmethod
     def _scan_gt_value(text):
+        # type: (Optional[str]) -> Optional[int]
         """
         Scan text for integer value N. Returns N if an int > 0, else None.
 
@@ -351,13 +369,14 @@ class FormatScanner:
             return int_value
 
     def _allowed_format_functions(self):
+        # type: () -> List[str]
         lines = []
         fmt = '  {} - {}.'
         for name in sorted(self._format_functions):
             lines.append(fmt.format(name, self._format_functions[name]))
         return lines
 
-    def _allowed_options(self):
+    def _allowed_options(self):    # type: () -> List[str]
         lines = ['Options are enclosed by "{}" and "{}".  '
                  'Options are separated by "{}".'.format(self._start,
                                                          self._end,

@@ -122,6 +122,7 @@ setup(
     # for example:
     # $ pip install -e .[test,docs]
     extras_require={'test': ['tox', 'pytest'],
-                    'docs': ['sphinx', 'sphinx_rtd_theme']
+                    'docs': ['sphinx', 'sphinx_rtd_theme'],
+                    'type-hints': ['typing'],
                     },
 )

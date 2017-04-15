@@ -36,6 +36,14 @@ from __future__ import print_function
 import string
 import sys
 
+# These imports are for PEP484, PYPI package mypy static type checking.
+try:
+    from typing import Tuple, Union, Any, Mapping, Sequence
+    # todo- is this form preferred?
+    from monotable.table import MonoTableCellError
+except(ImportError):
+    pass
+
 #
 # Format functions selectable by a format option of the same name.
 # These are also useful to override the class variable MonoTable.format_func
@@ -43,6 +51,7 @@ import sys
 
 
 def mformat(mapping, format_spec):
+    # type: (Mapping[str, object], str) -> str
     """Format function that selects values from a dictionary.
 
     In the format_spec use references to keyword arguments
@@ -81,6 +90,7 @@ def mformat(mapping, format_spec):
 
 
 def pformat(value, format_spec):
+    # type: (Union[object, Tuple[object]], str) -> str
     """Format function adapter to percent operator %.
 
     The exact number % replacements in the printf-style format spec must
@@ -91,6 +101,7 @@ def pformat(value, format_spec):
 
 
 def sformat(value, format_spec):
+    # type: (object, str) -> str
     """Format function adapter to str.format().
 
     Please keep in mind that only a single replacement field can be used.
@@ -100,6 +111,10 @@ def sformat(value, format_spec):
 
 
 def tformat(value, format_spec):
+    # type: (Mapping[str, str], str) -> str         # todo-...
+    # todo- want:   type: (Mapping[str, object], str) -> str
+    # monotable\plugin.py:117: error: Argument 1 to "substitute" of "Template"
+    # has incompatible type Mapping[str, object]; expected Mapping[str, str]
     """Format function adapter to string.Template.substitute()."""
 
     template = string.Template(format_spec)
@@ -111,12 +126,14 @@ def tformat(value, format_spec):
 #
 
 def raise_it(cell_error_exception):
+    # type: (MonoTableCellError) -> None
     """Format function error callback.  Exception is raised."""
 
     raise cell_error_exception
 
 
 def print_it(cell_error_exception):
+    # type: (MonoTableCellError) -> str
     """Format function error callback.  Prints exception. Returns '???'."""
 
     print(cell_error_exception)
@@ -127,6 +144,7 @@ def print_it(cell_error_exception):
 
 
 def ignore_it(_):
+    # type: (MonoTableCellError) -> str
     """Format function error callback.  No action taken.  Returns '???'."""
 
     return '???'

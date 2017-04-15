@@ -32,6 +32,14 @@
    BOTTOM         Align vertically to bottom.
 """
 
+# These imports are for PEP484, PYPI package mypy static type checking.
+try:
+    from typing import Tuple
+except(ImportError):
+    pass
+
+# repository: https://github.com/tmarktaylor/monotable
+
 NOT_SPECIFIED = 0  # must be zero
 """Horizontal text justification is not specified."""
 
@@ -51,6 +59,7 @@ _HALIGN_HELP = '\n'.join([
 
 
 def validate_horizontal_align(value):
+    # type: (int) -> None
     """Check if value is a valid enumeration value."""
 
     assert value in _HALIGN_ALLOWED, _HALIGN_HELP.format(value)
@@ -76,12 +85,14 @@ _VALIGN_HELP = '\n'.join([
 
 
 def validate_vertical_align(value):
+    # type: (int) -> None
     """Check if value is a valid enumeration value."""
 
     assert value in _VALIGN_ALLOWED, _VALIGN_HELP.format(value)
 
 
 def split_up(prefixed_string, align_spec_chars):
+    # type: (str, str) -> Tuple[int, str]
     """Split up string that starts with an optional one char align_spec.
 
     prefixed_string

@@ -31,6 +31,11 @@ from monotable.alignment import CENTER_TOP
 from monotable.alignment import CENTER_BOTTOM
 
 
+try:
+    from typing import List, Any
+except(ImportError):
+    pass
+
 class MonoBlock:
     """
     Manages a two dimensional block of text.
@@ -73,6 +78,7 @@ class MonoBlock:
     """
 
     def __init__(self, text='', halign=LEFT):
+        # type: (str, int) -> None
         """
         Create MonoBlock from caller's string.
 
@@ -98,12 +104,14 @@ class MonoBlock:
         self._update_height_and_width()
 
     def is_all_spaces(self):
+        # type: () -> bool
         """Return True if MonoBlock is all spaces, False otherwise."""
 
         # Concatenate lines, strip spaces, test for not empty string.
         return not ''.join(self.lines).strip()
 
     def chop_to_fieldsize(self, fieldsize, more_marker=''):
+        # type: (int, str) -> None
         """
         Truncate any lines longer than fieldsize and insert the more_marker.
 
@@ -131,6 +139,7 @@ class MonoBlock:
         self._update_height_and_width()
 
     def hjustify(self, width=None):
+        # type: (int) -> None
         """
         Horizontally justify each text line and pad to uniform length.
 
@@ -166,6 +175,7 @@ class MonoBlock:
         self._is_hjustified = True        # keep track for add_border()
 
     def vjustify(self, valign, height, more_marker=''):
+        # type: (int, int, str) -> None
         """Vertically justify lines per valign into field of height lines.
 
         If the MonoBlock has more lines than height, the first height
@@ -234,6 +244,7 @@ class MonoBlock:
                    hmargin=1,
                    vmargin=0,
                    border_chars='--|+'):
+        # type: (int, int, str) -> None
         """
         Expand MonoBlock to include ascii char borders and blank margins.
 
@@ -294,6 +305,7 @@ class MonoBlock:
         self._update_height_and_width()
 
     def remove_top_line(self):
+        # type: () -> None
         """Remove top line of MonoBlock. Used for stacking bordered blocks.
 
         If the MonoBlock only has 1 line it is shortened to the empty string.
@@ -306,6 +318,7 @@ class MonoBlock:
         self._update_height_and_width()
 
     def remove_left_column(self):
+        # type: () -> None
         """
         Remove left column of MonoBlock. Used to join adjacent bordered blocks.
         """
@@ -315,6 +328,7 @@ class MonoBlock:
             self._update_height_and_width()
 
     def _update_height_and_width(self):
+        # type: () -> None
         self.height = len(self.lines)
         line_widths = [len(line) for line in self.lines]
         for width in line_widths:
@@ -322,4 +336,5 @@ class MonoBlock:
         self.width = max(line_widths)
 
     def __str__(self):
+        # type: () -> str
         return '\n'.join(self.lines)
