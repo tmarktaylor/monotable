@@ -41,6 +41,7 @@ import monotable.plugin
 import monotable.scanner
 from monotable.scanner import FormatScanner
 
+from monotable.scanner import FormatScanner
 from monotable.monoblock import MonoBlock
 
 from monotable.alignment import NOT_SPECIFIED
@@ -373,10 +374,10 @@ class MonoTable:
                 # type: (...) -> None
         """
         Args:
-            headings (Optional[Iterable[str]]):
+            headings (Iterable[str]):
                 Iterable of strings for each column heading.
 
-            formats (Optional[Iterable[str]]):
+            formats (Iterable[str]):
                 Iterable of format strings of the form
                 ``[align_spec][option_spec][format_spec]``.
 
@@ -397,7 +398,7 @@ class MonoTable:
                     String passed to the format function.
 
 
-            indent (Optional[str]):
+            indent (str):
                 String added to the beginning of each line in the text table.
 
         The ``option_spec`` options are:
@@ -453,10 +454,10 @@ class MonoTable:
         """Format printable text table.  It is pretty in monospaced font.
 
         Args:
-            cellgrid (Optional[Iterable[Iterable[object]]]):
+            cellgrid (Iterable[Iterable[object]]):
                 representing table cells.
 
-            title (Optional[str]): ``[align_spec][wrap_spec]string``.
+            title (str): ``[align_spec][wrap_spec]string``.
                 Text to be aligned and printed above the text table.
 
                 align_spec
@@ -1033,10 +1034,10 @@ class MonoTable:
         """Format printable text table with individual cell borders.
 
         Args:
-            cellgrid (Optional[Iterable[Iterable[object]]]):
+            cellgrid (Iterable[Iterable[object]]):
                 representing table cells.
 
-            title (Optional[str]): ``[align_spec][wrap_spec]string``.
+            title (str): ``[align_spec][wrap_spec]string``.
                 Text to be aligned and printed above the text table.
 
                 align_spec
@@ -1152,7 +1153,7 @@ class MonoTable:
         """Format and justify table.  Return rows of the strings.
 
         Args:
-            cellgrid (Optional[Iterable[Iterable[object]]]):
+            cellgrid (Iterable[Iterable[object]]):
                 representing table cells.
 
             strip (bool): If True remove leading and trailing spaces.
