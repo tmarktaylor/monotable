@@ -121,8 +121,13 @@ setup(
     # dependencies). You can install these using the following syntax,
     # for example:
     # $ pip install -e .[test,docs]
+
+    # These dependencies mirror those in tox.ini.
     extras_require={'test': ['tox', 'pytest'],
+                    'inspect': ['flake8', 'pep8-naming'],
+                    'experimental_static_type_checking': ['typing', 'mypy'],
+                    'cover': ['pytest-cov', 'codecov'],
+                    'readme': ['readme_renderer'],
                     'docs': ['sphinx', 'sphinx_rtd_theme'],
-                    'type-hints': ['typing'],
                     },
 )

@@ -145,8 +145,8 @@ def test_allowed_options(format_scanner):
     first_part_expected_options = '\n'.join([
         'Options are enclosed by "(" and ")".  Options are separated by ";".',
         'For example: "(width=22;sep=   )"',
-        'Case is significant. Whitespace is not allowed except',
-        'after =.  Allowed options are:',
+        'Case is significant.  Whitespace is not significant except',
+        'after the "=" in "sep =".  Allowed options are:',
         '  width=N - column width is at most N columns. N > 0.',
         '  fixed   - column width is exactly width=N columns.',
         '            Use to qualify width=N option.',

@@ -676,7 +676,7 @@ class MonoTable:
 
     @staticmethod
     def _halign_suggestion(item):
-        # type: (object) ->  int
+        # type: (object) -> int
         """
         Return horizontal alignment enum value determined from the item type.
         """

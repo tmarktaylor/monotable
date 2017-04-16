@@ -153,7 +153,7 @@ class FormatScanner:
         # the functions in this class need several MonoTable class and
         # instance variables.  A copy of these variables are passed
         # here by parameter 'config' of type MonoTableConfig.
-        # The design choice not taken was to move the 6
+        # The design choice not taken was to move the
         # FormatScanner member functions into MonoTable.
 
         # renames to shorten long lines
@@ -383,8 +383,8 @@ class FormatScanner:
                                                          self._between),
                  'For example: "{}width=22{}sep=   {}"'.format(
                      self._start, self._between, self._end),
-                 'Case is significant. Whitespace is not allowed except',
-                 'after =.  Allowed options are:',
+                 'Case is significant.  Whitespace is not significant except',
+                 'after the "=" in "sep =".  Allowed options are:',
                  '  width=N - column width is at most N columns. N > 0.',
                  '  fixed   - column width is exactly width=N columns.',
                  '            Use to qualify width=N option.',

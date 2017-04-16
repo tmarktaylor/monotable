@@ -32,7 +32,7 @@ from monotable.alignment import CENTER_BOTTOM
 
 
 try:
-    from typing import List, Any    # noqa : F401
+    from typing import List, Any, Optional    # noqa : F401
 except(ImportError):
     pass
 
@@ -140,7 +140,7 @@ class MonoBlock:
         self._update_height_and_width()
 
     def hjustify(self, width=None):
-        # type: (int) -> None
+        # type: (Optional[int]) -> None
         """
         Horizontally justify each text line and pad to uniform length.
 

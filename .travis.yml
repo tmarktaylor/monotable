@@ -12,7 +12,7 @@ matrix:
     - python: 3.5
       env: TOXENV=py35,cover,inspect,readme
     - python: 3.6
-      env: TOXENV=py36,docs
+      env: TOXENV=py36,docs,experimental_static_type_checking
     - python: pypy
       env: TOXENV=pypy
     - python: pypy3
