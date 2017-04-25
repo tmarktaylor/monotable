@@ -59,8 +59,20 @@ except(ImportError):
 
 def _transpose(grid):
     # type: (Iterable[Iterable[Any]]) -> List[List[Any]]
-    """Swap rows for columns or columns for rows."""
+    """Swap rows for columns or columns for rows.
 
+    Please note that the return type is probably best described as
+    List[Tuple[Any]] because zip(iterable) in Python 3 returns an
+    iterator that yields tuples.
+    However mypy seems to be interpreting the return type as
+    Tuple[Any, ...] if tuple(zip(*grid)) is used here.
+
+    error: Incompatible return value type (got Tuple[Any, ...],
+    expected List[List[Any]])
+
+    List[List[Any]] is easier to understand and more expressive
+    than Tuple[Any, ...] even though inaccurate.
+    """
     return list(zip(*grid))
 
 
