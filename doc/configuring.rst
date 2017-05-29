@@ -23,11 +23,11 @@ Two Ways to Customize
        separated_guidelines = True
 
     headings = ['an int', 'string', 'another int', 'another string']
-    tbl = SeparatedMonoTable(headings)
+    tbl = SeparatedMonoTable()
 
     cells = [[123, 'import', 4567, 'this']]
 
-    print(tbl.table(cells, title='Subclass of MonoTable.'))
+    print(tbl.table(headings, [], cells, title='Subclass of MonoTable.'))
 
 .. testoutput::
 
@@ -48,13 +48,13 @@ Two Ways to Customize
     import monotable
 
     headings = ['an int', 'string', 'another int', 'another string']
-    tbl = monotable.MonoTable(headings)
+    tbl = monotable.MonoTable()
     tbl.guideline_chars = '-=-'
     tbl.separated_guidelines = True
 
     cells = [[123, 'import', 4567, 'this']]
 
-    print(tbl.table(cells, title='Override on an instance.'))
+    print(tbl.table(headings, [], cells, title='Override on an instance.'))
 
 
 .. testoutput::

@@ -54,9 +54,8 @@ First Example
     import monotable
     headings = ['int', 'percent']
     formats = [',', '.1%']
-    t1 = monotable.MonoTable(headings, formats)
     cells = [[123456789, 0.33], [2345678, 0.995]]
-    print(t1.table(cells,
+    print(monotable.table.table(headings, formats, cells,
                    title='=Comma and percent formats.'))
 
 .. testoutput::
@@ -143,6 +142,8 @@ More features are described in the documentation section
 
 Recent Changes
 ==============
+TODO- 2.0.0
+
 1.0.2 - 2017-04-06
 
 - Bug fix, incorrect cell auto-alignment when mixed types in a column.
@@ -180,12 +181,11 @@ Format strings are assigned to columns from left to right.
 
     headings = ['precision\n1', 'precision\n3', 'default', '9/16/16']
     formats = ['.1f', '.3f', '', 'week-%U-day-%j']
-    t2 = monotable.MonoTable(headings, formats)
-
     cells = [[1.23456789,   1.23456789,   1.23456789, d],
              [999.87654321, 999.87654321, 999.87654321, None]]
 
-    print(t2.table(cells, title='Different float precisions.'))
+    print(monotable.table.table(headings, formats, cells,
+                                title='Different float precisions.'))
 
 .. testoutput::
 
@@ -232,8 +232,6 @@ The API section MonoTable.__init__() in the docs describes the other options.
     headings = ['int', 'Formatted by mformat()']
     formats = ['',
         '(mformat)name= {name}\nage= {age:.1f}\ncolor= {favorite_color}']
-    t3 = monotable.MonoTable(headings, formats)
-
     cells = [[2345, dict(name='Row Zero',
                          age=888.000,
                          favorite_color='blue')],
@@ -242,7 +240,8 @@ The API section MonoTable.__init__() in the docs describes the other options.
                          age=999.111,
                          favorite_color='No! Red!')]]
 
-    print(t3.bordered_table(cells, title='mformat() Formatting.'))
+    print(monotable.table.bordered_table(headings, formats, cells,
+                                         title='mformat() Formatting.'))
 
 .. testoutput::
 
@@ -294,13 +293,14 @@ in the option_spec.
 
     headings = ['Id Number', 'Duties', 'Meal\nPreference']
     formats = ['', '', '(fulfill_menu_request)']
-    t4 = FormatFuncsMonoTable(headings, formats)
+    t1 = FormatFuncsMonoTable()
 
     cells = [[1, 'President and CEO', 'steak'],
              [2, 'Raise capital', 'eggs'],
              [3, 'Oversee day to day operations', 'toast']]
 
-    print(t4.table(cells, title='>User defined format function.'))
+    print(t1.table(headings, formats, cells,
+                   title='>User defined format function.'))
 
 .. testoutput::
 
@@ -325,8 +325,8 @@ in the option_spec.
 
 .. testcode::
 
-  t4 = monotable.MonoTable(headings, formats)
-  t4.format_func_map = {'fulfill_menu_request': fulfill_menu_request}
+  t2 = monotable.MonoTable()
+  t2.format_func_map = {'fulfill_menu_request': fulfill_menu_request}
 
 - The Duties column auto-aligns to the left since the cells
   are strings.

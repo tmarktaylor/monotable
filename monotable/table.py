@@ -23,6 +23,11 @@
    Classes:
    MonoTable   Format Python objects to ASCII table for monospaced font.
 
+   Functions:
+   table             Convenience function wrapper for MonoTable.table()
+   bordered_table    Convenience function wrapper for MonoTable.bordered_table()
+   row_strings       Convenience function wrapper for MonoTable.row_strings()
+
    Exceptions:
    MonoTableCellError  Created when formatting a cell fails.
 
@@ -92,16 +97,17 @@ table and a heading guideline is inserted in its place.
 class MonoTable:
     """Create an aligned and formatted text table from a grid of cells.
 
-    Pass a sequence of heading strings and a
-    sequence of format strings to the constructor.  Call
-    :py:meth:`~MonoTable.table` passing a sequence of sequence of
-    cells and a title string.
+    Pass  to the constructor.  Call
+    :py:meth:`~MonoTable.table` passing a sequence of heading strings,
+    a sequence of format strings, a sequence of sequence of
+    cells, and a title string.
     The return value is a string ready for printing.
 
     Call :py:meth:`~MonoTable.bordered_table` with the same arguments
     to format a table with character borders.
 
-    Call :py:meth:`~MonoTable.row_strings` passing a sequence of sequence of
+    Call :py:meth:`~MonoTable.row_strings` passing a sequence of heading
+    strings, a sequence of format strings, a sequence of sequence of
     cells to return a tuple of lists of formatted headings and
     list of list of cells.
 
@@ -227,17 +233,15 @@ class MonoTable:
     Python built in function staticmethod() like this:
 
     >>> import monotable
-    >>> headings = []
-    >>> formats = []
     >>> def your_user_defined_format_function(value, format_spec):
     ...    pass
     >>> class SubclassMonoTable(monotable.MonoTable):
     ...     format_func = staticmethod(your_user_defined_format_function)
-    >>> tbl = SubclassMonoTable(headings, formats)
+    >>> tbl = SubclassMonoTable()
     >>>
     >>> # When overriding on an instance do not use staticmethod like this:
     >>>
-    >>> tbl = monotable.MonoTable(headings, formats)
+    >>> tbl = monotable.MonoTable()
     >>> tbl.format_func = your_user_defined_format_function
 
     .. _Docs Here:
@@ -378,6 +382,37 @@ class MonoTable:
     def __init__(self, indent=''):    # type: (str) -> None
         """
         Args:
+            indent (str):
+                String added to the beginning of each line in the text table.
+
+        """
+
+        # User can override class and instance variables by assignment to
+        # an instance.
+        # To maintainers:
+        # - No instance variables are dependent on any other
+        #   instance variables.
+        # - No instance variables are assigned outside of the constructor.
+        #
+        self.indent = indent
+
+    def table(self,
+              headings=(),       # type: Iterable[str]
+              formats=(),        # type: Iterable[str]
+              cellgrid=((),),    # type: Iterable[Iterable[object]]
+              title='',          # type: str
+              ):
+        # type: (...) -> str
+        """Format printable text table.  It is pretty in monospaced font.
+
+        Args:
+            headings (Iterable[str]): move to table etc.
+                Iterable of strings for each column heading.
+
+            formats (Iterable[str]):
+                Iterable of format strings of the form
+                ``[align_spec][option_spec][format_spec]``.
+
                 align_spec
                     One of the characters '<', '^', '>' to
                     override auto-alignment.
@@ -394,9 +429,26 @@ class MonoTable:
                 format_spec
                     String passed to the format function.
 
+            cellgrid (Iterable[Iterable[object]]):
+                representing table cells.
 
-            indent (str):
-                String added to the beginning of each line in the text table.
+            title (str): ``[align_spec][wrap_spec]string``.
+                Text to be aligned and printed above the text table.
+
+                align_spec
+                    One of the characters '<', '^', '>' to
+                    override auto-alignment.
+
+                wrap_spec
+                    Character '=' to indicate the title
+                    should be text wrapped to the width of the table.
+
+
+        Returns:
+            str : The text table as a single string.
+
+        Raises:
+            MonoTableCellError
 
         The ``option_spec`` options are:
 
@@ -433,53 +485,7 @@ class MonoTable:
             Use the function selected by key function-name
             in the dictionary supplied by class variable
             :py:attr:`~MonoTable.format_func_map`.
-        """
 
-        # User can override class and instance variables by assignment to
-        # an instance.
-        # To maintainers:
-        # - No instance variables are dependent on any other
-        #   instance variables.
-        # - No instance variables are assigned outside of the constructor.
-        #
-        self.indent = indent
-
-    def table(self,
-              headings=(),       # type: Iterable[str]
-              formats=(),        # type: Iterable[str]
-              cellgrid=((),),    # type: Iterable[Iterable[object]]
-              title='',          # type: str
-              ):
-        # type: (...) -> str
-        """Format printable text table.  It is pretty in monospaced font.
-
-        Args:
-            headings (Iterable[str]): move to table etc.
-                Iterable of strings for each column heading.
-
-            formats (Iterable[str]):
-                Iterable of format strings of the form
-                ``[align_spec][option_spec][format_spec]``.
-
-            cellgrid (Iterable[Iterable[object]]):
-                representing table cells.
-
-            title (str): ``[align_spec][wrap_spec]string``.
-                Text to be aligned and printed above the text table.
-
-                align_spec
-                    One of the characters '<', '^', '>' to
-                    override auto-alignment.
-
-                wrap_spec
-                    Character '=' to indicate the title
-                    should be text wrapped to the width of the table.
-
-        Returns:
-            str : The text table as a single string.
-
-        Raises:
-            MonoTableCellError
 
         Here is an example of non-bordered text table:
 
@@ -1052,6 +1058,7 @@ class MonoTable:
             formats (Iterable[str]):
                 Iterable of format strings of the form
                 ``[align_spec][option_spec][format_spec]``.
+                Please see the docstring for table() for details.
 
             cellgrid (Iterable[Iterable[object]]):
                 representing table cells.
@@ -1183,6 +1190,7 @@ class MonoTable:
             formats (Iterable[str]):
                 Iterable of format strings of the form
                 ``[align_spec][option_spec][format_spec]``.
+                Please see the docstring for table() for details.
 
             cellgrid (Iterable[Iterable[object]]):
                 representing table cells.

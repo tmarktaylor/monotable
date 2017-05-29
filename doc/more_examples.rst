@@ -14,13 +14,12 @@ was omitted.
 
     headings = ['Id Number', 'Duties', 'Start Date']
     formats = ['', '(width=15)']
-    t5 = monotable.MonoTable(headings, formats)
-
     cells = [[1, 'President and CEO', '06/02/2016'],
              [2, 'Raise capital', '06/10/2016'],
              [3, 'Oversee day to day operations', '06/21/2016']]
 
-    print(t5.table(cells, title='Limit center column to 15 characters.'))
+    print(monotable.table.table(headings, formats, cells,
+            title='Limit center column to 15 characters.'))
 
 .. testoutput::
 
@@ -48,8 +47,8 @@ The second column is wrapped to a maximum width of 12 characters.
 
     headings = ['Id Number', 'Duties', 'Start Date']
     formats = ['', '(width=12;wrap)']
-    t6 = monotable.MonoTable(headings, formats)
-    t6.max_cell_height = 2              # override class var
+    t3 = monotable.MonoTable()
+    t3.max_cell_height = 2              # override class var
 
     cells = [[1, 'President and CEO', '06/02/2016'],
              [2, 'Raise capital', '06/10/2016'],
@@ -58,7 +57,7 @@ The second column is wrapped to a maximum width of 12 characters.
     title = ('Wrap center column to a maximum of 12 characters.\n'
              'Limit cell height to 2 lines')
 
-    print(t6.table(cells, title=title))
+    print(t3.table(headings, formats, cells, title=title))
 
 .. testoutput::
 
@@ -101,15 +100,13 @@ formatted text will be padded or truncated to the exact width.
 
     headings = ['left\ncol', 'mid\ncol', 'right\ncol']
     formats = ['', '^(width=11;fixed)']
-    t7 = monotable.MonoTable(headings, formats)
-
     cells = [['A',   1, 'x'],
              ['B', 222, 'y'],
              ['C',   3, 'z']]
 
     title = 'Middle column is fixed width.'
 
-    print(t7.table(cells, title=title))
+    print(monotable.table.table(headings, formats, cells, title=title))
 
 .. testoutput::
 
@@ -139,8 +136,6 @@ the element indexed by [1] from a sequence.
     headings = ['x\nattrib.', '[1]\nindex']
     formats = ['(sformat){.x}', '(sformat){[1]}']
 
-    t8 = monotable.MonoTable(headings, formats)
-
     class MyCell:
         def __init__(self, x, y):
              self.x = x
@@ -149,7 +144,8 @@ the element indexed by [1] from a sequence.
     cells = [[MyCell(1, 91), ['a', 'bb']],
              [MyCell(2, 92), ['c', 'dd']]]
 
-    print(t8.table(cells, title='<Select attribute/index.'))
+    print(monotable.table.table(headings, formats, cells,
+                                title='<Select attribute/index.'))
 
 .. testoutput::
 
@@ -182,9 +178,10 @@ the element indexed by [1] from a sequence.
 .. testcode::
 
     # Continues previous example.
-    t8.formats = ['>(sformat){.x}', '(sformat){[1]}']
-    t8.headings = ['<x\nattrib.', '[1]\nindex']
-    print(t8.table(cells, title='<Select attribute/index.'))
+    headings = ['<x\nattrib.', '[1]\nindex']
+    formats = ['>(sformat){.x}', '(sformat){[1]}']
+    print(monotable.table.table(headings, formats, cells,
+                                title='<Select attribute/index.'))
 
 .. testoutput::
 
@@ -221,15 +218,13 @@ strings are silently ignored.
     # specify sep=' | ' between 1st and 2nd columns for vertical rule
     formats = ['(sep= | )']
 
-    t9 = monotable.MonoTable(headings, formats)
-
     cells = [['time', '12:45'],
              ['place', 'home'],
              [monotable.HR],      # put a heading guideline here
              ['sound', 'bell'],
              ['volume']]          # short row is extended with empty string
 
-    print(t9.table(cells))
+    print(monotable.table.table(headings, formats, cells))
 
 .. testoutput::
 
@@ -261,7 +256,7 @@ markup.
         guideline_chars = '==='
 
     headings = ['option name', 'format function', 'description']
-    t10 = SeparatedMonoTable(headings)
+    t4 = SeparatedMonoTable()
 
     cells = [['mformat', 'monotable.plugin.mformat', 'mapping with str.format()'],
              ['pformat', 'monotable.plugin.pformat', 'printf style'],
@@ -269,7 +264,7 @@ markup.
              ['tformat', 'monotable.plugin.tformat', 'string.Template()'],
              ['function-name', '\\', 'user defined function']]
 
-    print(t10.table(cells))
+    print(t4.table(headings, [], cells))
 
 .. testoutput::
 
@@ -308,14 +303,13 @@ string.Template.substitute().
 
     headings = ['an\nint', 'Formatted by\nstr.Template()']
     formats = ['', '(tformat)name= $name\nage= $age\ncolor= $favorite_color']
-    t11 = monotable.MonoTable(headings, formats)
-
     cells = [[2345,
               dict(name='Row Zero', age=888, favorite_color='blue')],
              [6789,
               dict(name='Row One', age=999, favorite_color='No......')]]
 
-    print(t11.bordered_table(cells, title='A multi-line\nTitle.'))
+    print(monotable.table.bordered_table(headings, formats, cells,
+                                         title='A multi-line\nTitle.'))
 
 .. testoutput::
 
