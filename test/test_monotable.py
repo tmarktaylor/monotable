@@ -133,18 +133,18 @@ def test_empty_headings_empty_formats_empty_cells():
 
     expected_title = 'My Title is a Good Title'
     tbl = monotable.MonoTable()
-    text = tbl.table(cellgrid=[[]], title=expected_title)
+    text = monotable.table.table([], [], cellgrid=[[]], title=expected_title)
     assert text == expected_title
 
-    text = tbl.bordered_table(cellgrid=[[]], title=expected_title)
+    text = monotable.table.bordered_table([], [], cellgrid=[[]],
+                                          title=expected_title)
     assert text == expected_title
 
 
 def test_empty_headings_empty_formats_empty_cells_no_title():
     """Empty headings, empty formats, no title, and no cells in cellgrid."""
 
-    tbl = monotable.MonoTable([], [])
-    text = tbl.table(cellgrid=[[]])
+    text = monotable.table.table([], [], cellgrid=[[]])
     assert text == ''
 
 
@@ -220,8 +220,7 @@ def test_only_wrapped_title():
 def test_one_column_table():
     headings = ['Choices']
     cells = [['Spam'], ['Spam'], ['Spam'], ['Spam']]
-    tbl = monotable.MonoTable(headings)
-    text = tbl.table(cells)
+    text = monotable.table.table(headings, [], cells)
     expected = '\n'.join([
         "-------",
         "Choices",
@@ -238,8 +237,7 @@ def test_one_column_table():
 def test_one_column_bordered_table():
     headings = ['Choices']
     cells = [['Spam'], ['Spam'], ['Spam'], ['Spam']]
-    tbl = monotable.MonoTable(headings)
-    text = tbl.bordered_table(cells)
+    text = monotable.table.bordered_table(headings, [], cells)
     expected = '\n'.join([
         "+---------+",
         "| Choices |",
@@ -267,8 +265,7 @@ def test_one_column_bordered_table():
 #
 def test_cellgrid_is_tuples():
     cells = ((1, 2, 3), (4, 5, 6), (7, 8, 9))  # all tuples
-    tbl = monotable.MonoTable()
-    text = tbl.table(cells)
+    text = monotable.table.table([], [], cells)
     expected = '\n'.join([
         "-------",
         "1  2  3",
@@ -281,8 +278,7 @@ def test_cellgrid_is_tuples():
 
 def test_rows_are_ranges():
         cells = (range(11, 14), range(14, 17), range(17, 20))
-        tbl = monotable.MonoTable()  # no headings, no formats
-        text = tbl.table(cells)
+        text = monotable.table.table([], [], cells)    # no headings, no formats
         expected = '\n'.join([
             "----------",
             "11  12  13",
@@ -297,8 +293,7 @@ def test_headings_formats_cells_are_tuples_and_missing_items():
     headings = ('a', 'b')         # missing heading
     formats = ('', '', '', '')    # extra format
     cells = ((1, 2, 3), (4, 5, 6), (7, 8))  # missing last cell
-    tbl = monotable.MonoTable(headings, formats)
-    text = tbl.table(cells)
+    text = monotable.table.table(headings, formats, cells)
     expected = '\n'.join([
         "-------",
         "a  b",
@@ -315,8 +310,7 @@ def test_cell_rows_are_named_tuples():
     row = namedtuple('Row', ['column0', 'column1', 'column2'])
     cells = (row(column0=1, column1=2, column2=3),
              row(column0=11, column1=12, column2=13))
-    tbl = monotable.MonoTable()
-    text = tbl.table(cells)
+    text = monotable.table.table([], [], cells)
     expected = '\n'.join([
         "----------",
         " 1   2   3",
@@ -336,12 +330,11 @@ def test_add_column_of_row_numbers():
 
     headings = ['row\nnum', 'X', 'Y', 'Z']
     cells = (('A', 'B', 'C'), ('D', 'E', 'F'), ('G', 'H', 'I'))
-    tbl = monotable.MonoTable(headings)
     row_numbers = range(1, len(cells) + 1)
     cell_columns = transpose(cells)
     transposed_row_numbered = [row_numbers] + cell_columns
     row_numbered = transpose(transposed_row_numbered)
-    text = tbl.table(row_numbered)
+    text = monotable.table.table(headings, [], row_numbered)
     expected = '\n'.join([
         "------------",
         "row",
@@ -359,8 +352,8 @@ def test_headings_are_iterable():
     """Headings is an interable, but not a sequence.  No len()."""
     headings = iter(('h1', 'h2', 'h3'))
     cells = (('A', 'B', 'C'), ('D', 'E', 'F'), ('G', 'H', 'I'))
-    tbl = monotable.MonoTable(headings)
-    text = tbl.table(cells, title='Headings\nfrom\nIterable')
+    text = monotable.table.table(headings, [], cells,
+                                 title='Headings\nfrom\nIterable')
     expected = '\n'.join([
         " Headings",
         "   from",
@@ -392,8 +385,7 @@ def test_cellgrid_iterable_of_iterable():
         yield row2
 
     cells = row_generator()
-    tbl = monotable.MonoTable()
-    text = tbl.table(cells)
+    text = monotable.table.table([], {}, cells)
     expected = '\n'.join([
         "-------",
         "1  2  3",
@@ -412,9 +404,8 @@ def test_forgot_outer_list_with_one_row_cellgrid():
     """
 
     cells = [1, 2, 3]   # missing outer []
-    tbl = monotable.MonoTable()
     with pytest.raises(AssertionError) as exc_info:
-        _ = tbl.table(cells)
+        _ = monotable.table.table((), (), cells)
     msg = 'If one row cellgrid, likely missing outer list.'
     assert str(exc_info.value).endswith(msg)
 
@@ -427,9 +418,8 @@ class TestMonoTableExceptionCallback:
     cells = [[0, 9999], [1, 'label1']]
 
     def test_raise_it(self):
-        tbl = monotable.MonoTable(self.headings, self.formats)
         with pytest.raises(monotable.MonoTableCellError) as exc_info:
-            _ = tbl.table(self.cells)
+            _ = monotable.table.table(self.headings, self.formats, self.cells)
         exc = exc_info.value
         assert exc.row == 1
         assert exc.column == 1
@@ -444,9 +434,9 @@ class TestMonoTableExceptionCallback:
         assert expected_str in str(exc)
 
     def test_bordered_raise_it(self):
-        tbl = monotable.MonoTable(self.headings, self.formats)
         with pytest.raises(monotable.MonoTableCellError) as exc_info:
-            _ = tbl.bordered_table(self.cells)
+            _ = monotable.table.bordered_table(self.headings, self.formats,
+                                               self.cells)
         exc = exc_info.value
         assert exc.row == 1
         assert exc.column == 1
@@ -458,11 +448,10 @@ class TestMonoTableExceptionCallback:
         assert expected_str in str(exc)
 
     def test_bordered_format_ignore_it(self):
-        tbl = monotable.MonoTable(self.headings,
-                                  self.formats)
+        tbl = monotable.MonoTable()
 
         tbl.format_exc_callback = monotable.plugin.ignore_it
-        text = tbl.bordered_table(self.cells)
+        text = tbl.bordered_table(self.headings, self.formats, self.cells)
         # Each item in column not overridden by an align_spec
         # is aligned by type(item).
         # Since cell[1,1] = 'label1', a string, it auto-aligns to the left.
@@ -484,10 +473,9 @@ class TestMonoTableExceptionCallback:
         class MyIgnoreItMonoTable(monotable.MonoTable):
             format_exc_callback = staticmethod(my_ignore_it)
 
-        tbl = MyIgnoreItMonoTable(self.headings,
-                                  self.formats)
+        tbl = MyIgnoreItMonoTable()
 
-        text = tbl.table(self.cells)
+        text = tbl.table(self.headings, self.formats, self.cells)
         expected = '\n'.join([
             "--------------------",
             "column0      column1",
@@ -523,9 +511,8 @@ class TestMonoTableCatchesFormatErrors:
     def test_sformat_missing_attribute_error(self):
         """Callers cell object has no 'z' attribute."""
         formats = ['(sformat){.z}']   # missing attribute
-        tbl = monotable.MonoTable(headings=(), formats=formats)
         with pytest.raises(monotable.MonoTableCellError) as exc_info:
-            _ = tbl.table(self.cells)
+            _ = monotable.table.table((), formats, self.cells)
         exc = exc_info.value
         assert exc.row == 0
         assert exc.column == 0
@@ -536,9 +523,8 @@ class TestMonoTableCatchesFormatErrors:
     def test_sformat_missing_index_error(self):
         """Callers cell object has no [2] index."""
         formats = ['(sformat){[2]}']  # missing index
-        tbl = monotable.MonoTable(headings=(), formats=formats)
         with pytest.raises(monotable.MonoTableCellError) as exc_info:
-            _ = tbl.table(self.cells)
+            _ = monotable.table.table((), formats, self.cells)
         exc = exc_info.value
         assert exc.row == 0
         assert exc.column == 0
@@ -549,10 +535,9 @@ class TestMonoTableCatchesFormatErrors:
 
 def test_mformat_missing_key_error():
     """Callers dict has no value for key 'name'."""
-    tbl = monotable.MonoTable(headings=[], formats=['(mformat)name= {name}'])
     cells = [[dict(not_name=0)]]   # has no value for key='name'
     with pytest.raises(monotable.MonoTableCellError) as exc_info:
-        _ = tbl.table(cells)
+        _ = monotable.table.table([], ['(mformat)name= {name}'], cells)
     exc = exc_info.value
     assert exc.row == 0
     assert exc.column == 0
@@ -573,10 +558,10 @@ def test_user_defined_format_function_raises_assertion_error():
 
     class MyMonoTable(monotable.MonoTable):
         format_func_map = my_format_func_map
-    tbl = MyMonoTable(headings=[], formats=['(my_format_function)'])
+    tbl = MyMonoTable()
     cells = [[1234]]
     with pytest.raises(monotable.MonoTableCellError) as exc_info:
-        _ = tbl.table(cells)
+        _ = tbl.table([], ['(my_format_function)'], cells)
     exc = exc_info.value
     assert exc.row == 0
     assert exc.column == 0
@@ -590,15 +575,15 @@ def test_init_illegal_vertical_align():
     msg = 'Expected a vertical align value, got:'
 
     with pytest.raises(AssertionError) as exc_info:
-        tbl = monotable.MonoTable([], [])
+        tbl = monotable.MonoTable()
         tbl.cell_valign = -1
-        _ = tbl.table([[]])
+        _ = tbl.table([], [], [[]])
     assert str(exc_info.value).startswith(msg)
 
     with pytest.raises(AssertionError) as exc_info:
-        tbl = monotable.MonoTable([], [])
+        tbl = monotable.MonoTable()
         tbl.cell_valign = 50
-        _ = tbl.bordered_table([[]])
+        _ = tbl.bordered_table([], [], [[]])
     assert str(exc_info.value).startswith(msg)
 
 
@@ -608,11 +593,11 @@ def test_bad_option_spec():
     to a bad option in a valid option_spec.
     """
     # Note- Does not test entire exception message.
-    tbl = monotable.MonoTable(headings=[], formats=['(bad_option_spec)s'])
+    tbl = monotable.MonoTable()
     cells = [['A']]
 
     with pytest.raises(AssertionError) as exc_info:
-        _ = tbl.bordered_table(cells)
+        _ = tbl.bordered_table([], ['(bad_option_spec)s'], cells)
     assert str(exc_info.value).startswith('cell column 0, format= ')
 
 
@@ -626,11 +611,11 @@ def test_override_option_spec_delimiters_bad_option_spec():
     """
     # Note- Does not test entire exception message.
 
-    tbl = monotable.MonoTable(headings=[], formats=['!bad_option_spec!s'])
+    tbl = monotable.MonoTable()
     tbl.option_spec_delimiters = '!;!'
     cells = [['A']]
     with pytest.raises(AssertionError) as exc_info:
-        _ = tbl.bordered_table(cells)
+        _ = tbl.bordered_table([], ['!bad_option_spec!s'], cells)
     assert str(exc_info.value).startswith('cell column 0, format= ')
 
 
@@ -642,23 +627,23 @@ def test_no_option_spec_delimiters():
     """
     # Note- Does not test entire exception message.
 
-    tbl = monotable.MonoTable(headings=[], formats=['!width=10!s'])
+    tbl = monotable.MonoTable()
     tbl.option_spec_delimiters = ''   # disable
     cells = [['A']]
 
     msg = 'MonoTableCellError: cell[0][0], format_spec= !width=10!s'
     with pytest.raises(monotable.MonoTableCellError) as exc_info:
-        _ = tbl.table(cells)
+        _ = tbl.table([], ['!width=10!s'], cells)
     assert str(exc_info.value).startswith(msg)
 
 
 def test_override_option_spec_delimiters():
     """Test formatting with overridden option_spec_delimiters."""
 
-    tbl = monotable.MonoTable(headings=[], formats=['!width=10!s'])
+    tbl = monotable.MonoTable()
     tbl.option_spec_delimiters = '!;!'
     cells = [['A']]
-    text = tbl.table(cells)
+    text = tbl.table([], ['!width=10!s'], cells)
     assert text == '-\nA\n-'
 
 
@@ -671,8 +656,8 @@ def test_format_row_strings():
 
     class Float4fMonoTable(monotable.MonoTable):
         default_float_format_spec = '.4f'
-    t = Float4fMonoTable(headings, formats)
-    row_strings = t.row_strings(cells)
+    t = Float4fMonoTable()
+    row_strings = t.row_strings(headings, formats, cells)
     assert row_strings == [[' .1f', '.3f   ', '.5f     ', 'default=.4f'],
                            [' 9.1', '9.123 ', ' 9.12346', '     9.1235'],
                            ['88.1', '88.100', '88.10000', '    88.1000']]
@@ -687,8 +672,8 @@ def test_format_to_row_strings_stripped():
 
     class Float4fMonoTable(monotable.MonoTable):
         default_float_format_spec = '.4f'
-    t = Float4fMonoTable(headings, formats)
-    row_strings = t.row_strings(cells, strip=True)
+    t = Float4fMonoTable()
+    row_strings = t.row_strings(headings, formats, cells, strip=True)
     assert row_strings == [['.1f', '.3f', '.5f', 'default=.4f'],
                            ['9.1', '9.123', '9.12346', '9.1235'],
                            ['88.1', '88.100', '88.10000', '88.1000']]
