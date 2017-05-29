@@ -647,6 +647,19 @@ def test_override_option_spec_delimiters():
     assert text == '-\nA\n-'
 
 
+def test_row_strings_convenience_function():
+    row0 = [9.1234567] * 4
+    row1 = [88.1] * 4
+    cells = [row0, row1]
+    headings = ['.1f', '.3f', '<.5f', '.4f']
+    formats = ['.1f', '<.3f', '.5f', '.4f']
+    row_strings = monotable.table.row_strings(headings, formats, cells)
+    assert row_strings == [[' .1f', '.3f   ', '.5f     ', '    .4f'],
+                           [' 9.1', '9.123 ', ' 9.12346', ' 9.1235'],
+                           ['88.1', '88.100', '88.10000', '88.1000']]
+
+
+
 def test_format_row_strings():
     row0 = [9.1234567] * 4
     row1 = [88.1] * 4
