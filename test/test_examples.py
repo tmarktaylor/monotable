@@ -26,10 +26,9 @@ def test_simple_data_types():
     """
 
     headings = ['int', 'float', 'string', 'tuple']
-    t = monotable.MonoTable(headings)
     cells = [[123456789, math.pi, 'Hello World', (2, 3)],
              [2, math.e * 1000, 'another string', ('a', 'b')]]
-    text = t.table(cells)
+    text = monotable.table.table(headings, [], cells)
     expected = '\n'.join([
         "--------------------------------------------------",
         "      int        float  string          tuple",
@@ -55,12 +54,12 @@ def test_an_attribute_and_an_index_with_instance_assigned_format_func():
 
     headings = ['x\nattrib.', 'y\nattrib.', '[0]\nindex', '[1]\nindex']
     formats = ['{.x}', '{.y}', '{[0]}', '{[1]}']
-    t = monotable.MonoTable(headings, formats)
+    t = monotable.MonoTable()
     t.format_func = monotable.plugin.sformat
     point = namedtuple('point', ['x', 'y'])
     cells = [[point(1, 91), point(2, 92), point(3, 93), point(4, 94)],
              [point(5, 95), point(6, 96), point(7, 97), point(8, 98)]]
-    text = t.table(cells, title='<Select attribute/index.')
+    text = t.table(headings, formats, cells, title='<Select attribute/index.')
     expected = '\n'.join([
         "Select attribute/index.",
         "------------------------------",
@@ -86,13 +85,11 @@ def test_datetime():
     headings = ['format string\n"' + format_column_0 + '"',
                 'format string\n"' + format_column_1 + '"']
     formats = [format_column_0, format_column_1]
-    t = monotable.MonoTable(headings, formats)
-
     d = datetime.datetime(2016, 1, 10, 19, 35, 18)
     cells = [[d, d]]
     title = ('<=Formatting a datetime object '
              'datetime.datetime(2016, 1, 10, 19, 35, 18)')
-    text = t.bordered_table(cells, title=title)
+    text = monotable.table.bordered_table(headings, formats, cells, title=title)
     expected = '\n'.join([
         "Formatting a datetime object",
         "datetime.datetime(2016, 1, 10, 19, 35, 18)",
@@ -116,11 +113,10 @@ def test_template_substitution_and_multiline():
     """
     headings = ['int', 'Formatted by str.Template()']
     formats = ['', '(tformat)name= $name\nage= $age\ncolor= $favorite_color']
-    t = monotable.MonoTable(headings, formats)
-
     cells = [[2345, dict(name='Row Zero', age=888, favorite_color='blue')],
              [6789, dict(name='Row One', age=999, favorite_color='No! Red!')]]
-    text = t.bordered_table(cells, title='str.Template() Formatting.')
+    text = monotable.table.bordered_table(headings, formats, cells,
+                            title='str.Template() Formatting.')
     expected = '\n'.join([
         "      str.Template() Formatting.",
         "+------+-----------------------------+",
@@ -154,8 +150,8 @@ def test_mapping_and_multiline():
               dict(name='Row Zero', age=888.000, favorite_color='blue')],
              [6789,
               dict(name='Row One', age=999.111, favorite_color='No! Red!')]]
-    t = monotable.MonoTable(headings, formats)
-    text = t.bordered_table(cells, title='mformat() Formatting.')
+    text = monotable.table.bordered_table(headings, formats, cells,
+                                          title='mformat() Formatting.')
     expected = '\n'.join([
         "      mformat() Formatting.",
         "+------+------------------------+",
@@ -196,11 +192,11 @@ def test_printf_style_with_tuple_format_and_subclass_for_format_func():
     class CustomMonoTable(monotable.MonoTable):
         format_func = staticmethod(monotable.plugin.pformat)
 
-    t = CustomMonoTable(headings, formats)
+    t = CustomMonoTable()
 
     cells = [[123456789, math.pi, 'Hello World', (1, 2)],
              [2, math.e * 1000, 'another string', (3, 4)]]
-    text = t.table(cells)
+    text = t.table(headings, formats, cells)
     expected = '\n'.join([
         "----------------------------------------------",
         "      int        float  string          tuple",
@@ -224,14 +220,14 @@ def test_horizontal_and_vertical_guidelines_and_indent():
 
     headings = ['col-0', 'col-1']
     formats = ['(sep= | )']  # specify sep=' | ' between 1st and 2nd columns
-    t = monotable.MonoTable(headings, formats, indent='*****')
+    t = monotable.MonoTable(indent='*****')
 
     cells = [['time', '12:45'],
              ['place', 'home'],
              [monotable.HR],
              ['sound', 'bell'],
              ['volume', 'very loud']]
-    text = t.table(cells)
+    text = t.table(headings, formats, cells)
     expected = '\n'.join([
         "*****------------------",
         "*****col-0  | col-1",
@@ -251,11 +247,11 @@ def test_width_format_option():
 
     headings = ['Id Number', 'Duties', 'Start Date']
     formats = ['', '(width=15)']
-    t = monotable.MonoTable(headings, formats)
     cells = [[1, 'President and CEO', '06/02/2016'],
              [2, 'Raise capital', '06/10/2016'],
              [3, 'Oversee day to day operations', '06/21/2016']]
-    text = t.table(cells, title='Limit center column to 15 characters.')
+    text = monotable.table.table(headings, formats, cells,
+                   title='Limit center column to 15 characters.')
     expected = '\n'.join([
         "Limit center column to 15 characters.",
         "--------------------------------------",
@@ -276,11 +272,11 @@ def test_width_fixed_format_option():
 
     headings = ['Id Number', 'Duties', 'Start Date']
     formats = ['', '(width=18;fixed)']
-    t = monotable.MonoTable(headings, formats)
     cells = [[1, '1234567890123', '06/02/2016'],
              [2, 'Raise capital', '06/10/2016'],
              [3, 'Oversee day', '06/21/2016']]
-    text = t.table(cells, title='Fixed center column to 15 characters.')
+    text = monotable.table.table(headings, formats, cells,
+                                 title='Fixed center column to 15 characters.')
     expected = '\n'.join([
         "  Fixed center column to 15 characters.",
         "-----------------------------------------",
@@ -303,11 +299,11 @@ def test_width_fixed_format_option_with_none_and_missing_cells():
 
     headings = ['Id Number', 'Duties', 'Start Date']
     formats = ['', '>(width=18;fixed)']
-    t = monotable.MonoTable(headings, formats)
     cells = [[1, '1234567890123', '06/02/2016'],
              [2, None, '06/10/2016'],
              [3]]
-    text = t.table(cells, title='Fixed center column to 15 characters.')
+    text = monotable.table.table(headings, formats, cells,
+                   title='Fixed center column to 15 characters.')
     expected = '\n'.join([
         "  Fixed center column to 15 characters.",
         "-----------------------------------------",
@@ -328,11 +324,11 @@ def test_width_fixed_right_justified_format_option():
 
     headings = ['Id Number', 'Duties', 'Start Date']
     formats = ['', '>(width=18;fixed)']
-    t = monotable.MonoTable(headings, formats)
     cells = [[1, '1234567890123', '06/02/2016'],
              [2, 'Raise capital', '06/10/2016'],
              [3, 'Oversee day', '06/21/2016']]
-    text = t.table(cells, title='Fixed center column to 15 characters.')
+    text = monotable.table.table(headings, formats, cells,
+                   title='Fixed center column to 15 characters.')
     expected = '\n'.join([
         "  Fixed center column to 15 characters.",
         "-----------------------------------------",
@@ -357,11 +353,10 @@ def test_wrap_format_option():
 
     headings = ['Id Number', 'Duties', 'Start Date']
     formats = ['', '(width=12;wrap)']
-    t = monotable.MonoTable(headings, formats)
     cells = [[1, 'President and CEO', '06/02/2016'],
              [2, 'Raise capital', '06/10/2016'],
              [3, 'Oversee day to day operations', '06/21/2016']]
-    text = t.table(cells,
+    text = monotable.table.table(headings, formats, cells,
                    title='Wrap center column to a maximum of 12 characters.')
     expected = '\n'.join([
         "Wrap center column to a maximum of 12 characters.",
@@ -389,11 +384,10 @@ def test_fixed_wrap_format_option():
 
     headings = ['Id Number', '123456789', 'Start Date']
     formats = ['', '(width=12;wrap;fixed)']
-    t = monotable.MonoTable(headings, formats)
     cells = [[1, 'President President', '06/02/2016'],
              [2, 'Raise capital', '06/10/2016'],
              [3, 'Oversee Oversee', '06/21/2016']]
-    text = t.table(cells,
+    text = monotable.table.table(headings, formats, cells,
                    title='Wrap center column to a fixed width 12 characters.')
     expected = '\n'.join([
         "Wrap center column to a fixed width 12 characters.",
@@ -421,11 +415,10 @@ def test_fixed_wrap_right_justified_format_option():
 
     headings = ['Id Number', '123456789', 'Start Date']
     formats = ['', '>(width=12;wrap;fixed)']
-    t = monotable.MonoTable(headings, formats)
     cells = [[1, 'President President', '06/02/2016'],
              [2, 'Raise capital', '06/10/2016'],
              [3, 'Oversee Oversee', '06/21/2016']]
-    text = t.table(cells,
+    text = monotable.table.table(headings, formats, cells,
                    title=('Wrap center column to a fixed width 12 '
                           'characters.  right.'))
     expected = '\n'.join([
@@ -454,12 +447,12 @@ def test_width_fixed_format_option_missing_cells():
 
     headings = ['Id Number', 'Duties', 'Start Date']
     formats = ['', '(width=15)', '^(width=15;fixed)']
-    t = monotable.MonoTable(headings, formats)
     # third column of cells is missing
     cells = [[1, 'President and CEO'],
              [2, 'Raise capital'],
              [3, 'Oversee day to day operations']]
-    text = t.table(cells, title='<Limit center column to 15 characters.')
+    text = monotable.table.table(headings, formats, cells,
+                                 title='<Limit center column to 15 characters.')
     expected = '\n'.join([
         "Limit center column to 15 characters.",
         "-------------------------------------------",
@@ -482,12 +475,12 @@ def test_width_fixed_format_option_only_none_cells():
 
     headings = ['Id Number', 'Duties']
     formats = ['', '(width=15)', '^(width=15;fixed)']
-    t = monotable.MonoTable(headings, formats)
     # third column of cells is None
     cells = [[1, 'President and CEO', None],
              [2, 'Raise capital', None],
              [3, 'Oversee day to day operations', None]]
-    text = t.table(cells, title='<Limit center column to 15 characters.')
+    text = monotable.table.table(headings, formats, cells,
+                                 title='<Limit center column to 15 characters.')
     expected = '\n'.join([
         "Limit center column to 15 characters.",
         "-------------------------------------------",
@@ -505,11 +498,11 @@ def test_auto_align_mixed_cell_types_in_column():
     """Check auto alignment when a column has numeric and non-numeric types."""
 
     headings = ['Number', 'Mixed', 'Non-Number']
-    t = monotable.MonoTable(headings)
     cells = [[1, 11002233, 'a-string'],
              [2, 'Spam!', None],
              [33, 444, 'abc']]
-    text = t.table(cells, 'Different cell types in middle column.')
+    text = monotable.table.table(headings, [], cells,
+                   'Different cell types in middle column.')
     expected = '\n'.join([
         "Different cell types in middle column.",
         "----------------------------",
@@ -533,14 +526,14 @@ def test_max_cell_height():
 
     headings = ['Id Number', 'Duties', 'Start Date']
     formats = ['', '(width=12;wrap)']
-    t = monotable.MonoTable(headings, formats)
+    t = monotable.MonoTable()
     t.max_cell_height = 2              # override class var
     cells = [[1, 'President and CEO', '06/02/2016'],
              [2, 'Raise capital', '06/10/2016'],
              [3, 'Oversee day to day operations', '06/21/2016']]
     title = ('Wrap center column to a maximum of 12 characters.\n'
              'Limit cell height to 2 lines')
-    text = t.table(cells, title=title)
+    text = t.table(headings, formats, cells, title=title)
     expected = '\n'.join([
         "Wrap center column to a maximum of 12 characters.",
         "Limit cell height to 2 lines",
@@ -566,12 +559,12 @@ def test_bordered_format():
     cells = [[1, 'President and CEO', '06/02/2016'],
              [2, 'Raise capital', '06/10/2016'],
              [3, 'Oversee day to day operations', '06/21/2016']]
-    t = monotable.MonoTable(headings, formats)
+    t = monotable.MonoTable()
     t.max_cell_height = 2
     title = ('Wrap center column to a maximum of 12 characters.\n'
              'Limit cell height to 2 lines.\n'
              'Format with borders.')
-    text = t.bordered_table(cells, title=title)
+    text = t.bordered_table(headings, formats, cells, title=title)
     expected = '\n'.join([
         "Wrap center column to a maximum of 12 characters.",
         "Limit cell height to 2 lines.",
@@ -608,11 +601,12 @@ def test_user_defined_format_function():
 
     class CustomMonoTable(monotable.MonoTable):
         format_func_map = myformatfuncmap
-    t = CustomMonoTable(headings, formats)
+    t = CustomMonoTable()
     cells = [[1, 'President and CEO', '123'],
              [2, 'Raise capital', '12345'],
              [3, 'Oversee day to day operations', '123-45-6789']]
-    text = t.table(cells, title='>User defined format function.')
+    text = t.table(headings, formats, cells,
+                   title='>User defined format function.')
     expected = '\n'.join([
         "                        User defined format function.",
         "-----------------------------------------------------",
@@ -637,9 +631,10 @@ def test_default_float_format_spec():
     cells = [[9.1234567] * 4]
     headings = ['.1f', '.3f', '.5f', 'default=.4f']
     formats = ['.1f', '.3f', '.5f']
-    t = monotable.MonoTable(headings, formats)
+    t = monotable.MonoTable()
     t.default_float_format_spec = '.4f'
-    text = t.table(cells, title='Different float precision in each column.')
+    text = t.table(headings, formats, cells,
+                   title='Different float precision in each column.')
     expected = '\n'.join([
         "Different float precision in each column.",
         "--------------------------------",
@@ -660,9 +655,10 @@ def test_disable_default_float_format_spec():
     cells = [[9.1234567] * 4]
     headings = ['.1f', '.3f', '.5f', 'disable\ndefault_float_format_spec']
     formats = ['.1f', '.3f', '.5f']
-    t = monotable.MonoTable(headings, formats)
+    t = monotable.MonoTable()
     t.default_float_format_spec = ''
-    text = t.table(cells, title='<Disable default in last column.')
+    text = t.table(headings, formats, cells,
+                   title='<Disable default in last column.')
     expected = '\n'.join([
         "Disable default in last column.",
         "----------------------------------------------",
@@ -681,13 +677,13 @@ def test_override_format_none_as_with_auto_alignment():
         format_none_as = 'NONE!'
 
     headings = ['number', 'Life\nState']
-    t = CustomMonoTable(headings)
+    t = CustomMonoTable()
     cells = [[22334455, 'demised'],
              [66, 'passed on'],
              [None, 'is no more'],
              [9, None],
              [10, 'ceased to be']]
-    text = t.table(cells, '<format_none_as')
+    text = t.table(headings, [], cells, '<format_none_as')
     expected = '\n'.join([
         "format_none_as",
         "----------------------",
@@ -712,14 +708,14 @@ def test_override_format_none_as_with_format_align_specs():
 
     headings = ['number', 'Life\nState']
     formats = ['>']     # force None cell to right align
-    t = monotable.MonoTable(headings, formats)
+    t = monotable.MonoTable()
     t.format_none_as = '0-0'
     cells = [[22334455, 'demised'],
              [66, 'passed on'],
              [None, 'is no more'],
              [9, None],
              [10, 'ceased to be']]
-    text = t.table(cells, '<format_none_as')
+    text = t.table(headings, formats, cells, '<format_none_as')
     expected = '\n'.join([
         "format_none_as",
         "----------------------",
@@ -750,9 +746,10 @@ def test_heading_left_align_spec_and_format_left_align_spec():
     cells = [row0, row1]
     headings = ['.1f', '.3f', '<.5f', 'default=.4f']
     formats = ['.1f', '<.3f', '.5f']
-    t = monotable.MonoTable(headings, formats)
+    t = monotable.MonoTable()
     t.default_float_format_spec = '.4f'
-    text = t.table(cells, title='Different float precision in each column.')
+    text = t.table(headings, formats, cells,
+                   title='Different float precision in each column.')
     expected = '\n'.join([
         "Different float precision in each column.",
         "-----------------------------------",
@@ -775,9 +772,10 @@ def test_heading_center_align_spec_and_format_center_align_spec():
     cells = [[9.1234567] * 4]
     headings = ['.1f', '.3f', '^.5f', 'default=.4f']
     formats = ['.1f', '^.3f', '.5f']
-    t = monotable.MonoTable(headings, formats)
+    t = monotable.MonoTable()
     t.default_float_format_spec = '.4f'
-    text = t.table(cells, title='Different float precision in each column.')
+    text = t.table(headings, formats, cells,
+                   title='Different float precision in each column.')
     expected = '\n'.join([
         "Different float precision in each column.",
         "--------------------------------",
@@ -801,8 +799,8 @@ def test_heading_and_format_right_align_spec():
 
     class FloatPoint4MonoTable(monotable.MonoTable):
         default_float_format_spec = '.4f'
-    t = FloatPoint4MonoTable(headings, formats)
-    text = t.table(cells, title='Different float precision in each column.')
+    t = FloatPoint4MonoTable()
+    text = t.table(headings, formats, cells, title='Different float precision in each column.')
     expected = '\n'.join([
         "Different float precision in each column.",
         "--------------------------------",
@@ -824,9 +822,9 @@ def test_override_align_spec_chars():
     cells = [[123, 'import', 4567, 'this']]
     headings = ['an int', 'string', 'another int', 'another string']
     formats = ['R', '', 'L', 'C']
-    t = monotable.MonoTable(headings, formats)
+    t = monotable.MonoTable()
     t.align_spec_chars = 'LCR'
-    text = t.table(cells, title='RUser align_spec_chars.')
+    text = t.table(headings, formats, cells, title='RUser align_spec_chars.')
     expected = '\n'.join([
         "                     User align_spec_chars.",
         "-------------------------------------------",
@@ -847,9 +845,9 @@ def test_override_title_wrap_spec_char():
 
     cells = [[123, 'import']]
     headings = ['an int', 'a string']
-    t = monotable.MonoTable(headings)
+    t = monotable.MonoTable()
     t.wrap_spec_char = '$'
-    text = t.table(cells,
+    text = t.table(headings, [], cells,
                    title='<$User wrap_spec_char changed on an instance.')
     expected = '\n'.join([
         "User",
@@ -873,9 +871,9 @@ def test_override_heading_valign():
 
     cells = [[123, 'import']]
     headings = ['a\nshort\nint', 'a\nslightly\nlonger\nstring']
-    t = monotable.MonoTable(headings)
+    t = monotable.MonoTable()
     t.heading_valign = monotable.TOP
-    text = t.table(cells, title='instance.heading_valign = TOP')
+    text = t.table(headings, [], cells, title='instance.heading_valign = TOP')
     expected = '\n'.join([
         "instance.heading_valign = TOP",
         "---------------",
@@ -896,9 +894,9 @@ def test_override_guideline_chars():
     cells = [[123, 'import', 4567, 'this']]
     headings = ['an int', 'string', 'another int', 'another string']
     formats = ['>', '', '<', '^']
-    t = monotable.MonoTable(headings, formats)
+    t = monotable.MonoTable()
     t.guideline_chars = 'X=*'
-    text = t.table(cells, title='>User guideline_chars.')
+    text = t.table(headings, formats, cells, title='>User guideline_chars.')
     expected = '\n'.join([
         "                      User guideline_chars.",
         "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
@@ -916,7 +914,7 @@ def test_override_separated_guidelines():
         guideline_chars = '==='
 
     headings = ['option name', 'format function', 'description']
-    t = SeparatedMonoTable(headings)
+    t = SeparatedMonoTable()
 
     cells = [['mformat', 'monotable.plugin.mformat',
               'mapping with str.format()'],
@@ -925,7 +923,7 @@ def test_override_separated_guidelines():
              ['tformat', 'monotable.plugin.tformat', 'string.Template()'],
              ['function-name', '\\', 'user defined function']]
 
-    text = t.table(cells)
+    text = t.table(headings, [], cells)
     expected = '\n'.join([
         "=============  ========================  =========================",
         "option name    format function           description",
@@ -950,8 +948,8 @@ def test_override_separated_guidelines_no_bottom_guideline():
     cells = [[123, 'import', 4567, 'this']]
     headings = ['an int', 'string', 'another int', 'another string']
     formats = ['>', '', '<', '^']
-    t = SeparatedMonoTable(headings, formats)
-    text = t.table(cells, title='>separated_guidelines = True.')
+    t = SeparatedMonoTable()
+    text = t.table(headings, formats, cells, title='>separated_guidelines = True.')
     expected = '\n'.join([
         "               separated_guidelines = True.",
         "======  ======  ===========  ==============",
@@ -972,8 +970,9 @@ def test_omit_top_and_bottom_guidelines():
     headings = ['an int', 'string', 'another int', 'another string']
     formats = ['>', '', '<', '^']
 
-    t = CustomMonoTable(headings, formats)
-    text = t.table(cells, title='<No top, bottom guidelines.')
+    t = CustomMonoTable()
+    text = t.table(headings, formats,cells,
+                   title='<No top, bottom guidelines.')
     expected = '\n'.join([
         "No top, bottom guidelines.",
         "an int  string  another int  another string",
@@ -992,8 +991,9 @@ def test_top_guideline_is_dots_and_only_guideline():
     cells = [[123, 'import', 4567, 'this']]
     headings = ['an int', 'string', 'another int', 'another string']
     formats = ['>', '', '<', '^']
-    t = CustomMonoTable(headings, formats)
-    text = t.table(cells, title='^Top guideline is .s, no others.')
+    t = CustomMonoTable()
+    text = t.table(headings, formats, cells,
+                   title='^Top guideline is .s, no others.')
     expected = '\n'.join([
         "      Top guideline is .s, no others.",
         "...........................................",
@@ -1013,8 +1013,8 @@ def test_override_cell_vertical_alignment_to_center_top():
              [monotable.HR],
              ['A\nfour\nline\ncell', 'three\nline\ncell', 'two line\ncell']]
     headings = ['4 line cells', '3 line cells', '2 line cells']
-    t = CustomMonoTable(headings)
-    text = t.table(cells, title='cell_valign=CENTER_TOP')
+    t = CustomMonoTable()
+    text = t.table(headings, [], cells, title='cell_valign=CENTER_TOP')
     expected = '\n'.join([
         "         cell_valign=CENTER_TOP",
         "----------------------------------------",
@@ -1045,8 +1045,8 @@ def test_override_cell_vertical_alignment_to_center_bottom():
              ['A\nfour\nline\ncell', 'three\nline\ncell', 'two line\ncell']]
     headings = ['4 line cells', '3 line cells', '2 line cells']
 
-    t = CustomMonoTable(headings)
-    text = t.table(cells, title='cell_valign=CENTER_BOTTOM')
+    t = CustomMonoTable()
+    text = t.table(headings, [], cells, title='cell_valign=CENTER_BOTTOM')
     expected = '\n'.join([
         "       cell_valign=CENTER_BOTTOM",
         "----------------------------------------",
@@ -1087,8 +1087,9 @@ def test_override_more_marker_override_max_cell_height_option_max_width():
     headings = ['4 line', '3', '2 line']
     formats = ['', '(width=3)', '']
 
-    t = CustomMonoTable(headings, formats)
-    text = t.table(cells, title="max_cell_height=2, more_marker='**'")
+    t = CustomMonoTable()
+    text = t.table(headings, formats, cells,
+                   title="max_cell_height=2, more_marker='**'")
     expected = '\n'.join([
         "max_cell_height=2, more_marker='**'",
         "---------------------",
@@ -1121,10 +1122,10 @@ def test_comma_format_spec():
     e = 2.718281828459045    # math.e
     headings = ['an\nint', 'the\nfloat', 'string', 'tuple']
     formats = [',', ',.2f']
-    t = monotable.MonoTable(headings, formats)
     cells = [[123456789, pi, 'Hello\nWorld', (2, 3)],
              [2, e * 1000, 'another string']]
-    text = t.table(cells, title='Centered Title Line.')
+    text = monotable.table.table(headings, formats, cells,
+                                 title='Centered Title Line.')
     expected = '\n'.join([
         "             Centered Title Line.",
         "---------------------------------------------",
@@ -1145,10 +1146,11 @@ def test_default_when_override_border_chars_to_empty_string():
     '+' is the hard coded default used for missing border_chars.
     """
     headings = ['one\ndigit\nint', 'another\nint', 'floats']
-    t = monotable.MonoTable(headings)
+    t = monotable.MonoTable()
     t.border_chars = ''
     cells = [[1, 29, 3.5], [4, 5, 16.34]]
-    text = t.bordered_table(cells, '^centered caption\njust 2 lines')
+    text = t.bordered_table(headings, [], cells,
+                            '^centered caption\njust 2 lines')
     expected = '\n'.join([
         "        centered caption",
         "          just 2 lines",
@@ -1172,10 +1174,11 @@ def test_override_border_chars():
     """
 
     headings = ['one\ndigit\nint', 'another\nint', 'floats']
-    t = monotable.MonoTable(headings)
+    t = monotable.MonoTable()
     t.border_chars = 'TBSCH'
     cells = [[1, 29, 3.5], [4, 5, 16.34]]
-    text = t.bordered_table(cells, '^centered caption\njust 2 lines')
+    text = t.bordered_table(headings, [], cells,
+                            '^centered caption\njust 2 lines')
     expected = '\n'.join([
         "        centered caption",
         "          just 2 lines",
@@ -1200,9 +1203,9 @@ def test_override_hmargin_vmargin():
         vmargin = 2
 
     headings = ['one\ndigit\nint', 'another\nint', 'floats']
-    t = BigMarginMonoTable(headings)
+    t = BigMarginMonoTable()
     cells = [[1, 29, 3.5], [4, 5, 16.34]]
-    text = t.bordered_table(cells, '<hmargin=3, vmargin=2')
+    text = t.bordered_table(headings, [], cells, '<hmargin=3, vmargin=2')
     expected = '\n'.join([
         "hmargin=3, vmargin=2",
         "+-----------+-------------+---------------+",
@@ -1247,11 +1250,11 @@ def test_tile_four_tables_together():
     class CenterBottomMonoTable(monotable.MonoTable):
         cell_valign = monotable.CENTER_BOTTOM
 
-    ta = CenterBottomMonoTable(headings)
+    ta = CenterBottomMonoTable()
     cells = [['A\n4\nline\ncell', '3\nline\ncell'],
              [monotable.HR],
              ['A\nfour\nline\ncell', 'three\nline\ncell']]
-    taf = ta.table(cells, title='vertical align CENTER_BOTTOM')
+    taf = ta.table(headings, [], cells, title='vertical align CENTER_BOTTOM')
 
     headings = ['4 line', '3', '2 line']
     formats = ['', '(width=3)', '']
@@ -1260,11 +1263,11 @@ def test_tile_four_tables_together():
         more_marker = '**'
         max_cell_height = 2
 
-    tb = CustomMonoTable(headings, formats)
+    tb = CustomMonoTable()
     cells = [['A\n4\nline\ncell', '3\nline\ncell', '2 line\ncell'],
              [monotable.HR],
              ['A\nfour\nline\ncell', 'three\nline\ncell', 'two line\ncell']]
-    tbf = tb.table(cells, title="max_cell_height=2")
+    tbf = tb.table(headings, formats, cells, title="max_cell_height=2")
 
     headings = ['one\ndigit\nint', 'another\nint', 'floats']
 
@@ -1272,9 +1275,9 @@ def test_tile_four_tables_together():
         border_chars = ''
         default_float_format_spec = '.4f'
 
-    tc = BadBorderCharsFloat4fMonoTable(headings)
+    tc = BadBorderCharsFloat4fMonoTable()
     cells = [[1, 29, 3.5], [4, 5, 16.34]]
-    tcf = tc.bordered_table(cells, '^centered title\n of 2 lines')
+    tcf = tc.bordered_table(headings, [], cells, '^centered title\n of 2 lines')
 
     class NoGuidelinesMonoTable(monotable.MonoTable):
         guideline_chars = ''
@@ -1284,7 +1287,7 @@ def test_tile_four_tables_together():
     cells = [[taf, tbf],
              [None, None],  # to insert space between the top and bottom rows
              [tcf, tcf]]    # same table twice in the bottom row
-    text = tiled.table(cells)
+    text = tiled.table([], [], cells)
     expected = '\n'.join([
         "vertical align CENTER_BOTTOM       max_cell_height=2",
         "--------------------------       ---------------------",

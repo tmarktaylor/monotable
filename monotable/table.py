@@ -375,21 +375,9 @@ class MonoTable:
     Applies to bordered tables.
     """
 
-    def __init__(self,
-                 headings=(),    # type: Iterable[str]
-                 formats=(),     # type: Iterable[str]
-                 indent='',      # type: str
-                 ):
-                # type: (...) -> None
+    def __init__(self, indent=''):    # type: (str) -> None
         """
         Args:
-            headings (Iterable[str]):
-                Iterable of strings for each column heading.
-
-            formats (Iterable[str]):
-                Iterable of format strings of the form
-                ``[align_spec][option_spec][format_spec]``.
-
                 align_spec
                     One of the characters '<', '^', '>' to
                     override auto-alignment.
@@ -454,15 +442,25 @@ class MonoTable:
         #   instance variables.
         # - No instance variables are assigned outside of the constructor.
         #
-        self.headings = headings    # type: Iterable[str]
-        self.formats = formats    # type: Iterable[str]
-        self.indent = indent    # type: str
+        self.indent = indent
 
-    def table(self, cellgrid=((),), title=''):
-        # type: (Iterable[Iterable[object]], str) -> str
+    def table(self,
+              headings=(),       # type: Iterable[str]
+              formats=(),        # type: Iterable[str]
+              cellgrid=((),),    # type: Iterable[Iterable[object]]
+              title='',          # type: str
+              ):
+        # type: (...) -> str
         """Format printable text table.  It is pretty in monospaced font.
 
         Args:
+            headings (Iterable[str]): move to table etc.
+                Iterable of strings for each column heading.
+
+            formats (Iterable[str]):
+                Iterable of format strings of the form
+                ``[align_spec][option_spec][format_spec]``.
+
             cellgrid (Iterable[Iterable[object]]):
                 representing table cells.
 
@@ -506,8 +504,8 @@ class MonoTable:
 
         # convert, format, and justify headings/cells into MonoBlock objects
         justified_headings, justified_cells, widths, seps = (
-            self._format_and_justify(self.headings,
-                                     self.formats,
+            self._format_and_justify(headings,
+                                     formats,
                                      cellgrid))
 
         table_width = sum(widths) + sum([len(s) for s in seps])
@@ -1038,11 +1036,23 @@ class MonoTable:
             lines.append(line)
         return lines
 
-    def bordered_table(self, cellgrid=((),), title=''):
-        # type: (Iterable[Iterable[object]], str) -> str
+    def bordered_table(self,
+              headings=(),       # type: Iterable[str]
+              formats=(),        # type: Iterable[str]
+              cellgrid=((),),    # type: Iterable[Iterable[object]]
+              title='',          # type: str
+              ):
+        # type: (...) -> str
         """Format printable text table with individual cell borders.
 
         Args:
+            headings (Iterable[str]): move to table etc.
+                Iterable of strings for each column heading.
+
+            formats (Iterable[str]):
+                Iterable of format strings of the form
+                ``[align_spec][option_spec][format_spec]``.
+
             cellgrid (Iterable[Iterable[object]]):
                 representing table cells.
 
@@ -1082,8 +1092,8 @@ class MonoTable:
 
         # convert, format, and justify headings/cells into MonoBlock objects
         (justified_headings, justified_cells,
-         widths, _) = self._format_and_justify(self.headings,
-                                               self.formats,
+         widths, _) = self._format_and_justify(headings,
+                                               formats,
                                                cellgrid)
         lines = []  # lines of printable text
 
@@ -1157,11 +1167,23 @@ class MonoTable:
             return (sum(widths_before_borders) +
                     num_hmargin_chars + num_side_chars)
 
-    def row_strings(self, cellgrid=((),), strip=False):
-        # type: (Iterable[Iterable[object]], bool) -> List[List[str]]
+    def row_strings(self,
+                    headings=(),      # type: Iterable[str]
+                    formats=(),       # type: Iterable[str]
+                    cellgrid=((),),   # type: Iterable[Iterable[object]]
+                    strip=False,      # type: bool
+                    ):
+        # type: (...) -> List[List[str]]
         """Format and justify table.  Return rows of the strings.
 
         Args:
+            headings (Iterable[str]): move to table etc.
+                Iterable of strings for each column heading.
+
+            formats (Iterable[str]):
+                Iterable of format strings of the form
+                ``[align_spec][option_spec][format_spec]``.
+
             cellgrid (Iterable[Iterable[object]]):
                 representing table cells.
 
@@ -1180,8 +1202,8 @@ class MonoTable:
 
         # convert, format, and justify headings/cells into MonoBlock objects
         (justified_headings, justified_cells,
-            unused1, unused2) = self._format_and_justify(self.headings,
-                                                         self.formats,
+            unused1, unused2) = self._format_and_justify(headings,
+                                                         formats,
                                                          cellgrid)
         # Combine the resulting MonoBlocks into a single list.
         # Headings is the first row followed by the cell rows.
@@ -1196,6 +1218,39 @@ class MonoTable:
                 row = [item.strip() for item in row]
             rows.append(row)
         return rows
+
+
+def table(headings=(),       # type: Iterable[str]
+          formats=(),        # type: Iterable[str]
+          cellgrid=((),),    # type: Iterable[Iterable[object]]
+          title='',          # type: str
+          ):
+    # type: (...) -> str
+    """Convenience function calling MonoTable.table() using class defaults."""
+    tbl = monotable.MonoTable()
+    return tbl.table(headings, formats, cellgrid, title)
+
+
+def bordered_table(headings=(),  # type: Iterable[str]
+                   formats=(),  # type: Iterable[str]
+                   cellgrid=((),),  # type: Iterable[Iterable[object]]
+                   title='',  # type: str
+                   ):
+    # type: (...) -> str
+    """Convenience function calling MonoTable.bordered_table()."""
+    tbl = monotable.MonoTable()
+    return tbl.bordered_table(headings, formats, cellgrid, title)
+
+
+def row_strings(headings=(),     # type: Iterable[str]
+                formats=(),      # type: Iterable[str]
+                cellgrid=((),),  # type: Iterable[Iterable[object]]
+                strip=False,     # type: bool
+                ):
+    # type: (...) -> List[List[str]]
+    """Convenience function calling MonoTable.row_strings()."""
+    tbl = monotable.MonoTable()
+    return tbl.row_strings(headings, formats, cellgrid, strip)
 
 
 class MonoTableCellError(Exception):
