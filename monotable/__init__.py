@@ -29,4 +29,4 @@ from monotable.alignment import BOTTOM
 from monotable.alignment import CENTER_BOTTOM
 from monotable.alignment import CENTER_TOP
 
-__version__ = '1.0.2'
+__version__ = '2.0.0'

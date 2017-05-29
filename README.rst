@@ -142,7 +142,13 @@ More features are described in the documentation section
 
 Recent Changes
 ==============
-TODO- 2.0.0
+
+2.0.0 - TODO
+
+- Moved headings, formats parameters from MonoTable.__init__() to
+  MonoTable.table(), MonoTable.bordered_table(), and MonoTable.row_stings().
+- Added convenience functions to module monotable.table: table(),
+  bordered_table(), row_strings().
 
 1.0.2 - 2017-04-06
 
