@@ -54,7 +54,19 @@ class FormatScanner:
     in addition to any supplied by format_func_map.
 
         option name     function
-        ------------------------
+        --------------------------
+        'boolean'        boolean
+        'thousands'      thousands
+        'millions'       millions
+        'billions'       billions
+        'trillions'      trillions
+        'milli'          milli
+        'micro'          micro
+        'nano'           nano
+        'pico'           pico
+        'kilo'           kilo
+        'mega'           mega
+        'terra'          terra
         'mformat'        mformat
         'pformat'        pformat
         'sformat'        sformat
@@ -182,7 +194,19 @@ class FormatScanner:
         # Combine hard coded format function options with user supplied
         # format functions.  Note that a user name will hide a hard coded
         # name.                 option name  function
-        self._format_functions = {'mformat': monotable.plugin.mformat,
+        self._format_functions = {'boolean': monotable.plugin.boolean,
+                                  'thousands': monotable.plugin.thousands,
+                                  'millions': monotable.plugin.millions,
+                                  'billions': monotable.plugin.billions,
+                                  'trillions': monotable.plugin.trillions,
+                                  'milli': monotable.plugin.milli,
+                                  'micro': monotable.plugin.micro,
+                                  'nano': monotable.plugin.nano,
+                                  'pico': monotable.plugin.pico,
+                                  'kilo': monotable.plugin.kilo,
+                                  'mega': monotable.plugin.mega,
+                                  'terra': monotable.plugin.terra,
+                                  'mformat': monotable.plugin.mformat,
                                   'pformat': monotable.plugin.pformat,
                                   'sformat': monotable.plugin.sformat,
                                   'tformat': monotable.plugin.tformat

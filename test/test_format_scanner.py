@@ -21,6 +21,25 @@ MONOTABLE_CONFIG = monotable.scanner.MonoTableConfig(
     format_func_map=None,
     option_spec_delimiters='(;)')
 
+DEFAULT_FORMAT_FUNCTIONS = [
+    '  boolean - <function boolean',
+    '  thousands - <function thousands',
+    '  millions - <function millions',
+    '  billions - <function billions',
+    '  trillions - <function trillions',
+    '  milli - <function milli',
+    '  micro - <function micro',
+    '  nano - <function nano',
+    '  pico - <function pico',
+    '  kilo - <function kilo',
+    '  mega - <function mega',
+    '  terra - <function terra',
+    '  pformat - <function pformat',
+    '  sformat - <function sformat',
+    '  mformat - <function mformat',
+    '  tformat - <function tformat',
+]
+"""Format functions that can be selected in an option_spec. (def order)."""
 
 @pytest.fixture()
 def format_scanner():
@@ -56,16 +75,10 @@ def test_scan_gt_value_one(format_scanner):
 # Tests for FormatScanner._allowed_format_functions().
 #
 
-
 def test_allowed_format_functions_no_user_defined(format_scanner):
     """Checks for match of just the beginning of each string."""
 
-    expected_format_functions = [
-        '  mformat - <function mformat',
-        '  pformat - <function pformat',
-        '  sformat - <function sformat',
-        '  tformat - <function tformat']
-
+    expected_format_functions = sorted(DEFAULT_FORMAT_FUNCTIONS)
     lines = format_scanner._allowed_format_functions()
     for expected, actual in zip(expected_format_functions, lines):
         assert actual.startswith(expected)
@@ -74,14 +87,12 @@ def test_allowed_format_functions_no_user_defined(format_scanner):
 def test_allowed_format_functions_user_format_functions():
     """Checks for match of just the beginning of each string.."""
 
-    expected_format_functions = [
-        '  mformat - <function mformat',
+    expected_user_defined_format_functions = [
         '  myformat - <function ',
         '  mysecondformat - <function ',
-        '  pformat - <function pformat',
-        '  sformat - <function sformat',
-        '  tformat - <function tformat']
-
+    ]
+    expected_format_functions = sorted(DEFAULT_FORMAT_FUNCTIONS +
+                                       expected_user_defined_format_functions)
     def myformat(value, format_spec):
         _, _ = value, format_spec
         pass
@@ -103,16 +114,23 @@ def test_allowed_format_functions_user_format_functions():
     mysecondformat(None, None)
 
 
-def test_allowed_format_functions_user_hides_predefined():
-    """Checks for match of just the beginning of each string."""
+def test_allowed_format_functions_user_hides_default_format_function():
+    """Checks for match of just the beginning of each string.
 
-    expected_format_functions = [
-        '  mformat - <function mformat',
+    Verify that a user defined format function doesn't break the
+    list of expected format functions returned by _allowed_format_functions().
+    """
+
+
+    # note- The user defined format
+    expected_user_defined_format_functions = [
         '  myformat - <function ',
-        '  pformat - <function pformat',
-        '  sformat - <function ',      # py -2, py -3 differ beyond here
-        '  tformat - <function tformat'
     ]
+    x1 = (DEFAULT_FORMAT_FUNCTIONS +
+          expected_user_defined_format_functions)
+    x1.remove('  sformat - <function sformat')
+    x1.append('  sformat - <function ')    # py2/3 differ beyond this point
+    expected_format_functions = sorted(x1)
 
     def myformat(value, format_spec):
         _, _ = value, format_spec
@@ -157,12 +175,7 @@ def test_allowed_options(format_scanner):
     ])
 
     # The test checks for match of just the beginning of each string.
-    expected_format_functions = [
-        '  mformat - <function mformat',
-        '  pformat - <function pformat',
-        '  sformat - <function sformat',
-        '  tformat - <function tformat'
-    ]
+    expected_format_functions = sorted(DEFAULT_FORMAT_FUNCTIONS)
     num_expected_format_functions = len(expected_format_functions)
     lines = format_scanner._allowed_options()
     lines_up_to_functions = lines[:-num_expected_format_functions]

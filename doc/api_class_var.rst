@@ -9,7 +9,7 @@ MonoTable Class Variables
 .. module:: monotable
 .. include:: autodoc_ref.txt
 
-| Link to class variable below:
+| Links to class variable below:
 | |format_func| |format_exc_callback|
 | |default_float_format_spec| |format_none_as|
 | |sep| |separated_guidelines| |guideline_chars|

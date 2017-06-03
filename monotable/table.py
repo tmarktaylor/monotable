@@ -24,9 +24,10 @@
    MonoTable   Format Python objects to ASCII table for monospaced font.
 
    Functions:
-   table             Convenience function wrapper for MonoTable.table()
-   bordered_table    Convenience function wrapper for MonoTable.bordered_table()
-   row_strings       Convenience function wrapper for MonoTable.row_strings()
+   table               Convenience wrapper for MonoTable.table()
+   bordered_table      Convenience wrapper for MonoTable.bordered_table()
+   cotable             Convenience wrapper for MonoTable.cotable()
+   cobordered_table    Convenience wrapper for MonoTable.cobordered_table()
 
    Exceptions:
    MonoTableCellError  Created when formatting a cell fails.
@@ -41,6 +42,12 @@ import numbers
 import sys
 import textwrap
 import traceback
+
+try:
+    from itertools import zip_longest
+except(ImportError):
+    from itertools import izip_longest as zip_longest    # type: ignore
+
 
 import monotable.plugin
 import monotable.scanner
@@ -131,7 +138,7 @@ class MonoTable:
     :Title String: [align_spec][wrap_spec]string
 
     * The format string syntax is described by the
-      :py:meth:`~MonoTable.__init__` argument **formats** below.
+      :py:meth:`~MonoTable.table` argument **formats** below.
 
     * Heading alignment is determined by this decision order:
 
@@ -163,17 +170,27 @@ class MonoTable:
           :py:attr:`~MonoTable.format_func`.
         * In option_spec the user can specify a format function for
           a column which takes precedence over the table default format
-          function.
+          function.  These option names are included in MonoTable:
 
-          =============  ========================  =========================
-          option name    format function           description
-          =============  ========================  =========================
-          mformat        monotable.plugin.mformat  mapping with str.format()
-          pformat        monotable.plugin.pformat  printf-style
-          sformat        monotable.plugin.sformat  str.format()
-          tformat        monotable.plugin.tformat  string.Template()
-          function-name  \                         user defined function
-          =============  ========================  =========================
+          =============  ==========================  =========================
+          option name    format function             description
+          =============  ==========================  =========================
+          boolean        monotable.plugin.boolean    show custom truth value
+          thousands      monotable.plugin.thousands  divide by 1000.0
+          millions       monotable.plugin.millions   divide by 1000.0**2
+          billions       monotable.plugin.billions   divide by 1000.0**3
+          milli          monotable.plugin.milli      multiply by 1000.0
+          micro          monotable.plugin.micro      multiply by 1000.0**2
+          nano           monotable.plugin.nano       multiply by 1000.0**3
+          kilo           monotable.plugin.kilo       divide by 1024.0
+          mega           monotable.plugin.mega       divide by 1024.0**2
+          terra          monotable.plugin.terra      divide by 1024.0**3
+          mformat        monotable.plugin.mformat    mapping with str.format()
+          pformat        monotable.plugin.pformat    printf-style
+          sformat        monotable.plugin.sformat    str.format()
+          tformat        monotable.plugin.tformat    string.Template()
+          function-name  \                           user defined function
+          =============  ==========================  =========================
 
 
         * Any user defined function in the dict assigned to the class variable
@@ -295,9 +312,9 @@ class MonoTable:
     Dictionary of format functions keyed by name.
     name, when used as a format option in format string option_spec, selects
     the corresponding function from the dictionary.  If a key
-    is one of 'mformat', 'pformat', 'sformat', or 'tformat' and is used
-    in a format string option_spec the function from format_func_map
-    will be selected.
+    is one of the included option names like 'boolean', 'mformat', etc.
+    and is used in a format string option_spec the function from
+    format_func_map will be selected.
     """
 
     format_none_as = ''
@@ -406,7 +423,7 @@ class MonoTable:
         """Format printable text table.  It is pretty in monospaced font.
 
         Args:
-            headings (Iterable[str]): move to table etc.
+            headings (Iterable[str]):
                 Iterable of strings for each column heading.
 
             formats (Iterable[str]):
@@ -424,7 +441,7 @@ class MonoTable:
                         * Each option is allowed once in an option_spec.
                         * Spacing before and after '=' is ignored except after
                           ``sep =`` where spacing becomes part of sep.
-                        * The options are shown following the arg list.
+                        * Please see `options`_ for option_spec details.
 
                 format_spec
                     String passed to the format function.
@@ -450,43 +467,6 @@ class MonoTable:
         Raises:
             MonoTableCellError
 
-        The ``option_spec`` options are:
-
-        .. _options:
-
-        width=N
-            Truncate each formatted cell line to width N and
-            insert the class variable :py:attr:`more_marker` if text was
-            omitted.
-
-        fixed
-            Format text to exactly width = N columns.
-
-        wrap
-            Do textwrap of formatted cell to width = N.
-
-        sep=ccc
-            Characters after 'sep=' are the column separator on the
-            right hand side of the column.
-
-        mformat
-            Use :py:func:`monotable.plugin.mformat` to format the cell.
-
-        pformat
-            Use :py:func:`monotable.plugin.pformat` to format the cell.
-
-        sformat
-            Use :py:func:`monotable.plugin.sformat` to format the cell.
-
-        tformat
-            Use :py:func:`monotable.plugin.tformat` to format the cell.
-
-        function-name
-            Use the function selected by key function-name
-            in the dictionary supplied by class variable
-            :py:attr:`~MonoTable.format_func_map`.
-
-
         Here is an example of non-bordered text table:
 
         .. code-block:: none
@@ -506,6 +486,101 @@ class MonoTable:
         This example has 6 sep strings of 2 spaces each.  The seps are placed
         between columns in the heading line and between the columns in
         each of the 2 cell rows.
+
+        .. _options:
+
+        **Format string option_spec options:**
+
+        The format string option_spec options described here apply to all
+        MonoTable methods and monotable convenience functions that
+        take format strings.
+
+        The ``option_spec`` options are:
+
+        width=N
+            Truncate each formatted cell line to width N and
+            insert the class variable :py:attr:`more_marker` if text was
+            omitted.
+
+        fixed
+            Format text to exactly width = N columns.
+
+        wrap
+            Do textwrap of formatted cell to width = N.
+
+        sep=ccc
+            Characters after 'sep=' are the column separator on the
+            right hand side of the column.
+
+        boolean
+            Select format function that formats the boolean values to user's
+            strings. :py:func:`monotable.plugin.boolean`
+
+        thousands
+            Select format function that divides by 10.0e3 to get units of
+            thousands. :py:func:`monotable.plugin.thousands`
+
+        millions
+            Select format function that divides by 10.0e6 to get units of
+            millions. :py:func:`monotable.plugin.millions`
+
+        billions
+            Select format function that divides by 10.0e9 to get units of
+            billions. :py:func:`monotable.plugin.billions`
+
+        trillions
+            Select format function that divides by 10.0e12 to get units of
+            trillions. :py:func:`monotable.plugin.trillions`
+
+        milli
+            Select ormat function that multiplies by 10.0e3 to get units of
+            milli*. :py:func:`monotable.plugin.milli`
+
+        micro
+            Select format function that multiplies by 10.0e6 to get units of
+            micro*. :py:func:`monotable.plugin.micro`
+
+        nano
+            Select format function that multiplies by 10.0e9 to get units
+            of nano*. :py:func:`monotable.plugin.nano`
+
+        pico
+            Select format function that multiplies by 10.0e12 to get units of
+            pico*. :py:func:`monotable.plugin.pico`
+
+        kilo
+            Select format function that divides by 1024 to get units of kilo*.
+            :py:func:`monotable.plugin.kilo`
+
+        mega
+            Select format function that divides by 1024^2 to get units of
+            mega*. :py:func:`monotable.plugin.mega`
+
+        terra
+            Select format function that divides by 1024^3 to get units of
+            terra*. :py:func:`monotable.plugin.terra`
+
+        mformat
+            Select format function that selects values from a dictionary.
+            :py:func:`monotable.plugin.mformat`
+
+        pformat
+            Select format function adapter to percent operator %.
+            :py:func:`monotable.plugin.pformat`
+
+        sformat
+            Select format function adapter to str.format().
+            :py:func:`monotable.plugin.sformat`
+
+        tformat
+            Select format function adapter to string.Template.substitute().
+            :py:func:`monotable.plugin.tformat`
+
+        function-name
+            Use the function selected by key function-name
+            in the dictionary supplied by class variable
+            :py:attr:`~MonoTable.format_func_map`.
+
         """
 
         # convert, format, and justify headings/cells into MonoBlock objects
@@ -1043,22 +1118,37 @@ class MonoTable:
         return lines
 
     def bordered_table(self,
-              headings=(),       # type: Iterable[str]
-              formats=(),        # type: Iterable[str]
-              cellgrid=((),),    # type: Iterable[Iterable[object]]
-              title='',          # type: str
-              ):
+                       headings=(),       # type: Iterable[str]
+                       formats=(),        # type: Iterable[str]
+                       cellgrid=((),),    # type: Iterable[Iterable[object]]
+                       title='',          # type: str
+                       ):
         # type: (...) -> str
         """Format printable text table with individual cell borders.
 
         Args:
-            headings (Iterable[str]): move to table etc.
+            headings (Iterable[str]):
                 Iterable of strings for each column heading.
 
             formats (Iterable[str]):
                 Iterable of format strings of the form
                 ``[align_spec][option_spec][format_spec]``.
-                Please see the docstring for table() for details.
+
+                align_spec
+                    One of the characters '<', '^', '>' to
+                    override auto-alignment.
+
+                option_spec
+                    One or more of `options`_ enclosed by '(' and ')'
+                    separated by ';'.
+
+                        * Each option is allowed once in an option_spec.
+                        * Spacing before and after '=' is ignored except after
+                          ``sep =`` where spacing becomes part of sep.
+                        * Please see `options`_ for option_spec details.
+
+                format_spec
+                    String passed to the format function.
 
             cellgrid (Iterable[Iterable[object]]):
                 representing table cells.
@@ -1184,13 +1274,28 @@ class MonoTable:
         """Format and justify table.  Return rows of the strings.
 
         Args:
-            headings (Iterable[str]): move to table etc.
+            headings (Iterable[str]):
                 Iterable of strings for each column heading.
 
             formats (Iterable[str]):
                 Iterable of format strings of the form
                 ``[align_spec][option_spec][format_spec]``.
-                Please see the docstring for table() for details.
+
+                align_spec
+                    One of the characters '<', '^', '>' to
+                    override auto-alignment.
+
+                option_spec
+                    One or more of `options`_ enclosed by '(' and ')'
+                    separated by ';'.
+
+                        * Each option is allowed once in an option_spec.
+                        * Spacing before and after '=' is ignored except after
+                          ``sep =`` where spacing becomes part of sep.
+                        * Please see `options`_ for option_spec details.
+
+                format_spec
+                    String passed to the format function.
 
             cellgrid (Iterable[Iterable[object]]):
                 representing table cells.
@@ -1227,6 +1332,84 @@ class MonoTable:
             rows.append(row)
         return rows
 
+    def cotable(self,
+                column_tuples=(),  # type: Iterable[Tuple[str, str, List[object]]]    # noqa : E501
+                title='',  # type: str
+                ):
+        # type: (...) -> str
+        """Format printable text table from tuples describing columns.
+
+        Args:
+            column_tuples (Tuple[str, str, List[object]]]):
+                Tuple of (heading string, format string,
+                iterable of cell objects).
+
+                The heading string syntax is described here
+                :py:meth:`~MonoTable.table` under the parameter headings.
+                The column tuple has a single heading string.
+
+                The format string syntax is described here
+                :py:meth:`~MonoTable.table` under the
+                parameter formats.
+                The column tuple has a single format string.
+
+                Iterable of cell objects represent the cells in the column.
+
+            title (str): ``[align_spec][wrap_spec]string``.
+                Text to be aligned and printed above the text table.
+
+                align_spec
+                    One of the characters '<', '^', '>' to
+                    override auto-alignment.
+
+                wrap_spec
+                    Character '=' to indicate the title
+                    should be text wrapped to the width of the table.
+        """
+        headings, formats, cell_columns = zip(*column_tuples)
+        cellgrid = zip_longest(*cell_columns)
+        return self.table(headings, formats, cellgrid, title)
+
+    def cobordered_table(self,
+                         column_tuples=(),  # type: Iterable[Tuple[str, str, List[object]]]    # noqa : E501
+                         title='',  # type: str
+                         ):
+        # type: (...) -> str
+        """Format printable bordered text table from tuples describing columns.
+
+        Args:
+            column_tuples (Tuple[str, str, List[object]]]):
+                Tuple of (heading string, format string,
+                iterable of cell objects).
+
+                The heading string syntax is described here
+                :py:meth:`~MonoTable.table` under the parameter headings.
+                The column tuple has a single heading string.
+
+                The format string syntax is described here
+                :py:meth:`~MonoTable.table` under the
+                parameter formats.
+                The column tuple has a single format string.
+
+                Iterable of cell objects represent the cells in the column.
+
+            title (str): ``[align_spec][wrap_spec]string``.
+                Text to be aligned and printed above the text table.
+
+                align_spec
+                    One of the characters '<', '^', '>' to
+                    override auto-alignment.
+
+                wrap_spec
+                    Character '=' to indicate the title
+                    should be text wrapped to the width of the table.
+        """
+        headings, formats, cell_columns = zip(*column_tuples)
+        cellgrid = zip_longest(*cell_columns)
+        return self.bordered_table(headings, formats, cellgrid, title)
+
+
+# Convenience Functions
 
 def table(headings=(),       # type: Iterable[str]
           formats=(),        # type: Iterable[str]
@@ -1234,31 +1417,39 @@ def table(headings=(),       # type: Iterable[str]
           title='',          # type: str
           ):
     # type: (...) -> str
-    """Convenience function calling MonoTable.table() using class defaults."""
-    tbl = monotable.MonoTable()
+    """Wrapper to :py:meth:`monotable.MonoTable.table`.
+    """
+    tbl = MonoTable()
     return tbl.table(headings, formats, cellgrid, title)
 
 
-def bordered_table(headings=(),  # type: Iterable[str]
-                   formats=(),  # type: Iterable[str]
+def bordered_table(headings=(),     # type: Iterable[str]
+                   formats=(),      # type: Iterable[str]
                    cellgrid=((),),  # type: Iterable[Iterable[object]]
-                   title='',  # type: str
+                   title='',        # type: str
                    ):
     # type: (...) -> str
-    """Convenience function calling MonoTable.bordered_table()."""
-    tbl = monotable.MonoTable()
+    """Wrapper to :py:meth:`monotable.MonoTable.bordered_table`."""
+    tbl = MonoTable()
     return tbl.bordered_table(headings, formats, cellgrid, title)
 
 
-def row_strings(headings=(),     # type: Iterable[str]
-                formats=(),      # type: Iterable[str]
-                cellgrid=((),),  # type: Iterable[Iterable[object]]
-                strip=False,     # type: bool
-                ):
-    # type: (...) -> List[List[str]]
-    """Convenience function calling MonoTable.row_strings()."""
-    tbl = monotable.MonoTable()
-    return tbl.row_strings(headings, formats, cellgrid, strip)
+def cotable(column_tuples=(),  # type: Iterable[Tuple[str, str, List[object]]]
+            title='',          # type: str
+            ):
+    # type: (...) -> str
+    """Wrapper to :py:meth:`monotable.MonoTable.cotable`."""
+    tbl = MonoTable()
+    return tbl.cotable(column_tuples, title)
+
+
+def cobordered_table(column_tuples=(),  # type: Iterable[Tuple[str, str, List[object]]]    # noqa : E501
+                     title='',          # type: str
+                     ):
+    # type: (...) -> str
+    """Wrapper to :py:meth:`monotable.MonoTable.cobordered_table`."""
+    tbl = MonoTable()
+    return tbl.cobordered_table(column_tuples, title)
 
 
 class MonoTableCellError(Exception):

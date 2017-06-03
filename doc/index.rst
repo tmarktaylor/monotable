@@ -23,6 +23,7 @@ Contents:
 
    introduction
    more_examples
+   convenience
    api_class
    api_class_var
    api_format_functions

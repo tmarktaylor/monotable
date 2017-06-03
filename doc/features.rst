@@ -5,11 +5,20 @@
 
 Full List of Features
 =====================
-Links like |format_func| below indicate related MonoTable class variables
-that can be overridden.
+- Module level convenience functions for use when no configuration is
+  required.
+- Two ways to specify the table:
+
+  - Provide row of headings, row of formats, cellgrid, and optional title.
+  - Provide a list of tuples, one for each column:
+    (heading, format, list of cells), and optional title.
 
 To configure monotable and override class variables,
 please see :ref:`configuring-label`.
+
+Links like |format_func| below indicate related MonoTable class variables
+that can be overridden to configure monotable.
+
 
 - Fine-grained control of formatting and alignment,
   on a per column basis as needed.
@@ -20,14 +29,17 @@ please see :ref:`configuring-label`.
     format string with ``<``, ``^``, or ``>``. |align_spec_chars|
   - Specify the alignment of the heading the same way.
   - Set the format function. The format function has the same
-    signature as <built-in function format>.  The choices are:
+    signature as built-in function format().  The choices are:
 
-    - <built-in function format> is the default.
-    - Adapter to string.format().
-    - Adapter to pass a mapping to string.format().
-    - Adapter to ``%`` printf style string formatting.
-    - Adapter to string.Template().
-    - User defined format function. Override |format_func_map|.
+    - Built-in function format().  This is the default.
+    - Boolean formatter that prints arbitrary strings like 'yes' and 'no'
+      for the True and False Python boolean values.
+    - Eleven format functions that scale numeric values by 10e3, 10e6,
+      10e-3, 10e-6, 1024, 1024**2, and others.
+    - An unlimited number of user defined format functions that are
+      configured by overriding |format_func_map|.
+    - Adapters to string.format(), string.Template(), and printf-style
+      format functions.
 
 
 - The default format function is configurable. |format_func|

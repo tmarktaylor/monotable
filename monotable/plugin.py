@@ -49,6 +49,104 @@ except(ImportError):
 # or on an instance.
 
 
+def boolean(bool_value, format_spec='T,F'):
+    # type: (bool, str) -> str
+    """Format function that formats the boolean values to user's strings.
+
+    The format_spec is a string ``'true-truth-value,false-truth-value'`` of
+    the true and false truth value strings joined by comm where
+    true-truth-value is returned when bool_value evaluates to logical True.
+    """
+
+    truth_values = format_spec.split(',')
+    if len(truth_values) == 2:
+        if bool_value:
+            return truth_values[0]
+        else:
+            return truth_values[1]
+    return format(bool_value)
+
+
+# Note- For the Mypy type annotations below int and float are duck type
+#       compatible with complex.
+
+def thousands(numeric_value, format_spec):
+    # type: (complex, str) -> str     # see note above.
+    """Format function that divides by 10.0e3 to get units of thousands."""
+
+    return format(numeric_value / 10.0e3, format_spec)
+
+
+def millions(numeric_value, format_spec):
+    # type: (complex, str) -> str     # see note above.
+    """Format function that divides by 10.0e6 to get units of millions."""
+
+    return format(numeric_value / 10.0e6, format_spec)
+
+
+def billions(numeric_value, format_spec):
+    # type: (complex, str) -> str     # see note above.
+    """Format function that divides by 10.0e9 to get units of billions."""
+
+    return format(numeric_value / 10.0e9, format_spec)
+
+
+def trillions(numeric_value, format_spec):
+    # type: (complex, str) -> str     # see note above.
+    """Format function that divides by 10.0e12 to get units of trillions."""
+
+    return format(numeric_value / 10.0e12, format_spec)
+
+
+def milli(numeric_value, format_spec):
+    # type: (complex, str) -> str     # see note above.
+    """Format function that multiplies by 10.0e3 to get units of milli*."""
+
+    return format(numeric_value * 10.0e3, format_spec)
+
+
+def micro(numeric_value, format_spec):
+    # type: (complex, str) -> str     # see note above.
+    """Format function that multiplies by 10.0e6 to get units of micro*."""
+
+    return format(numeric_value * 10.0e6, format_spec)
+
+
+def nano(numeric_value, format_spec):
+    # type: (complex, str) -> str     # see note above.
+    """Format function that multiplies by 10.0e9 to get units of nano*."""
+
+    return format(numeric_value * 10.0e9, format_spec)
+
+
+def pico(numeric_value, format_spec):
+    # type: (complex, str) -> str     # see note above.
+    """Format function that multiplies by 10.0e12 to get units of pico*."""
+
+    return format(numeric_value * 10.0e12, format_spec)
+
+
+def kilo(numeric_value, format_spec):
+    # type: (complex, str) -> str     # see note above.
+    """Format function that divides by 1024 to get units of kilo*."""
+
+    return format(numeric_value / 1024.0, format_spec)
+
+
+def mega(numeric_value, format_spec):
+    # type: (complex, str) -> str     # see note above.
+    """Format function that divides by 1024^2 to get units of mega*."""
+
+    return format(numeric_value / 1048576.0, format_spec)
+
+
+def terra(numeric_value, format_spec):
+    # type: (complex, str) -> str     # see note above.
+    """Format function that divides by 1024^3 to get units of terra*."""
+
+    return format(numeric_value / 1073741824.0, format_spec)
+
+
 def mformat(mapping, format_spec):
     # type: (Mapping[str, object], str) -> str
     """Format function that selects values from a dictionary.
