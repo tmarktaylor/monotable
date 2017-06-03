@@ -8,10 +8,10 @@ LEFT = monotable.alignment.LEFT
 CENTER = monotable.alignment.CENTER
 RIGHT = monotable.alignment.RIGHT
 
-TOP = monotable.TOP
-CENTER_TOP = monotable.CENTER_TOP
-CENTER_BOTTOM = monotable.CENTER_BOTTOM
-BOTTOM = monotable.BOTTOM
+TOP = monotable.alignment.TOP
+CENTER_TOP = monotable.alignment.CENTER_TOP
+CENTER_BOTTOM = monotable.alignment.CENTER_BOTTOM
+BOTTOM = monotable.alignment.BOTTOM
 
 #
 # Tests for MonoBlock.__init__().

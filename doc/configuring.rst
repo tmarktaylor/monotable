@@ -18,7 +18,7 @@ Two Ways to Customize
 
     import monotable
 
-    class SeparatedMonoTable(monotable.MonoTable):
+    class SeparatedMonoTable(monotable.table.MonoTable):
        guideline_chars = '-=-'
        separated_guidelines = True
 
@@ -48,7 +48,7 @@ Two Ways to Customize
     import monotable
 
     headings = ['an int', 'string', 'another int', 'another string']
-    tbl = monotable.MonoTable()
+    tbl = monotable.table.MonoTable()
     tbl.guideline_chars = '-=-'
     tbl.separated_guidelines = True
 

@@ -1,4 +1,4 @@
-"""Assertion based test cases for monotable.MonoTable.  Run with pytest."""
+"""Assertion based test cases for monotable.table.MonoTable for pytest."""
 
 from collections import namedtuple
 import datetime
@@ -6,7 +6,10 @@ import doctest
 import math
 
 import monotable
+import monotable.alignment
 import monotable.plugin
+import monotable.scanner
+import monotable.table
 
 
 def test_doctest_scanner_py():
@@ -44,7 +47,7 @@ def test_an_attribute_and_an_index_with_instance_assigned_format_func():
     """
     Show an attribute of an cell object and an item of a sequence.
 
-    Change the instance format_func to monotable.sformat()
+    Change the instance format_func to monotable.plugin.sformat()
     by assigning it to the instance variable.
 
     Use align_spec '<' to left justify the title.
@@ -54,7 +57,7 @@ def test_an_attribute_and_an_index_with_instance_assigned_format_func():
 
     headings = ['x\nattrib.', 'y\nattrib.', '[0]\nindex', '[1]\nindex']
     formats = ['{.x}', '{.y}', '{[0]}', '{[1]}']
-    t = monotable.MonoTable()
+    t = monotable.table.MonoTable()
     t.format_func = monotable.plugin.sformat
     point = namedtuple('point', ['x', 'y'])
     cells = [[point(1, 91), point(2, 92), point(3, 93), point(4, 94)],
@@ -107,7 +110,7 @@ def test_template_substitution_and_multiline():
     """Show values using string.Template substitution.  Show multi-line cells.
 
     Use format_option_spec for the second column to specify
-    monotable.tformat() for that column.
+    monotable.plugin.tformat() for that column.
     This invokes str.Template formatting for the column.
     Format a bordered table by calling bordered_table() instead of table().
     """
@@ -138,7 +141,7 @@ def test_mapping_and_multiline():
     """Show values from a mapping using mformat().  Show multi-line cells.
 
     Use format_option_spec for the second column to specify
-    monotable.mformat() for that column.
+    monotable.plugin.mformat() for that column.
     Note the age fixed precision formatting.  This is not possible with
     template substitution.
     Format a bordered table by calling bordered_table() instead of table().
@@ -172,7 +175,7 @@ def test_mapping_and_multiline():
 def test_printf_style_with_tuple_format_and_subclass_for_format_func():
     """Formatting with pformat printf-style String Formatting.
 
-    Create a subclass of MonoTable that uses monotable.pformat as the
+    Create a subclass of MonoTable that uses monotable.plugin.pformat as the
     default format function.
 
     Floating point format precision defaults to 6 places.
@@ -189,7 +192,7 @@ def test_printf_style_with_tuple_format_and_subclass_for_format_func():
     headings = ['int', 'float', 'string', 'tuple']
     formats = ['%d', '%f', '%s', '()(%d, %d)']
 
-    class CustomMonoTable(monotable.MonoTable):
+    class CustomMonoTable(monotable.table.MonoTable):
         format_func = staticmethod(monotable.plugin.pformat)
 
     t = CustomMonoTable()
@@ -220,11 +223,11 @@ def test_horizontal_and_vertical_guidelines_and_indent():
 
     headings = ['col-0', 'col-1']
     formats = ['(sep= | )']  # specify sep=' | ' between 1st and 2nd columns
-    t = monotable.MonoTable(indent='*****')
+    t = monotable.table.MonoTable(indent='*****')
 
     cells = [['time', '12:45'],
              ['place', 'home'],
-             [monotable.HR],
+             [monotable.table.HR],
              ['sound', 'bell'],
              ['volume', 'very loud']]
     text = t.table(headings, formats, cells)
@@ -526,7 +529,7 @@ def test_max_cell_height():
 
     headings = ['Id Number', 'Duties', 'Start Date']
     formats = ['', '(width=12;wrap)']
-    t = monotable.MonoTable()
+    t = monotable.table.MonoTable()
     t.max_cell_height = 2              # override class var
     cells = [[1, 'President and CEO', '06/02/2016'],
              [2, 'Raise capital', '06/10/2016'],
@@ -559,7 +562,7 @@ def test_bordered_format():
     cells = [[1, 'President and CEO', '06/02/2016'],
              [2, 'Raise capital', '06/10/2016'],
              [3, 'Oversee day to day operations', '06/21/2016']]
-    t = monotable.MonoTable()
+    t = monotable.table.MonoTable()
     t.max_cell_height = 2
     title = ('Wrap center column to a maximum of 12 characters.\n'
              'Limit cell height to 2 lines.\n'
@@ -599,7 +602,7 @@ def test_user_defined_format_function():
     headings = ['Id Number', 'Duties', 'Sensitive\nInfo']
     formats = ['', '', '(show_last_four)']
 
-    class CustomMonoTable(monotable.MonoTable):
+    class CustomMonoTable(monotable.table.MonoTable):
         format_func_map = myformatfuncmap
     t = CustomMonoTable()
     cells = [[1, 'President and CEO', '123'],
@@ -631,7 +634,7 @@ def test_default_float_format_spec():
     cells = [[9.1234567] * 4]
     headings = ['.1f', '.3f', '.5f', 'default=.4f']
     formats = ['.1f', '.3f', '.5f']
-    t = monotable.MonoTable()
+    t = monotable.table.MonoTable()
     t.default_float_format_spec = '.4f'
     text = t.table(headings, formats, cells,
                    title='Different float precision in each column.')
@@ -655,7 +658,7 @@ def test_disable_default_float_format_spec():
     cells = [[9.1234567] * 4]
     headings = ['.1f', '.3f', '.5f', 'disable\ndefault_float_format_spec']
     formats = ['.1f', '.3f', '.5f']
-    t = monotable.MonoTable()
+    t = monotable.table.MonoTable()
     t.default_float_format_spec = ''
     text = t.table(headings, formats, cells,
                    title='<Disable default in last column.')
@@ -673,7 +676,7 @@ def test_disable_default_float_format_spec():
 def test_override_format_none_as_with_auto_alignment():
     """Override class variable format_none_as."""
 
-    class CustomMonoTable(monotable.MonoTable):
+    class CustomMonoTable(monotable.table.MonoTable):
         format_none_as = 'NONE!'
 
     headings = ['number', 'Life\nState']
@@ -708,7 +711,7 @@ def test_override_format_none_as_with_format_align_specs():
 
     headings = ['number', 'Life\nState']
     formats = ['>']     # force None cell to right align
-    t = monotable.MonoTable()
+    t = monotable.table.MonoTable()
     t.format_none_as = '0-0'
     cells = [[22334455, 'demised'],
              [66, 'passed on'],
@@ -746,7 +749,7 @@ def test_heading_left_align_spec_and_format_left_align_spec():
     cells = [row0, row1]
     headings = ['.1f', '.3f', '<.5f', 'default=.4f']
     formats = ['.1f', '<.3f', '.5f']
-    t = monotable.MonoTable()
+    t = monotable.table.MonoTable()
     t.default_float_format_spec = '.4f'
     text = t.table(headings, formats, cells,
                    title='Different float precision in each column.')
@@ -772,7 +775,7 @@ def test_heading_center_align_spec_and_format_center_align_spec():
     cells = [[9.1234567] * 4]
     headings = ['.1f', '.3f', '^.5f', 'default=.4f']
     formats = ['.1f', '^.3f', '.5f']
-    t = monotable.MonoTable()
+    t = monotable.table.MonoTable()
     t.default_float_format_spec = '.4f'
     text = t.table(headings, formats, cells,
                    title='Different float precision in each column.')
@@ -797,7 +800,7 @@ def test_heading_and_format_right_align_spec():
     headings = ['.1f', '.3f', '>.5f', 'default=.4f']
     formats = ['.1f', '>.3f', '.5f']
 
-    class FloatPoint4MonoTable(monotable.MonoTable):
+    class FloatPoint4MonoTable(monotable.table.MonoTable):
         default_float_format_spec = '.4f'
     t = FloatPoint4MonoTable()
     text = t.table(headings, formats, cells, title='Different float precision in each column.')
@@ -822,7 +825,7 @@ def test_override_align_spec_chars():
     cells = [[123, 'import', 4567, 'this']]
     headings = ['an int', 'string', 'another int', 'another string']
     formats = ['R', '', 'L', 'C']
-    t = monotable.MonoTable()
+    t = monotable.table.MonoTable()
     t.align_spec_chars = 'LCR'
     text = t.table(headings, formats, cells, title='RUser align_spec_chars.')
     expected = '\n'.join([
@@ -845,7 +848,7 @@ def test_override_title_wrap_spec_char():
 
     cells = [[123, 'import']]
     headings = ['an int', 'a string']
-    t = monotable.MonoTable()
+    t = monotable.table.MonoTable()
     t.wrap_spec_char = '$'
     text = t.table(headings, [], cells,
                    title='<$User wrap_spec_char changed on an instance.')
@@ -871,8 +874,8 @@ def test_override_heading_valign():
 
     cells = [[123, 'import']]
     headings = ['a\nshort\nint', 'a\nslightly\nlonger\nstring']
-    t = monotable.MonoTable()
-    t.heading_valign = monotable.TOP
+    t = monotable.table.MonoTable()
+    t.heading_valign = monotable.alignment.TOP
     text = t.table(headings, [], cells, title='instance.heading_valign = TOP')
     expected = '\n'.join([
         "instance.heading_valign = TOP",
@@ -894,7 +897,7 @@ def test_override_guideline_chars():
     cells = [[123, 'import', 4567, 'this']]
     headings = ['an int', 'string', 'another int', 'another string']
     formats = ['>', '', '<', '^']
-    t = monotable.MonoTable()
+    t = monotable.table.MonoTable()
     t.guideline_chars = 'X=*'
     text = t.table(headings, formats, cells, title='>User guideline_chars.')
     expected = '\n'.join([
@@ -909,7 +912,7 @@ def test_override_guideline_chars():
 
 
 def test_override_separated_guidelines():
-    class SeparatedMonoTable(monotable.MonoTable):
+    class SeparatedMonoTable(monotable.table.MonoTable):
         separated_guidelines = True
         guideline_chars = '==='
 
@@ -941,7 +944,7 @@ def test_override_separated_guidelines():
 def test_override_separated_guidelines_no_bottom_guideline():
     """Test separated guideline style with no bottom guideline."""
 
-    class SeparatedMonoTable(monotable.MonoTable):
+    class SeparatedMonoTable(monotable.table.MonoTable):
         guideline_chars = '== '    # disable bottom guideline
         separated_guidelines = True
 
@@ -963,7 +966,7 @@ def test_override_separated_guidelines_no_bottom_guideline():
 def test_omit_top_and_bottom_guidelines():
     """Override guideline_chars to omit top and bottom guidelines."""
 
-    class CustomMonoTable(monotable.MonoTable):
+    class CustomMonoTable(monotable.table.MonoTable):
         guideline_chars = ' = '
 
     cells = [[123, 'import', 4567, 'this']]
@@ -985,7 +988,7 @@ def test_omit_top_and_bottom_guidelines():
 def test_top_guideline_is_dots_and_only_guideline():
     """Omit heading and bottom guidelines.  Top guideline is '.'"""
 
-    class CustomMonoTable(monotable.MonoTable):
+    class CustomMonoTable(monotable.table.MonoTable):
         guideline_chars = '.'
 
     cells = [[123, 'import', 4567, 'this']]
@@ -1006,11 +1009,11 @@ def test_top_guideline_is_dots_and_only_guideline():
 def test_override_cell_vertical_alignment_to_center_top():
     """Change cell vertical alignment to CENTER_TOP."""
 
-    class CustomMonoTable(monotable.MonoTable):
-        cell_valign = monotable.CENTER_TOP
+    class CustomMonoTable(monotable.table.MonoTable):
+        cell_valign = monotable.alignment.CENTER_TOP
 
     cells = [['A\n4\nline\ncell', '3\nline\ncell', '2 line\ncell'],
-             [monotable.HR],
+             [monotable.table.HR],
              ['A\nfour\nline\ncell', 'three\nline\ncell', 'two line\ncell']]
     headings = ['4 line cells', '3 line cells', '2 line cells']
     t = CustomMonoTable()
@@ -1037,11 +1040,11 @@ def test_override_cell_vertical_alignment_to_center_top():
 def test_override_cell_vertical_alignment_to_center_bottom():
     """Change cell vertical alignment to CENTER_BOTTOM."""
 
-    class CustomMonoTable(monotable.MonoTable):
-        cell_valign = monotable.CENTER_BOTTOM
+    class CustomMonoTable(monotable.table.MonoTable):
+        cell_valign = monotable.alignment.CENTER_BOTTOM
 
     cells = [['A\n4\nline\ncell', '3\nline\ncell', '2 line\ncell'],
-             [monotable.HR],
+             [monotable.table.HR],
              ['A\nfour\nline\ncell', 'three\nline\ncell', 'two line\ncell']]
     headings = ['4 line cells', '3 line cells', '2 line cells']
 
@@ -1077,12 +1080,12 @@ def test_override_more_marker_override_max_cell_height_option_max_width():
     cells in the first and second columns are limited to two line height.
     """
 
-    class CustomMonoTable(monotable.MonoTable):
+    class CustomMonoTable(monotable.table.MonoTable):
         more_marker = '**'
         max_cell_height = 2
 
     cells = [['A\n4\nline\ncell', '3\nline\ncell', '2 line\ncell'],
-             [monotable.HR],
+             [monotable.table.HR],
              ['A\nfour\nline\ncell', 'three\nline\ncell', 'two line\ncell']]
     headings = ['4 line', '3', '2 line']
     formats = ['', '(width=3)', '']
@@ -1146,7 +1149,7 @@ def test_default_when_override_border_chars_to_empty_string():
     '+' is the hard coded default used for missing border_chars.
     """
     headings = ['one\ndigit\nint', 'another\nint', 'floats']
-    t = monotable.MonoTable()
+    t = monotable.table.MonoTable()
     t.border_chars = ''
     cells = [[1, 29, 3.5], [4, 5, 16.34]]
     text = t.bordered_table(headings, [], cells,
@@ -1174,7 +1177,7 @@ def test_override_border_chars():
     """
 
     headings = ['one\ndigit\nint', 'another\nint', 'floats']
-    t = monotable.MonoTable()
+    t = monotable.table.MonoTable()
     t.border_chars = 'TBSCH'
     cells = [[1, 29, 3.5], [4, 5, 16.34]]
     text = t.bordered_table(headings, [], cells,
@@ -1198,7 +1201,7 @@ def test_override_border_chars():
 def test_override_hmargin_vmargin():
     """Change class variables hmargin and vmargin in subclass."""
 
-    class BigMarginMonoTable(monotable.MonoTable):
+    class BigMarginMonoTable(monotable.table.MonoTable):
         hmargin = 3
         vmargin = 2
 
@@ -1247,31 +1250,31 @@ def test_tile_four_tables_together():
 
     headings = ['4 line cells', '3 line cells']
 
-    class CenterBottomMonoTable(monotable.MonoTable):
-        cell_valign = monotable.CENTER_BOTTOM
+    class CenterBottomMonoTable(monotable.table.MonoTable):
+        cell_valign = monotable.alignment.CENTER_BOTTOM
 
     ta = CenterBottomMonoTable()
     cells = [['A\n4\nline\ncell', '3\nline\ncell'],
-             [monotable.HR],
+             [monotable.table.HR],
              ['A\nfour\nline\ncell', 'three\nline\ncell']]
     taf = ta.table(headings, [], cells, title='vertical align CENTER_BOTTOM')
 
     headings = ['4 line', '3', '2 line']
     formats = ['', '(width=3)', '']
 
-    class CustomMonoTable(monotable.MonoTable):
+    class CustomMonoTable(monotable.table.MonoTable):
         more_marker = '**'
         max_cell_height = 2
 
     tb = CustomMonoTable()
     cells = [['A\n4\nline\ncell', '3\nline\ncell', '2 line\ncell'],
-             [monotable.HR],
+             [monotable.table.HR],
              ['A\nfour\nline\ncell', 'three\nline\ncell', 'two line\ncell']]
     tbf = tb.table(headings, formats, cells, title="max_cell_height=2")
 
     headings = ['one\ndigit\nint', 'another\nint', 'floats']
 
-    class BadBorderCharsFloat4fMonoTable(monotable.MonoTable):
+    class BadBorderCharsFloat4fMonoTable(monotable.table.MonoTable):
         border_chars = ''
         default_float_format_spec = '.4f'
 
@@ -1279,7 +1282,7 @@ def test_tile_four_tables_together():
     cells = [[1, 29, 3.5], [4, 5, 16.34]]
     tcf = tc.bordered_table(headings, [], cells, '^centered title\n of 2 lines')
 
-    class NoGuidelinesMonoTable(monotable.MonoTable):
+    class NoGuidelinesMonoTable(monotable.table.MonoTable):
         guideline_chars = ''
         sep = '    '
 

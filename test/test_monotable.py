@@ -1,4 +1,4 @@
-"""Assertion based test cases for monotable.MonoTable.  Run with pytest."""
+"""Assertion based test cases for monotable.table.MonoTable for pytest."""
 
 from collections import namedtuple
 from os import path
@@ -8,6 +8,7 @@ import pytest
 
 import monotable
 import monotable.plugin
+import monotable.table
 
 
 def read_file(*path_components):
@@ -108,7 +109,7 @@ def test_no_headings_no_formats_no_title_empty_cells():
 
     Test with both default argument values and empty lists."""
 
-    tbl = monotable.MonoTable()    # default args for headings, formats
+    tbl = monotable.table.MonoTable()    # default args for headings, formats
     text = tbl.table()
     assert text == ''
 
@@ -132,7 +133,7 @@ def test_empty_headings_empty_formats_empty_cells():
     """Empty headings, empty formats, and no cells in the cellgrid."""
 
     expected_title = 'My Title is a Good Title'
-    tbl = monotable.MonoTable()
+    tbl = monotable.table.MonoTable()
     text = monotable.table.table([], [], cellgrid=[[]], title=expected_title)
     assert text == expected_title
 
@@ -149,7 +150,7 @@ def test_empty_headings_empty_formats_empty_cells_no_title():
 
 
 def test_only_title():
-    tbl = monotable.MonoTable()
+    tbl = monotable.table.MonoTable()
 
     text = tbl.table(cellgrid=[[]], title='Table Title')
     assert text == 'Table Title'
@@ -189,7 +190,7 @@ def test_only_wrapped_title():
     No wrapping is done since table width is 0.
     """
 
-    tbl = monotable.MonoTable()
+    tbl = monotable.table.MonoTable()
 
     text = tbl.table(title='=Wrapped Title')
     assert text == 'Wrapped Title'
@@ -418,7 +419,7 @@ class TestMonoTableExceptionCallback:
     cells = [[0, 9999], [1, 'label1']]
 
     def test_raise_it(self):
-        with pytest.raises(monotable.MonoTableCellError) as exc_info:
+        with pytest.raises(monotable.table.MonoTableCellError) as exc_info:
             _ = monotable.table.table(self.headings, self.formats, self.cells)
         exc = exc_info.value
         assert exc.row == 1
@@ -434,7 +435,7 @@ class TestMonoTableExceptionCallback:
         assert expected_str in str(exc)
 
     def test_bordered_raise_it(self):
-        with pytest.raises(monotable.MonoTableCellError) as exc_info:
+        with pytest.raises(monotable.table.MonoTableCellError) as exc_info:
             _ = monotable.table.bordered_table(self.headings, self.formats,
                                                self.cells)
         exc = exc_info.value
@@ -448,7 +449,7 @@ class TestMonoTableExceptionCallback:
         assert expected_str in str(exc)
 
     def test_bordered_format_ignore_it(self):
-        tbl = monotable.MonoTable()
+        tbl = monotable.table.MonoTable()
 
         tbl.format_exc_callback = monotable.plugin.ignore_it
         text = tbl.bordered_table(self.headings, self.formats, self.cells)
@@ -470,7 +471,7 @@ class TestMonoTableExceptionCallback:
         def my_ignore_it(_):
             return '!!!!!!!!!!!'
 
-        class MyIgnoreItMonoTable(monotable.MonoTable):
+        class MyIgnoreItMonoTable(monotable.table.MonoTable):
             format_exc_callback = staticmethod(my_ignore_it)
 
         tbl = MyIgnoreItMonoTable()
@@ -488,10 +489,9 @@ class TestMonoTableExceptionCallback:
 
 
 def test_print_it(capsys):
-    from monotable import MonoTableCellError
-    from monotable.plugin import print_it
-    exc = MonoTableCellError(777, 999, 'spec', 'this is the trace text')
-    value = print_it(exc)
+    exc = monotable.table.MonoTableCellError(777, 999, 'spec',
+                                             'this is the trace text')
+    value = monotable.plugin.print_it(exc)
     out, err = capsys.readouterr()
     assert out == '\n'.join([
         "MonoTableCellError: cell[777][999], format_spec= spec",
@@ -511,7 +511,7 @@ class TestMonoTableCatchesFormatErrors:
     def test_sformat_missing_attribute_error(self):
         """Callers cell object has no 'z' attribute."""
         formats = ['(sformat){.z}']   # missing attribute
-        with pytest.raises(monotable.MonoTableCellError) as exc_info:
+        with pytest.raises(monotable.table.MonoTableCellError) as exc_info:
             _ = monotable.table.table((), formats, self.cells)
         exc = exc_info.value
         assert exc.row == 0
@@ -523,7 +523,7 @@ class TestMonoTableCatchesFormatErrors:
     def test_sformat_missing_index_error(self):
         """Callers cell object has no [2] index."""
         formats = ['(sformat){[2]}']  # missing index
-        with pytest.raises(monotable.MonoTableCellError) as exc_info:
+        with pytest.raises(monotable.table.MonoTableCellError) as exc_info:
             _ = monotable.table.table((), formats, self.cells)
         exc = exc_info.value
         assert exc.row == 0
@@ -536,7 +536,7 @@ class TestMonoTableCatchesFormatErrors:
 def test_mformat_missing_key_error():
     """Callers dict has no value for key 'name'."""
     cells = [[dict(not_name=0)]]   # has no value for key='name'
-    with pytest.raises(monotable.MonoTableCellError) as exc_info:
+    with pytest.raises(monotable.table.MonoTableCellError) as exc_info:
         _ = monotable.table.table([], ['(mformat)name= {name}'], cells)
     exc = exc_info.value
     assert exc.row == 0
@@ -555,7 +555,7 @@ def test_user_defined_format_function_hides_default_format_function():
 
     my_format_func_map = {'pformat': pformat}
 
-    class MyMonoTable(monotable.MonoTable):
+    class MyMonoTable(monotable.table.MonoTable):
         format_func_map = my_format_func_map
     tbl = MyMonoTable()
     assert id(tbl.format_func_map['pformat']) == id(pformat)
@@ -570,11 +570,11 @@ def test_user_defined_format_function_raises_assertion_error():
 
     my_format_func_map = {'my_format_function': user_defined_format_function}
 
-    class MyMonoTable(monotable.MonoTable):
+    class MyMonoTable(monotable.table.MonoTable):
         format_func_map = my_format_func_map
     tbl = MyMonoTable()
     cells = [[1234]]
-    with pytest.raises(monotable.MonoTableCellError) as exc_info:
+    with pytest.raises(monotable.table.MonoTableCellError) as exc_info:
         _ = tbl.table([], ['(my_format_function)'], cells)
     exc = exc_info.value
     assert exc.row == 0
@@ -589,13 +589,13 @@ def test_init_illegal_vertical_align():
     msg = 'Expected a vertical align value, got:'
 
     with pytest.raises(AssertionError) as exc_info:
-        tbl = monotable.MonoTable()
+        tbl = monotable.table.MonoTable()
         tbl.cell_valign = -1
         _ = tbl.table([], [], [[]])
     assert str(exc_info.value).startswith(msg)
 
     with pytest.raises(AssertionError) as exc_info:
-        tbl = monotable.MonoTable()
+        tbl = monotable.table.MonoTable()
         tbl.cell_valign = 50
         _ = tbl.bordered_table([], [], [[]])
     assert str(exc_info.value).startswith(msg)
@@ -607,7 +607,7 @@ def test_bad_option_spec():
     to a bad option in a valid option_spec.
     """
     # Note- Does not test entire exception message.
-    tbl = monotable.MonoTable()
+    tbl = monotable.table.MonoTable()
     cells = [['A']]
 
     with pytest.raises(AssertionError) as exc_info:
@@ -625,7 +625,7 @@ def test_override_option_spec_delimiters_bad_option_spec():
     """
     # Note- Does not test entire exception message.
 
-    tbl = monotable.MonoTable()
+    tbl = monotable.table.MonoTable()
     tbl.option_spec_delimiters = '!;!'
     cells = [['A']]
     with pytest.raises(AssertionError) as exc_info:
@@ -641,12 +641,12 @@ def test_no_option_spec_delimiters():
     """
     # Note- Does not test entire exception message.
 
-    tbl = monotable.MonoTable()
+    tbl = monotable.table.MonoTable()
     tbl.option_spec_delimiters = ''   # disable
     cells = [['A']]
 
     msg = 'MonoTableCellError: cell[0][0], format_spec= !width=10!s'
-    with pytest.raises(monotable.MonoTableCellError) as exc_info:
+    with pytest.raises(monotable.table.MonoTableCellError) as exc_info:
         _ = tbl.table([], ['!width=10!s'], cells)
     assert str(exc_info.value).startswith(msg)
 
@@ -654,7 +654,7 @@ def test_no_option_spec_delimiters():
 def test_override_option_spec_delimiters():
     """Test formatting with overridden option_spec_delimiters."""
 
-    tbl = monotable.MonoTable()
+    tbl = monotable.table.MonoTable()
     tbl.option_spec_delimiters = '!;!'
     cells = [['A']]
     text = tbl.table([], ['!width=10!s'], cells)
@@ -668,7 +668,7 @@ def test_format_row_strings():
     headings = ['.1f', '.3f', '<.5f', 'default=.4f']
     formats = ['.1f', '<.3f', '.5f']
 
-    class Float4fMonoTable(monotable.MonoTable):
+    class Float4fMonoTable(monotable.table.MonoTable):
         default_float_format_spec = '.4f'
     t = Float4fMonoTable()
     row_strings = t.row_strings(headings, formats, cells)
@@ -684,7 +684,7 @@ def test_format_to_row_strings_stripped():
     headings = ['.1f', '.3f', '<.5f', 'default=.4f']
     formats = ['.1f', '<.3f', '.5f']
 
-    class Float4fMonoTable(monotable.MonoTable):
+    class Float4fMonoTable(monotable.table.MonoTable):
         default_float_format_spec = '.4f'
     t = Float4fMonoTable()
     row_strings = t.row_strings(headings, formats, cells, strip=True)

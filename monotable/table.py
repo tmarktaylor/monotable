@@ -48,7 +48,6 @@ try:
 except(ImportError):
     from itertools import izip_longest as zip_longest    # type: ignore
 
-
 import monotable.plugin
 import monotable.scanner
 from monotable.monoblock import MonoBlock
@@ -252,13 +251,13 @@ class MonoTable:
     >>> import monotable
     >>> def your_user_defined_format_function(value, format_spec):
     ...    pass
-    >>> class SubclassMonoTable(monotable.MonoTable):
+    >>> class SubclassMonoTable(monotable.table.MonoTable):
     ...     format_func = staticmethod(your_user_defined_format_function)
     >>> tbl = SubclassMonoTable()
     >>>
     >>> # When overriding on an instance do not use staticmethod like this:
     >>>
-    >>> tbl = monotable.MonoTable()
+    >>> tbl = monotable.table.MonoTable()
     >>> tbl.format_func = your_user_defined_format_function
 
     .. _Docs Here:
@@ -1417,7 +1416,7 @@ def table(headings=(),       # type: Iterable[str]
           title='',          # type: str
           ):
     # type: (...) -> str
-    """Wrapper to :py:meth:`monotable.MonoTable.table`.
+    """Wrapper to :py:meth:`monotable.table.MonoTable.table`.
     """
     tbl = MonoTable()
     return tbl.table(headings, formats, cellgrid, title)
@@ -1429,7 +1428,7 @@ def bordered_table(headings=(),     # type: Iterable[str]
                    title='',        # type: str
                    ):
     # type: (...) -> str
-    """Wrapper to :py:meth:`monotable.MonoTable.bordered_table`."""
+    """Wrapper to :py:meth:`monotable.table.MonoTable.bordered_table`."""
     tbl = MonoTable()
     return tbl.bordered_table(headings, formats, cellgrid, title)
 
@@ -1438,7 +1437,7 @@ def cotable(column_tuples=(),  # type: Iterable[Tuple[str, str, List[object]]]
             title='',          # type: str
             ):
     # type: (...) -> str
-    """Wrapper to :py:meth:`monotable.MonoTable.cotable`."""
+    """Wrapper to :py:meth:`monotable.table.MonoTable.cotable`."""
     tbl = MonoTable()
     return tbl.cotable(column_tuples, title)
 
@@ -1447,7 +1446,7 @@ def cobordered_table(column_tuples=(),  # type: Iterable[Tuple[str, str, List[ob
                      title='',          # type: str
                      ):
     # type: (...) -> str
-    """Wrapper to :py:meth:`monotable.MonoTable.cobordered_table`."""
+    """Wrapper to :py:meth:`monotable.table.MonoTable.cobordered_table`."""
     tbl = MonoTable()
     return tbl.cobordered_table(column_tuples, title)
 

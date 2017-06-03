@@ -39,7 +39,6 @@ import sys
 # These imports are for PEP484, PYPI package mypy static type checking.
 try:
     from typing import Tuple, Union, Any, Mapping, Sequence    # noqa : F401
-    from monotable.table import MonoTableCellError    # noqa : F401
 except(ImportError):
     pass
 
@@ -222,15 +221,16 @@ def tformat(value, format_spec):
 # Format function error callbacks for use with MonoTable().
 #
 
-def raise_it(cell_error_exception):
-    # type: (MonoTableCellError) -> None
+
+def raise_it(cell_error_exception):    # type: ignore
+    # type: (monotable.table.MonoTableCellError) -> None
     """Format function error callback.  Exception is raised."""
 
     raise cell_error_exception
 
 
-def print_it(cell_error_exception):
-    # type: (MonoTableCellError) -> str
+def print_it(cell_error_exception):    # type: ignore
+    # type: (monotable.table.MonoTableCellError) -> str
     """Format function error callback.  Prints exception. Returns '???'."""
 
     print(cell_error_exception)
@@ -240,8 +240,18 @@ def print_it(cell_error_exception):
     return '???'
 
 
-def ignore_it(_):
-    # type: (MonoTableCellError) -> str
+def ignore_it(_):    # type: ignore
+    # type: (monotable.table.MonoTableCellError) -> str
     """Format function error callback.  No action taken.  Returns '???'."""
 
     return '???'
+
+# todo-
+# note-  Designating type: ignore on the callbacks because...
+#        When "from monotable.table import MonoTableCellError" is present
+#        plugin dissappears from dir(monotable).  I am guessing this is due
+#        to a circular import (table <-> plugin), but have not investigated
+#        further to confirm or refute.  If true, it might indicate an
+#        issue with the design.  For now, since static type checking is
+#        experimental the type check is ignored and the type: comment
+#        remains for the human readers.

@@ -4,12 +4,12 @@ HR, Vertical Align Constants
 .. toctree::
    :maxdepth: 2
 
-.. module:: monotable
+.. module:: monotable.table
 
 Horizontal Rule
 ---------------
 
-.. autodata:: monotable.HR
+.. autodata:: HR
    :annotation:
 
 .. _vertical-alignment-constants-label:
@@ -17,18 +17,9 @@ Horizontal Rule
 Vertical Alignment Constants
 ----------------------------
 
-For convenience these names are copied to the monotable namespace by
-__init__.py.  They are unique int enumeration values.
-They are accessible as::
-
-   monotable.TOP
-   montable.CENTER_TOP
-   montable.CENTER_BOTTOM
-   montable.BOTTOM
-
-
-.. Using monotable.alignment.TOP, etc. here since Sphinx autodata renders
-   the description of them incorrectly.  Don't know why.
+Use these to specify a value for MonoTable class variable
+:py:attr:`~MonoTable.heading_valign` or
+:py:attr:`~MonoTable.cell_valign`
 
 .. autodata:: monotable.alignment.TOP
 .. autodata:: monotable.alignment.CENTER_TOP

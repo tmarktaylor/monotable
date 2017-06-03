@@ -6,7 +6,7 @@ MonoTable Class Variables
 .. toctree::
    :maxdepth: 2
 
-.. module:: monotable
+.. module:: monotable.table
 .. include:: autodoc_ref.txt
 
 | Links to class variable below:

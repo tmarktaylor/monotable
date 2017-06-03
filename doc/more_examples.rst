@@ -47,7 +47,7 @@ The second column is wrapped to a maximum width of 12 characters.
 
     headings = ['Id Number', 'Duties', 'Start Date']
     formats = ['', '(width=12;wrap)']
-    t3 = monotable.MonoTable()
+    t3 = monotable.table.MonoTable()
     t3.max_cell_height = 2              # override class var
 
     cells = [[1, 'President and CEO', '06/02/2016'],
@@ -197,7 +197,7 @@ the element indexed by [1] from a sequence.
 Horizontal and vertical rules
 -----------------------------
 
-A cell row that starts with value **monotable.HR** will be replaced with a
+A cell row that starts with value **monotable.table.HR** will be replaced with a
 heading guideline.
 
 The text between columns can be changed with the format option sep.
@@ -220,7 +220,7 @@ strings are silently ignored.
 
     cells = [['time', '12:45'],
              ['place', 'home'],
-             [monotable.HR],      # put a heading guideline here
+             [monotable.table.HR],      # put a heading guideline here
              ['sound', 'bell'],
              ['volume']]          # short row is extended with empty string
 
@@ -251,7 +251,7 @@ markup.
 
     import monotable
 
-    class SeparatedMonoTable(monotable.MonoTable):
+    class SeparatedMonoTable(monotable.table.MonoTable):
         separated_guidelines = True
         guideline_chars = '==='
 

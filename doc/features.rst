@@ -1,4 +1,4 @@
-.. module:: monotable
+.. module:: monotable.table
 .. include:: autodoc_ref.txt
 
 .. _features-label:
@@ -87,9 +87,9 @@ that can be overridden to configure monotable.
 
 - Change the character used for the top, heading, and bottom guidelines.
   |guideline_chars|
-- Add a horizontal rule by placing a **monotable.HR**
+- Add a horizontal rule by placing a **monotable.table.HR**
   instance in the cellgrid left most column of a row.  HR must be
-  enclosed in an iterable for example ``[monotable.HR]``.
+  enclosed in an iterable for example ``[monotable.table.HR]``.
 - Set the text placed between columns by using the **sep=** format string
   option or override |sep|.
 - Method **row_strings()** returns lists of formatted,

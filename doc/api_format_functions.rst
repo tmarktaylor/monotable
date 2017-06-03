@@ -17,13 +17,13 @@ Format Functions
 .. toctree::
    :maxdepth: 2
 
-.. module:: monotable
 .. module:: monotable.plugin
 
 | Links to format functions below:
 | :py:func:`~boolean`
 | :py:func:`~thousands` :py:func:`~millions` :py:func:`~billions`
-| :py:func:`~milli` :py:func:`~micro` :py:func:`~nano`
+  :py:func:`~trillions`
+| :py:func:`~milli` :py:func:`~micro` :py:func:`~nano` :py:func:`~pico`
 | :py:func:`~kilo` :py:func:`~mega` :py:func:`~terra`
 | :py:func:`~sformat` :py:func:`~mformat` :py:func:`~pformat`
   :py:func:`~tformat`
@@ -31,8 +31,8 @@ Format Functions
 Format functions have the same signature as ``<built-in function format>``.
 
 These can be used to override the class variable
-:py:attr:`~MonoTable.format_func` in a subclass or on an instance.
-
+:py:attr:`~monotable.table.MonoTable.format_func` in a subclass
+or on an instance.
 
 .. autofunction:: boolean
 .. autofunction:: thousands

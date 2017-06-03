@@ -4,7 +4,7 @@ Class MonoTable
 .. toctree::
    :maxdepth: 2
 
-.. module:: monotable
+.. module:: monotable.table
 
 Links:
 

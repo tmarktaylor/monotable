@@ -147,8 +147,14 @@ Recent Changes
 
 - Moved headings, formats parameters from MonoTable.__init__() to
   MonoTable.table(), MonoTable.bordered_table(), and MonoTable.row_stings().
-- Added convenience functions to module monotable.table: table(),
-  bordered_table(), row_strings().
+- Added 2 member functions that take table data organized as columns
+  to class MonoTable.
+- Added convenience functions to module monotable.table.
+  They call class MonoTable public member functions.
+- Added 12 new plugin format functions and the corresponding format options:
+  boolean, thousands, millions, billions, trillions, milli, micro, nano,
+  pico, kilo, mega, terra.
+- Removed 'from MonoTable import' statements from __init__.py.
 
 1.0.2 - 2017-04-06
 
@@ -294,7 +300,7 @@ in the option_spec.
 
     # Configure MonoTable subclass with the dictionary
     # of user defined format functions.
-    class FormatFuncsMonoTable(monotable.MonoTable):
+    class FormatFuncsMonoTable(monotable.table.MonoTable):
         format_func_map = {'fulfill_menu_request': fulfill_menu_request}
 
     headings = ['Id Number', 'Duties', 'Meal\nPreference']
@@ -331,7 +337,7 @@ in the option_spec.
 
 .. testcode::
 
-  t2 = monotable.MonoTable()
+  t2 = monotable.table.MonoTable()
   t2.format_func_map = {'fulfill_menu_request': fulfill_menu_request}
 
 - The Duties column auto-aligns to the left since the cells

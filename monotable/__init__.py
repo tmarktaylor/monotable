@@ -18,15 +18,4 @@
 
 """ASCII table: per column format specs, plug-in format functions, multi-line.
 """
-# flake8: noqa    prevents all warnings, was getting F401 imported but unused
-
-from monotable.table import MonoTable
-from monotable.table import MonoTableCellError
-from monotable.table import HR
-
-from monotable.alignment import TOP
-from monotable.alignment import BOTTOM
-from monotable.alignment import CENTER_BOTTOM
-from monotable.alignment import CENTER_TOP
-
 __version__ = '2.0.0'
