@@ -116,6 +116,9 @@ def test_no_headings_no_formats_no_title_empty_cells():
     text = tbl.table(cellgrid=[[]])
     assert text == ''
 
+    text = monotable.table.cotable()
+    assert text == ''
+
     text = tbl.bordered_table()
     assert text == ''
 
@@ -127,7 +130,6 @@ def test_no_headings_no_formats_no_title_empty_cells():
 
     row_strings = tbl.row_strings(cellgrid=[[]])
     assert row_strings == [[]]
-
 
 def test_empty_headings_empty_formats_empty_cells():
     """Empty headings, empty formats, and no cells in the cellgrid."""
@@ -183,6 +185,12 @@ def test_only_title():
     text = tbl.bordered_table(title='>Table Title')
     assert text == 'Table Title'
 
+    # repeat for column oriented tables
+    text = monotable.table.cotable([], 'Table Title')
+    assert text == 'Table Title'
+
+    text = monotable.table.cobordered_table([], 'Table Title')
+    assert text == 'Table Title'
 
 def test_only_wrapped_title():
     """Try to wrap a title on an empty table.
@@ -235,10 +243,45 @@ def test_one_column_table():
     assert text == expected
 
 
+def test_one_column_cotable():
+    column = ('Choices', '', ['Spam', 'Spam', 'Spam', 'Spam'])
+    text = monotable.table.cotable([column])
+    expected = '\n'.join([
+        "-------",
+        "Choices",
+        "-------",
+        "Spam",
+        "Spam",
+        "Spam",
+        "Spam",
+        "-------",
+    ])
+    assert text == expected
+
+
 def test_one_column_bordered_table():
     headings = ['Choices']
     cells = [['Spam'], ['Spam'], ['Spam'], ['Spam']]
     text = monotable.table.bordered_table(headings, [], cells)
+    expected = '\n'.join([
+        "+---------+",
+        "| Choices |",
+        "+=========+",
+        "| Spam    |",
+        "+---------+",
+        "| Spam    |",
+        "+---------+",
+        "| Spam    |",
+        "+---------+",
+        "| Spam    |",
+        "+---------+",
+    ])
+    assert text == expected
+
+
+def test_one_column_cobordered_table():
+    column = ('Choices', '', ['Spam', 'Spam', 'Spam', 'Spam'])
+    text = monotable.table.cobordered_table([column])
     expected = '\n'.join([
         "+---------+",
         "| Choices |",
@@ -273,6 +316,38 @@ def test_cellgrid_is_tuples():
         "4  5  6",
         "7  8  9",
         "-------",
+    ])
+    assert text == expected
+
+
+def test_column_oriented_cells_are_tuples():
+    column0 = ('', '', (1, 4, 7))
+    column1 = ('', '', (2, 5, 8))
+    column2 = ('', '', (3, 6, 9))
+    text = monotable.table.cotable([column0, column1, column2])
+    expected = '\n'.join([
+        "-------",
+        "1  2  3",
+        "4  5  6",
+        "7  8  9",
+        "-------",
+    ])
+    assert text == expected
+
+
+def test_column_oriented_bordered_table_cells_are_tuples():
+    column0 = ('', '', (1, 4, 7))
+    column1 = ('', '', (2, 5, 8))
+    column2 = ('', '', (3, 6, 9))
+    text = monotable.table.cobordered_table([column0, column1, column2])
+    expected = '\n'.join([
+        "+---+---+---+",
+        "| 1 | 2 | 3 |",
+        "+---+---+---+",
+        "| 4 | 5 | 6 |",
+        "+---+---+---+",
+        "| 7 | 8 | 9 |",
+        "+---+---+---+",
     ])
     assert text == expected
 
@@ -409,6 +484,130 @@ def test_forgot_outer_list_with_one_row_cellgrid():
         _ = monotable.table.table((), (), cells)
     msg = 'If one row cellgrid, likely missing outer list.'
     assert str(exc_info.value).endswith(msg)
+
+
+def test_forgot_outer_list_with_one_column_of_column_tuples():
+    """Show proper error handling for missing list around column tuples."""
+    msg = 'Short tuple or missing enclosing list.'
+    column = ('', '', (1, 4, 5))
+    with pytest.raises(AssertionError) as exc_info:
+        _ = monotable.table.cotable(column)    # missing outer []
+    assert str(exc_info.value).endswith(msg)
+
+    with pytest.raises(AssertionError) as exc_info:
+        _ = monotable.table.cobordered_table(column)    # missing outer []
+    assert str(exc_info.value).endswith(msg)
+
+
+def test_too_short_column_tuple():
+    """Show proper error handling for column tuple len() != 3."""
+    msg = 'Short tuple or missing enclosing list.'
+    column0 = ('', '', (1, 4, 7))
+    column1 = ('', '', (2,))
+    column2 = ('',  (3, 6, 9))    # short tuple, missing format string
+    with pytest.raises(AssertionError) as exc_info:
+        _ = monotable.table.cotable([column0, column1, column2])
+    assert str(exc_info.value).endswith(msg)
+
+    with pytest.raises(AssertionError) as exc_info:
+        _ = monotable.table.cobordered_table([column0, column1, column2])
+    assert str(exc_info.value).endswith(msg)
+
+
+def test_column_oriented_left_column_shorter():
+    column0 = ('', '', (1, 4))
+    column1 = ('', '', (2, 5, 8))
+    column2 = ('', '', (3, 6, 9))
+    text = monotable.table.cotable([column0, column1, column2])
+    expected = '\n'.join([
+        "-------",
+        "1  2  3",
+        "4  5  6",
+        "   8  9",
+        "-------",
+    ])
+    assert text == expected
+
+
+def test_column_oriented_right_column_shorter():
+    column0 = ('', '', (1, 4, 7))
+    column1 = ('', '', (2, 5, 8))
+    column2 = ('', '', (3, 6))
+    text = monotable.table.cotable([column0, column1, column2])
+    expected = '\n'.join([
+        "-------",
+        "1  2  3",
+        "4  5  6",
+        "7  8",
+        "-------",
+    ])
+    assert text == expected
+
+
+def test_column_oriented_middle_column_shorter():
+    column0 = ('', '', (1, 4, 7))
+    column1 = ('', '', (2,))
+    column2 = ('', '', (3, 6, 9))
+    text = monotable.table.cotable([column0, column1, column2])
+    expected = '\n'.join([
+        "-------",
+        "1  2  3",
+        "4     6",
+        "7     9",
+        "-------",
+    ])
+    assert text == expected
+
+
+def test_bordered_column_oriented_left_column_shorter():
+    column0 = ('', '', (1, 4))
+    column1 = ('', '', (2, 5, 8))
+    column2 = ('', '', (3, 6, 9))
+    text = monotable.table.cobordered_table([column0, column1, column2])
+    expected = '\n'.join([
+        "+---+---+---+",
+        "| 1 | 2 | 3 |",
+        "+---+---+---+",
+        "| 4 | 5 | 6 |",
+        "+---+---+---+",
+        "|   | 8 | 9 |",
+        "+---+---+---+",
+    ])
+    assert text == expected
+
+
+def test_bordered_column_oriented_right_column_shorter():
+    column0 = ('', '', (1, 4, 7))
+    column1 = ('', '', (2, 5, 8))
+    column2 = ('', '', (3, 6))
+    text = monotable.table.cobordered_table([column0, column1, column2])
+    expected = '\n'.join([
+        "+---+---+---+",
+        "| 1 | 2 | 3 |",
+        "+---+---+---+",
+        "| 4 | 5 | 6 |",
+        "+---+---+---+",
+        "| 7 | 8 |   |",
+        "+---+---+---+",
+    ])
+    assert text == expected
+
+
+def test_bordered_column_oriented_middle_column_shorter():
+    column0 = ('', '', (1, 4, 7))
+    column1 = ('', '', (2,))
+    column2 = ('', '', (3, 6, 9))
+    text = monotable.table.cobordered_table([column0, column1, column2])
+    expected = '\n'.join([
+        "+---+---+---+",
+        "| 1 | 2 | 3 |",
+        "+---+---+---+",
+        "| 4 |   | 6 |",
+        "+---+---+---+",
+        "| 7 |   | 9 |",
+        "+---+---+---+",
+    ])
+    assert text == expected
 
 
 class TestMonoTableExceptionCallback:

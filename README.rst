@@ -30,28 +30,33 @@
 .. _Master branch build status, coverage, testing:
    https://github.com/tmarktaylor/monotable/blob/master/README.md
 
-Introduction
-============
+Introduction, Installation, and First Examples
+==============================================
 
 monotable is a Python library that generates an ASCII table from
-tabular data that looks *pretty* when printed in a monospaced font.
+tabular data that looks *pretty* in a monospaced font.
 
-monotable eliminates the need to pre-format
-your data objects before generating the table.
-
-monotable will do the formatting for you using your format function
-or one of its own general purpose format functions; on a per column basis.
-
-monotable handles multi-line content.
+In many applications the tabular data requires pre-formatting.
+monotable can do the formatting for you using one
+of its general purpose format functions on a per column basis.
+You can also plug in an unlimited number of custom format functions.
 
 monotable is *thoroughly* documented and tested.
 
-First Example
--------------
+Installation
+------------
+
+::
+
+    pip install monotable
+
+
+Example - Per column format specifications
+------------------------------------------
 
 .. testcode::
 
-    import monotable
+    import monotable.table
     headings = ['int', 'percent']
     formats = [',', '.1%']
     cells = [[123456789, 0.33], [2345678, 0.995]]
@@ -71,20 +76,74 @@ First Example
 
 - The built-in function **format(value, format_spec)** is used by default
   for each column.
-- The string in the list **formats** is passed as format_spec for the column.
+- Format strings in the list **formats** are assigned to columns from
+  left to right.
+- The string passed as format_spec for the column.
 - To write a format_spec, consult Python's
   `Format Specification Mini-Language`_.
 
-Installation
-------------
+Example - float, thousands, datetime, and boolean formatting
+------------------------------------------------------------
 
-::
 
-    pip install monotable
+.. testcode::
 
+    import datetime
+    import monotable.table
+
+    d = datetime.datetime(2016, 9, 16)
+
+    headings = ['float\nprecision\n3',
+                'units of\nthousands',
+                'datetime\n9/16/16',
+                'bool to\nyes/no']
+
+    formats = ['.3f',
+               '(thousands).1f',
+               'week-%U-day-%j',
+               '(boolean)yes,no']
+
+    cells = [[1.23456789,   35200,    d, True],
+             [999.87654321,  1660,  None, False]]
+
+    print(monotable.table.table(headings, formats, cells,
+        title='Float, thousands, datetime, boolean formatting.'))
+
+.. testoutput::
+
+    Float, thousands, datetime, boolean formatting.
+    ----------------------------------------------
+        float
+    precision   units of  datetime         bool to
+            3  thousands  9/16/16           yes/no
+    ----------------------------------------------
+        1.235       35.2  week-37-day-260      yes
+      999.877        1.7                        no
+    ----------------------------------------------
+
+- A format string is: ``[align_spec][option_spec][format_spec]``.  All three
+  parts are optional.
+
+  - align_spec is one of ``'<'``, ``'^'``, ``'>'``.
+  - option_spec is one or more options separated by ``';'``.
+    between ``'('`` and ``')'``.
+  - format_spec is passed to the format function.
+
+- '(thousands)' invokes monotable.plugin.thousands() as the format function
+  for the column.
+- '(boolean)yes,no' invokes monotable.plugin.boolean() with the
+  format_spec 'yes,no' which formats True as 'yes' and False as 'no'.
+- The 12 integrated number scaling format functions are:  thousands, millions,
+  billions, trillions, milli, micro, nano, pico, kibi, mebi, gibi, tebi.
+- The float and thousands cells are auto-aligned to the right since
+  they are numbers.
+- Override auto-alignment by adding an align_spec.
+
+`Skip ahead to examples.`_
 
 Links to License, Docs, Repos, Issues, PYPI page
-------------------------------------------------
+================================================
+
 - License: `Apache 2.0`_
 - Full `Documentation`_ on `Read the Docs`_
 - `Repository`_
@@ -93,19 +152,16 @@ Links to License, Docs, Repos, Issues, PYPI page
 - `Master branch build status, coverage, testing`_
 
 Description
------------
+===========
 
-You can specify the format spec and the format function on a per column
-basis as needed.
-
-These format functions are available:
+These are the format functions integrated into monotable:
 
    - The default is built-in function **format**\ (value, format_spec).
+   - Boolean value formatter boolean().
+   - 12 number scaling functions including thousands(), mebi(), and micro().
+   - Adapters to standard library string.format(), Template.substitute(),
+     and printf-style formatting.
    - An unlimited number of user defined plug-in format functions.
-   - An adapter to standard library string.format().
-   - An adapter to pass a mapping to string.format().
-   - An adapter to percent operator % formatting.
-   - An adapter to standard library Template.substitute().
 
 When custom formatting code is needed for an object type,
 put it in a plug-in format function and reuse it in other tables that
@@ -120,20 +176,24 @@ is configurable.  A more marker is placed to show where text was omitted.
 
 monotable auto-aligns each column.  Auto-alignment is overridden by
 using one of ``'<'``, ``'^'``, ``'>'`` prefixes
-on a heading string, format string, or title.
+on a heading string, format string, or title as ``[align_spec]``.
+
+monotable accepts table data that is organized by columns.
 
 monotable does not do the following:
 
     - Produce terminal graphics characters.  Try PYPI terminaltables.
-    - Produce markup source text.  Try PYPI tabulate instead.
     - Handle CJK wide characters.
     - Handle ANSI escape terminal color sequences. Try PYPI terminaltables.
+    - Produce arbritrary markup source text.  Try PYPI tabulate instead.
+      However monotable.table.bordered_table() produces valid
+      reStructuredText grid table and simple table markup is possible.
 
-However, monotable does make the output of its formatting and
+monotable does make the output of its formatting and
 alignment engine available in list form.  Please look for the function
 **MonoTable.row_strings()** in the API documentation.
 
-More features are described in the documentation section
+More features are described in the full documentation section
 'Full List of Features'.
 
 .. Reserved for recognizing contributors
@@ -145,15 +205,15 @@ Recent Changes
 
 2.0.0 - TODO
 
-- Moved headings, formats parameters from MonoTable.__init__() to
-  MonoTable.table(), MonoTable.bordered_table(), and MonoTable.row_stings().
-- Added 2 member functions that take table data organized as columns
-  to class MonoTable.
+- Changed the API: headings and formats parameters are now passed to table(),
+  bordered_table().
+- Added to class MonoTable 2 member functions that take table data
+  organized as columns.
 - Added convenience functions to module monotable.table.
   They call class MonoTable public member functions.
-- Added 12 new plugin format functions and the corresponding format options:
+- Added 13 new plugin format functions and the corresponding format options:
   boolean, thousands, millions, billions, trillions, milli, micro, nano,
-  pico, kilo, mega, terra.
+  pico, kibi, mebi, gibi, tebi.
 - Removed 'from MonoTable import' statements from __init__.py.
 
 1.0.2 - 2017-04-06
@@ -169,112 +229,48 @@ Recent Changes
 
 - MANIFEST.in and doc fixes.
 
-1.0.0 - 2017-03-25
 
-- Initial upload.
-
-
+.. _`Skip ahead to examples.`:
 
 Examples
 ========
 
-Per column formatting with format spec
---------------------------------------
+Column Oriented Input
+---------------------
 
-In the example below formats is a list of format strings, one for each column.
-Format strings are assigned to columns from left to right.
+The input is specified as a list of tuples, one per column:
+``(heading string, format string, list of cells)``.
 
 .. testcode::
 
     import datetime
-    import monotable
+    import monotable.table
 
     d = datetime.datetime(2016, 9, 16)
 
-    headings = ['precision\n1', 'precision\n3', 'default', '9/16/16']
-    formats = ['.1f', '.3f', '', 'week-%U-day-%j']
-    cells = [[1.23456789,   1.23456789,   1.23456789, d],
-             [999.87654321, 999.87654321, 999.87654321, None]]
+    column0 = ('float\nprecision\n3', '.3f',[1.23456789, 999.87654321])
+    column1 = ('units of\nthousands', '(thousands).1f', [35200, 1660])
+    column2 = ('datetime\n9/16/16', 'week-%U-day-%j', [d])
+    column3 = ('bool to\nyes/no', '(boolean)yes,no', [True, False])
+    columns = [column0, column1, column2, column3]
 
-    print(monotable.table.table(headings, formats, cells,
-                                title='Different float precisions.'))
-
-.. testoutput::
-
-               Different float precisions.
-    -------------------------------------------------
-    precision  precision
-            1          3     default  9/16/16
-    -------------------------------------------------
-          1.2      1.235    1.234568  week-37-day-260
-        999.9    999.877  999.876543
-    -------------------------------------------------
-
-- For type float, when the format_spec is empty, a default format_spec
-  of ``'.6f'`` is used.  This is configurable.
-- Auto-alignment is right justifying a cell that is an instance of
-  numbers.Number.
-- Auto alignment aligns the heading the same way as the alignment of
-  the cell in the first row of the column.
-- The title is centered by default.
-
-
-Selecting keys from a dictionary
---------------------------------
-
-This example uses monotable's extended format string notation to set
-the format function of the second column. A format string has the form:
-
-    ``[align_spec][option_spec][format_spec]``
-
-align_spec is one of the characters '<', '^', '>' to override auto-alignment.
-align_spec is not used in this example.
-
-option_spec is one or more monotable options enclosed by ``'('``
-and ``')'`` separated by ``';'``.  In the second column the option_spec
-is ``(mformat)``.
-mformat selects the function **monotable.plugin.mformat()**
-as the format function.
-The API section MonoTable.__init__() in the docs describes the other options.
-
-.. testcode::
-
-    import monotable
-
-    headings = ['int', 'Formatted by mformat()']
-    formats = ['',
-        '(mformat)name= {name}\nage= {age:.1f}\ncolor= {favorite_color}']
-    cells = [[2345, dict(name='Row Zero',
-                         age=888.000,
-                         favorite_color='blue')],
-
-             [6789, dict(name='Row One',
-                         age=999.111,
-                         favorite_color='No! Red!')]]
-
-    print(monotable.table.bordered_table(headings, formats, cells,
-                                         title='mformat() Formatting.'))
+    print(monotable.table.cotable(columns,
+        title='Float, thousands, datetime, boolean formatting.'))
 
 .. testoutput::
 
-          mformat() Formatting.
-    +------+------------------------+
-    |  int | Formatted by mformat() |
-    +======+========================+
-    | 2345 | name= Row Zero         |
-    |      | age= 888.0             |
-    |      | color= blue            |
-    +------+------------------------+
-    | 6789 | name= Row One          |
-    |      | age= 999.1             |
-    |      | color= No! Red!        |
-    +------+------------------------+
+    Float, thousands, datetime, boolean formatting.
+    ----------------------------------------------
+        float
+    precision   units of  datetime         bool to
+            3  thousands  9/16/16           yes/no
+    ----------------------------------------------
+        1.235       35.2  week-37-day-260      yes
+      999.877        1.7                        no
+    ----------------------------------------------
 
-- Note the age fixed precision formatting.  This is not possible with
-  template substitution provided by option tformat.
-- Format a bordered table by calling **bordered_table()**
-  instead of **table()**.
-- This example also shows formatted cells with newlines.
+- Note only one cell was specified for column2.
+- The output is identical to that from the earlier example.
 
 
 User defined format function
@@ -291,7 +287,7 @@ in the option_spec.
 
 .. testcode::
 
-    import monotable
+    import monotable.table
 
     # User defined format function.
     def fulfill_menu_request(value, spec):
@@ -345,6 +341,63 @@ in the option_spec.
 - The headings auto-align to the alignment of the cell in the first row.
 - The title starts with an ``'>'`` align_spec_char which right aligns
   the title over the table.
+
+Selecting keys from a dictionary and table borders
+--------------------------------------------------
+
+This example uses monotable's extended format string notation to set
+the format function of the second column. A format string has the form:
+
+    ``[align_spec][option_spec][format_spec]``
+
+align_spec is one of the characters '<', '^', '>' to override auto-alignment.
+align_spec is not used in this example.
+
+option_spec is one or more monotable options enclosed by ``'('``
+and ``')'`` separated by ``';'``.  In the second column the option_spec
+is ``(mformat)``.
+mformat selects the function **monotable.plugin.mformat()**
+as the format function.
+The API section MonoTable.__init__() in the docs describes the other options.
+
+.. testcode::
+
+    import monotable.table
+
+    headings = ['int', 'Formatted by mformat()']
+    formats = ['',
+        '(mformat)name= {name}\nage= {age:.1f}\ncolor= {favorite_color}']
+    cells = [[2345, dict(name='Row Zero',
+                         age=888.000,
+                         favorite_color='blue')],
+
+             [6789, dict(name='Row One',
+                         age=999.111,
+                         favorite_color='No! Red!')]]
+
+    print(monotable.table.bordered_table(headings, formats, cells,
+                                         title='mformat() Formatting.'))
+
+.. testoutput::
+
+          mformat() Formatting.
+    +------+------------------------+
+    |  int | Formatted by mformat() |
+    +======+========================+
+    | 2345 | name= Row Zero         |
+    |      | age= 888.0             |
+    |      | color= blue            |
+    +------+------------------------+
+    | 6789 | name= Row One          |
+    |      | age= 999.1             |
+    |      | color= No! Red!        |
+    +------+------------------------+
+
+- Note the age fixed precision formatting.  This is not possible with
+  template substitution provided by option tformat.
+- Format a bordered table by calling **bordered_table()**
+  instead of **table()**.
+- This example also shows formatted cells with newlines.
 
 .. admonition:: More ...
 

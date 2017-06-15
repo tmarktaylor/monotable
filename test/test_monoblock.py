@@ -1,7 +1,7 @@
 """Assertion based test cases for monotable.table.MonoBlock."""
 import pytest
 
-import monotable
+import monotable.table
 
 NOT_SPECIFIED = monotable.table.NOT_SPECIFIED
 LEFT = monotable.alignment.LEFT

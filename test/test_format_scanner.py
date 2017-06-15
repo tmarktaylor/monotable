@@ -5,7 +5,6 @@ import monotable.alignment
 import monotable.plugin
 import monotable.scanner
 import monotable.table
-import monotable
 
 TOP = monotable.alignment.TOP
 CENTER_TOP = monotable.alignment.CENTER_TOP
@@ -34,9 +33,10 @@ DEFAULT_FORMAT_FUNCTIONS = [
     '  micro - <function micro',
     '  nano - <function nano',
     '  pico - <function pico',
-    '  kilo - <function kilo',
-    '  mega - <function mega',
-    '  terra - <function terra',
+    '  kibi - <function kibi',
+    '  mebi - <function mebi',
+    '  gibi - <function gibi',
+    '  tebi - <function tebi',
     '  pformat - <function pformat',
     '  sformat - <function sformat',
     '  mformat - <function mformat',

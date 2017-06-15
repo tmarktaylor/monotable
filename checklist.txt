@@ -13,3 +13,6 @@
 - Run readme_preview.py.
 - Build Sphinx docs.
 - Verify sdist archive contains at least all the files under version control.
+- Run mypy against monotable and on test/test_examples.py.
+- Run flake8
+
