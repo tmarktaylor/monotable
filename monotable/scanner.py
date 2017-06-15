@@ -64,9 +64,10 @@ class FormatScanner:
         'micro'          micro
         'nano'           nano
         'pico'           pico
-        'kilo'           kilo
-        'mega'           mega
-        'terra'          terra
+        'kibi'           kibi
+        'mebi'           mebi
+        'gibi'           gibi
+        'tebi'           tebi
         'mformat'        mformat
         'pformat'        pformat
         'sformat'        sformat
@@ -203,9 +204,10 @@ class FormatScanner:
                                   'micro': monotable.plugin.micro,
                                   'nano': monotable.plugin.nano,
                                   'pico': monotable.plugin.pico,
-                                  'kilo': monotable.plugin.kilo,
-                                  'mega': monotable.plugin.mega,
-                                  'terra': monotable.plugin.terra,
+                                  'kibi': monotable.plugin.kibi,
+                                  'mebi': monotable.plugin.mebi,
+                                  'gibi': monotable.plugin.gibi,
+                                  'tebi': monotable.plugin.tebi,
                                   'mformat': monotable.plugin.mformat,
                                   'pformat': monotable.plugin.pformat,
                                   'sformat': monotable.plugin.sformat,

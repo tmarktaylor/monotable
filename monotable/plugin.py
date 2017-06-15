@@ -53,7 +53,7 @@ def boolean(bool_value, format_spec='T,F'):
     """Format function that formats the boolean values to user's strings.
 
     The format_spec is a string ``'true-truth-value,false-truth-value'`` of
-    the true and false truth value strings joined by comm where
+    the true and false truth value strings joined by comma where
     true-truth-value is returned when bool_value evaluates to logical True.
     """
 
@@ -67,86 +67,93 @@ def boolean(bool_value, format_spec='T,F'):
 
 
 # Note- For the Mypy type annotations below int and float are duck type
-#       compatible with complex.
+#       compatible with complex.  See mypy.pdf Chapter 12.
 
-def thousands(numeric_value, format_spec):
+def thousands(numeric_value, format_spec=''):
     # type: (complex, str) -> str     # see note above.
-    """Format function that divides by 10.0e3 to get units of thousands."""
+    """Format function that divides by 1.0e3."""
 
-    return format(numeric_value / 10.0e3, format_spec)
+    return format(numeric_value / 1.0e3, format_spec)
 
 
-def millions(numeric_value, format_spec):
+def millions(numeric_value, format_spec=''):
     # type: (complex, str) -> str     # see note above.
-    """Format function that divides by 10.0e6 to get units of millions."""
+    """Format function that divides by 1.0e6."""
 
-    return format(numeric_value / 10.0e6, format_spec)
+    return format(numeric_value / 1.0e6, format_spec)
 
 
-def billions(numeric_value, format_spec):
+def billions(numeric_value, format_spec=''):
     # type: (complex, str) -> str     # see note above.
-    """Format function that divides by 10.0e9 to get units of billions."""
+    """Format function that divides by 1.0e9."""
 
-    return format(numeric_value / 10.0e9, format_spec)
+    return format(numeric_value / 1.0e9, format_spec)
 
 
-def trillions(numeric_value, format_spec):
+def trillions(numeric_value, format_spec=''):
     # type: (complex, str) -> str     # see note above.
-    """Format function that divides by 10.0e12 to get units of trillions."""
+    """Format function that divides by 1.0e12."""
 
-    return format(numeric_value / 10.0e12, format_spec)
+    return format(numeric_value / 1.0e12, format_spec)
 
 
-def milli(numeric_value, format_spec):
+def milli(numeric_value, format_spec=''):
     # type: (complex, str) -> str     # see note above.
-    """Format function that multiplies by 10.0e3 to get units of milli*."""
+    """Format function that multiplies by 1.0e3."""
 
-    return format(numeric_value * 10.0e3, format_spec)
+    return format(numeric_value * 1.0e3, format_spec)
 
 
-def micro(numeric_value, format_spec):
+def micro(numeric_value, format_spec=''):
     # type: (complex, str) -> str     # see note above.
-    """Format function that multiplies by 10.0e6 to get units of micro*."""
+    """Format function that multiplies by 1.0e6."""
 
-    return format(numeric_value * 10.0e6, format_spec)
+    return format(numeric_value * 1.0e6, format_spec)
 
 
-def nano(numeric_value, format_spec):
+def nano(numeric_value, format_spec=''):
     # type: (complex, str) -> str     # see note above.
-    """Format function that multiplies by 10.0e9 to get units of nano*."""
+    """Format function that multiplies by 1.0e9."""
 
-    return format(numeric_value * 10.0e9, format_spec)
+    return format(numeric_value * 1.0e9, format_spec)
 
 
-def pico(numeric_value, format_spec):
+def pico(numeric_value, format_spec=''):
     # type: (complex, str) -> str     # see note above.
-    """Format function that multiplies by 10.0e12 to get units of pico*."""
+    """Format function that multiplies by 1.0e12."""
 
-    return format(numeric_value * 10.0e12, format_spec)
+    return format(numeric_value * 1.0e12, format_spec)
 
 
-def kilo(numeric_value, format_spec):
+def kibi(numeric_value, format_spec=''):
     # type: (complex, str) -> str     # see note above.
-    """Format function that divides by 1024 to get units of kilo*."""
+    """Format function that divides by 1024."""
 
     return format(numeric_value / 1024.0, format_spec)
 
 
-def mega(numeric_value, format_spec):
+def mebi(numeric_value, format_spec=''):
     # type: (complex, str) -> str     # see note above.
-    """Format function that divides by 1024^2 to get units of mega*."""
+    """Format function that divides by 1024^2."""
 
-    return format(numeric_value / 1048576.0, format_spec)
+    return format(numeric_value / 1024.0**2, format_spec)
 
 
-def terra(numeric_value, format_spec):
+def gibi(numeric_value, format_spec=''):
     # type: (complex, str) -> str     # see note above.
-    """Format function that divides by 1024^3 to get units of terra*."""
+    """Format function that divides by 1024^3."""
 
-    return format(numeric_value / 1073741824.0, format_spec)
+    return format(numeric_value / 1024.0**3, format_spec)
 
 
-def mformat(mapping, format_spec):
+def tebi(numeric_value, format_spec=''):
+    # type: (complex, str) -> str     # see note above.
+    """Format function that divides by 1024^4."""
+
+    return format(numeric_value / 1024.0**4, format_spec)
+
+
+def mformat(mapping, format_spec=''):
     # type: (Mapping[str, object], str) -> str
     """Format function that selects values from a dictionary.
 
@@ -185,7 +192,7 @@ def mformat(mapping, format_spec):
     return formatter.vformat(format_spec, (), mapping)
 
 
-def pformat(value, format_spec):
+def pformat(value, format_spec=''):
     # type: (Union[object, Tuple[object]], str) -> str
     """Format function adapter to percent operator %.
 
@@ -196,7 +203,7 @@ def pformat(value, format_spec):
     return format_spec % value
 
 
-def sformat(value, format_spec):
+def sformat(value, format_spec=''):
     # type: (object, str) -> str
     """Format function adapter to str.format().
 
@@ -206,7 +213,7 @@ def sformat(value, format_spec):
     return format_spec.format(value)
 
 
-def tformat(value, format_spec):
+def tformat(value, format_spec=''):
     # type: (Mapping[str, str], str) -> str         # todo-...
     # todo- want:   type: (Mapping[str, object], str) -> str
     # monotable\plugin.py:117: error: Argument 1 to "substitute" of "Template"

@@ -169,29 +169,7 @@ class MonoTable:
           :py:attr:`~MonoTable.format_func`.
         * In option_spec the user can specify a format function for
           a column which takes precedence over the table default format
-          function.  These option names are included in MonoTable:
-
-          =============  ==========================  =========================
-          option name    format function             description
-          =============  ==========================  =========================
-          boolean        monotable.plugin.boolean    show custom truth value
-          thousands      monotable.plugin.thousands  divide by 1000.0
-          millions       monotable.plugin.millions   divide by 1000.0**2
-          billions       monotable.plugin.billions   divide by 1000.0**3
-          milli          monotable.plugin.milli      multiply by 1000.0
-          micro          monotable.plugin.micro      multiply by 1000.0**2
-          nano           monotable.plugin.nano       multiply by 1000.0**3
-          kilo           monotable.plugin.kilo       divide by 1024.0
-          mega           monotable.plugin.mega       divide by 1024.0**2
-          terra          monotable.plugin.terra      divide by 1024.0**3
-          mformat        monotable.plugin.mformat    mapping with str.format()
-          pformat        monotable.plugin.pformat    printf-style
-          sformat        monotable.plugin.sformat    str.format()
-          tformat        monotable.plugin.tformat    string.Template()
-          function-name  \                           user defined function
-          =============  ==========================  =========================
-
-
+          function.  They are listed here: `options`_.
         * Any user defined function in the dict assigned to the class variable
           :py:attr:`~MonoTable.format_func_map`
           may be selected by putting its key as an option in option_spec.
@@ -516,48 +494,52 @@ class MonoTable:
             strings. :py:func:`monotable.plugin.boolean`
 
         thousands
-            Select format function that divides by 10.0e3 to get units of
-            thousands. :py:func:`monotable.plugin.thousands`
+            Select format function that divides by 10.0e3 before applying the
+            format_spec. :py:func:`monotable.plugin.thousands`
 
         millions
-            Select format function that divides by 10.0e6 to get units of
-            millions. :py:func:`monotable.plugin.millions`
+            Select format function that divides by 10.0e6 before applying the
+            format_spec. :py:func:`monotable.plugin.millions`
 
         billions
-            Select format function that divides by 10.0e9 to get units of
-            billions. :py:func:`monotable.plugin.billions`
+            Select format function that divides by 10.0e9 before applying the
+            format_spec. :py:func:`monotable.plugin.billions`
 
         trillions
-            Select format function that divides by 10.0e12 to get units of
-            trillions. :py:func:`monotable.plugin.trillions`
+            Select format function that divides by 10.0e12 before applying the
+            format_spec. :py:func:`monotable.plugin.trillions`
 
         milli
-            Select ormat function that multiplies by 10.0e3 to get units of
-            milli*. :py:func:`monotable.plugin.milli`
+            Select ormat function that multiplies by 10.0e3 before applying
+            the format_spec. :py:func:`monotable.plugin.milli`
 
         micro
-            Select format function that multiplies by 10.0e6 to get units of
-            micro*. :py:func:`monotable.plugin.micro`
+            Select format function that multiplies by 10.0e6 before applying
+            the format_spec. :py:func:`monotable.plugin.micro`
 
         nano
-            Select format function that multiplies by 10.0e9 to get units
-            of nano*. :py:func:`monotable.plugin.nano`
+            Select format function that multiplies by 10.0e9 tbefore applying
+            the format_spec. :py:func:`monotable.plugin.nano`
 
         pico
-            Select format function that multiplies by 10.0e12 to get units of
-            pico*. :py:func:`monotable.plugin.pico`
+            Select format function that multiplies by 10.0e12 before applying
+            the format_spec. :py:func:`monotable.plugin.pico`
 
-        kilo
-            Select format function that divides by 1024 to get units of kilo*.
-            :py:func:`monotable.plugin.kilo`
+        kibi
+            Select format function that divides by 1024 before applying the
+            format_spec. :py:func:`monotable.plugin.kibi`
 
-        mega
-            Select format function that divides by 1024^2 to get units of
-            mega*. :py:func:`monotable.plugin.mega`
+        mebi
+            Select format function that divides by 1024^2 before applying the
+            format_spec. :py:func:`monotable.plugin.mebi`
 
-        terra
-            Select format function that divides by 1024^3 to get units of
-            terra*. :py:func:`monotable.plugin.terra`
+        gibi
+            Select format function that divides by 1024^3 before applying the
+            format_spec. :py:func:`monotable.plugin.gibi`
+
+        tebi
+            Select format function that divides by 1024^4 before applying the
+            format_spec. :py:func:`monotable.plugin.tebi`
 
         mformat
             Select format function that selects values from a dictionary.
@@ -1332,15 +1314,15 @@ class MonoTable:
         return rows
 
     def cotable(self,
-                column_tuples=(),  # type: Iterable[Tuple[str, str, List[object]]]    # noqa : E501
-                title='',  # type: str
+                column_tuples=(),  # type: Sequence[Tuple[str, str, Sequence[object]]]    # noqa : E501
+                title='',          # type: str
                 ):
         # type: (...) -> str
         """Format printable text table from tuples describing columns.
 
         Args:
-            column_tuples (Tuple[str, str, List[object]]]):
-                Tuple of (heading string, format string,
+            column_tuples (List[Tuple[str, str, List[object]]]):
+                List of tuple of (heading string, format string,
                 iterable of cell objects).
 
                 The heading string syntax is described here
@@ -1365,20 +1347,24 @@ class MonoTable:
                     Character '=' to indicate the title
                     should be text wrapped to the width of the table.
         """
+        if len(column_tuples) == 0:
+            return title
+        for tup in column_tuples:
+            assert len(tup) == 3, 'Short tuple or missing enclosing list.'
         headings, formats, cell_columns = zip(*column_tuples)
         cellgrid = zip_longest(*cell_columns)
         return self.table(headings, formats, cellgrid, title)
 
     def cobordered_table(self,
-                         column_tuples=(),  # type: Iterable[Tuple[str, str, List[object]]]    # noqa : E501
-                         title='',  # type: str
+                         column_tuples=(),  # type: Sequence[Tuple[str, str, Sequence[object]]]    # noqa : E501
+                         title='',          # type: str
                          ):
         # type: (...) -> str
         """Format printable bordered text table from tuples describing columns.
 
         Args:
-            column_tuples (Tuple[str, str, List[object]]]):
-                Tuple of (heading string, format string,
+            column_tuples (List[Tuple[str, str, List[object]]]):
+                List of tuple of (heading string, format string,
                 iterable of cell objects).
 
                 The heading string syntax is described here
@@ -1403,6 +1389,10 @@ class MonoTable:
                     Character '=' to indicate the title
                     should be text wrapped to the width of the table.
         """
+        if len(column_tuples) == 0:
+            return title
+        for tup in column_tuples:
+            assert len(tup) == 3, 'Short tuple or missing enclosing list.'
         headings, formats, cell_columns = zip(*column_tuples)
         cellgrid = zip_longest(*cell_columns)
         return self.bordered_table(headings, formats, cellgrid, title)
@@ -1416,8 +1406,7 @@ def table(headings=(),       # type: Iterable[str]
           title='',          # type: str
           ):
     # type: (...) -> str
-    """Wrapper to :py:meth:`monotable.table.MonoTable.table`.
-    """
+    """Wrapper to :py:meth:`monotable.table.MonoTable.table`."""
     tbl = MonoTable()
     return tbl.table(headings, formats, cellgrid, title)
 
@@ -1433,7 +1422,7 @@ def bordered_table(headings=(),     # type: Iterable[str]
     return tbl.bordered_table(headings, formats, cellgrid, title)
 
 
-def cotable(column_tuples=(),  # type: Iterable[Tuple[str, str, List[object]]]
+def cotable(column_tuples=(),  # type: Sequence[Tuple[str, str, Sequence[object]]]    # noqa : E501
             title='',          # type: str
             ):
     # type: (...) -> str
@@ -1442,7 +1431,7 @@ def cotable(column_tuples=(),  # type: Iterable[Tuple[str, str, List[object]]]
     return tbl.cotable(column_tuples, title)
 
 
-def cobordered_table(column_tuples=(),  # type: Iterable[Tuple[str, str, List[object]]]    # noqa : E501
+def cobordered_table(column_tuples=(),  # type: Sequence[Tuple[str, str, Sequence[object]]]    # noqa : E501
                      title='',          # type: str
                      ):
     # type: (...) -> str
