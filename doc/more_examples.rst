@@ -10,7 +10,7 @@ was omitted.
 
 .. testcode::
 
-    import monotable
+    import monotable.table
 
     headings = ['Id Number', 'Duties', 'Start Date']
     formats = ['', '(width=15)']
@@ -43,7 +43,7 @@ The second column is wrapped to a maximum width of 12 characters.
 
 .. testcode::
 
-    import monotable
+    import monotable.table
 
     headings = ['Id Number', 'Duties', 'Start Date']
     formats = ['', '(width=12;wrap)']
@@ -96,7 +96,7 @@ formatted text will be padded or truncated to the exact width.
 
 .. testcode::
 
-    import monotable
+    import monotable.table
 
     headings = ['left\ncol', 'mid\ncol', 'right\ncol']
     formats = ['', '^(width=11;fixed)']
@@ -131,7 +131,7 @@ the element indexed by [1] from a sequence.
 
 .. testcode::
 
-    import monotable
+    import monotable.table
 
     headings = ['x\nattrib.', '[1]\nindex']
     formats = ['(sformat){.x}', '(sformat){[1]}']
@@ -211,7 +211,7 @@ strings are silently ignored.
 
 .. testcode::
 
-    import monotable
+    import monotable.table
 
     headings = ['col-0', 'col-1']
 
@@ -249,7 +249,7 @@ markup.
 
 .. testcode::
 
-    import monotable
+    import monotable.table
 
     class SeparatedMonoTable(monotable.table.MonoTable):
         separated_guidelines = True
@@ -299,7 +299,7 @@ string.Template.substitute().
 
 .. testcode::
 
-    import monotable
+    import monotable.table
 
     headings = ['an\nint', 'Formatted by\nstr.Template()']
     formats = ['', '(tformat)name= $name\nage= $age\ncolor= $favorite_color']

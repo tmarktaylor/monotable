@@ -1,6 +1,6 @@
 .. _configuring-label:
 
-How To Configure MonoTable
+How to Configure MonoTable
 ==========================
 
 .. toctree::
@@ -16,7 +16,7 @@ Two Ways to Customize
 
 .. testcode::
 
-    import monotable
+    import monotable.table
 
     class SeparatedMonoTable(monotable.table.MonoTable):
        guideline_chars = '-=-'
@@ -45,7 +45,7 @@ Two Ways to Customize
 
 .. testcode::
 
-    import monotable
+    import monotable.table
 
     headings = ['an int', 'string', 'another int', 'another string']
     tbl = monotable.table.MonoTable()

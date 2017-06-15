@@ -6,7 +6,8 @@ Functions
 
 .. module:: monotable.table
 
-The convenience functions below are quickest way to generate an Ascii table.
+The convenience functions below are the quickest way to generate an
+Ascii table.
 They are module level functions in the module **monotable.table**.
 They create a temporary instance of the class MonoTable
 and call the same named MonoTable member function.

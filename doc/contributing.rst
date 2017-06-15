@@ -6,7 +6,8 @@ Contributing
 
 Contributions are welcome.
 
-Please submit contributions by making a pull request to the repository.
+Please submit contributions by raising an issue and/or making a pull
+request to the repository.
 
 Please include updates to the documentation and tests to provide
 full test coverage.
@@ -52,3 +53,7 @@ in __init__.py and then let the test suite failures show the other usages.
 
 The script readme_preview.py generates html from
 the output of ``setup.py --long-description``.
+
+Experimental static type checking and code conformance checks are performed
+during Continuous Integration.  Errors raised by these tools will not
+fail the build.  Please check the log files manually.

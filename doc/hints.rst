@@ -13,3 +13,6 @@ Hints
 - In a format string a missing option_spec end delimiter is not an error.
   The intended option_spec text will become part of the format_spec.
 - The sep format option applies to *after* the column where it is specified.
+- The file test/test_examples.py has PEP484 (mypy) type annotation comments
+  for experimental static type checking.  It can serve as a guide to solving
+  type checking issues.

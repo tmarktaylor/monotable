@@ -1,8 +1,6 @@
 .. module:: monotable.table
 .. include:: autodoc_ref.txt
 
-.. _features-label:
-
 Full List of Features
 =====================
 - Module level convenience functions for use when no configuration is
@@ -34,8 +32,7 @@ that can be overridden to configure monotable.
     - Built-in function format().  This is the default.
     - Boolean formatter that prints arbitrary strings like 'yes' and 'no'
       for the True and False Python boolean values.
-    - Eleven format functions that scale numeric values by 10e3, 10e6,
-      10e-3, 10e-6, 1024, 1024**2, and others.
+    - 12 format functions that scale numeric values by 10e3, 10e6, etc.
     - An unlimited number of user defined format functions that are
       configured by overriding |format_func_map|.
     - Adapters to string.format(), string.Template(), and printf-style
