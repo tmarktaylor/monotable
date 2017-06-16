@@ -203,7 +203,7 @@ More features are described in the full documentation section
 Recent Changes
 ==============
 
-2.0.0 - TODO
+2.0.0 - 2017-06-16
 
 - Changed the API: headings and formats parameters are now passed to table(),
   bordered_table().

@@ -85,7 +85,7 @@ setup(
     name='monotable',
     version='2.0.0',
     description=('ASCII table with per column format specs, '
-                 'multi-line content, plug-in format functions, '
+                 'multi-line content, integrated formatting, '
                  'column width control.'),
     long_description=make_long_description(),
     url='https://github.com/tmarktaylor/monotable',

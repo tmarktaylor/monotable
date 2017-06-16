@@ -109,8 +109,16 @@ class MonoTable:
     cells, and a title string.
     The return value is a string ready for printing.
 
+    Call :py:meth:`~MonoTable.cotable` passing a sequence of tuples of
+    (heading, format, list of cells in the column); one tuple for each
+    column; and a title string.  The prefix co stands for column oriented.
+
     Call :py:meth:`~MonoTable.bordered_table` with the same arguments
     to format a table with character borders.
+
+    Call :py:meth:`~MonoTable.cobordered_table` passing a sequence of tuples of
+    (heading, format, list of cells in the column); one tuple for each
+    column; and a title string.
 
     Call :py:meth:`~MonoTable.row_strings` passing a sequence of heading
     strings, a sequence of format strings, a sequence of sequence of
