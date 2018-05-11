@@ -35,7 +35,7 @@
 # These imports are for PEP484, PYPI package mypy static type checking.
 try:
     from typing import Tuple    # noqa : F401
-except(ImportError):
+except ImportError:
     pass
 
 # repository: https://github.com/tmarktaylor/monotable

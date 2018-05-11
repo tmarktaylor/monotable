@@ -45,7 +45,7 @@ import traceback
 
 try:
     from itertools import zip_longest
-except(ImportError):
+except ImportError:
     from itertools import izip_longest as zip_longest    # type: ignore
 
 import monotable.plugin
@@ -61,7 +61,7 @@ try:
     from typing import List, Dict, Tuple, Optional, Callable    # noqa : F401
     from typing import Any, Mapping, Sequence, Iterable    # noqa : F401
     from monotable.scanner import FormatScanner    # noqa : F401
-except(ImportError):
+except ImportError:
     pass
 
 # repository: https://github.com/tmarktaylor/monotable

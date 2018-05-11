@@ -13,7 +13,7 @@ import math
 # These imports are for PEP484, PYPI package mypy static type checking.
 try:
     from typing import List, Any, Tuple
-except(ImportError):
+except ImportError:
     pass
 
 import monotable.alignment

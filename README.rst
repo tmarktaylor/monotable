@@ -202,6 +202,10 @@ More features are described in the full documentation section
 
 Recent Changes
 ==============
+2.0.1 - 2018-05-12
+
+- Bugfix- MonoTableCellError on str below float in a column.
+- Bugfix- Incorrect format spec reported in MonoTableCellError.
 
 2.0.0 - 2017-06-16
 
