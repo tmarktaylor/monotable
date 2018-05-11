@@ -1,6 +1,6 @@
 # monotable ASCII table formatter.
 #
-# Copyright 2017 Mark Taylor
+# Copyright 2018 Mark Taylor
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,4 +18,4 @@
 
 """ASCII table: per column format specs, plug-in format functions, multi-line.
 """
-__version__ = '2.0.0'
+__version__ = '2.0.1'

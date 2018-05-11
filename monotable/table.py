@@ -1,4 +1,4 @@
-# Copyright 2017 Mark Taylor
+# Copyright 2018 Mark Taylor
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -854,16 +854,16 @@ class MonoTable:
                     formatted_column.append(block1)
                     continue
 
-                format_spec = self._default(item, format_func, format_spec)
+                item_format_spec = self._default(item, format_func, format_spec)
 
                 try:
-                    text = format_func(item, format_spec)
+                    text = format_func(item, item_format_spec)
                 except (AttributeError, LookupError, TypeError, ValueError,
                         ArithmeticError, AssertionError):
                     msg = traceback.format_exc()
                     exc = MonoTableCellError(row_index,
                                              column_index,
-                                             formatobj.format_spec,
+                                             item_format_spec,
                                              msg)    # type: MonoTableCellError
                     text = self.format_exc_callback(exc)  # type: ignore #todo-
 
