@@ -253,7 +253,7 @@ class MonoTable:
     to use built in function staticmethod().
     """
 
-    format_exc_callback = staticmethod(monotable.plugin.raise_it)    # type: ignore  # noqa : E501
+    format_exc_callback = staticmethod(monotable.plugin.raise_it)
     """ Function called when format_func raises an exception.
 
     The function takes the argument MonoTableCellError and
@@ -779,7 +779,7 @@ class MonoTable:
         instance_config = monotable.scanner.MonoTableConfig(
             align_spec_chars=self.align_spec_chars,
             sep=self.sep,
-            format_func=self.format_func,    # type: ignore
+            format_func=self.format_func,
             format_func_map=self.format_func_map,
             option_spec_delimiters=self.option_spec_delimiters)
 
@@ -854,7 +854,8 @@ class MonoTable:
                     formatted_column.append(block1)
                     continue
 
-                item_format_spec = self._default(item, format_func, format_spec)
+                item_format_spec = self._default(item, format_func,
+                                                 format_spec)
 
                 try:
                     text = format_func(item, item_format_spec)
@@ -1469,7 +1470,7 @@ class MonoTableCellError(Exception):
     """
 
     def __init__(self, row, column, format_spec='', trace_text=None):
-        # type: (int, int, str, str) -> None
+        # type: (int, int, str, Optional[str]) -> None
 
         self.row = row
         self.column = column

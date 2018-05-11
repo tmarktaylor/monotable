@@ -25,7 +25,7 @@ import monotable.table
 def test_doctest_scanner_py():    # type: () -> None
 
     # mypy is expecting module=monotable.scanner, py -2 expects m=.
-    failure_count, test_count = doctest.testmod(m=monotable.scanner)    # type: ignore
+    failure_count, test_count = doctest.testmod(m=monotable.scanner)
     assert test_count > 0
     assert failure_count == 0
 
