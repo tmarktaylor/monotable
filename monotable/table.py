@@ -105,7 +105,7 @@ class MonoTable:
 
     Pass  to the constructor.  Call
     :py:meth:`~MonoTable.table` passing a sequence of heading strings,
-    a sequence of format strings, a sequence of sequence of
+    a sequence of format directive strings, a sequence of sequence of
     cells, and a title string.
     The return value is a string ready for printing.
 
@@ -121,7 +121,7 @@ class MonoTable:
     column; and a title string.
 
     Call :py:meth:`~MonoTable.row_strings` passing a sequence of heading
-    strings, a sequence of format strings, a sequence of sequence of
+    strings, a sequence of format directive strings, a sequence of sequence of
     cells to return a tuple of lists of formatted headings and
     list of list of cells.
 
@@ -144,8 +144,10 @@ class MonoTable:
 
     :Title String: [align_spec][wrap_spec]string
 
-    * The format string syntax is described by the
+    * The format directive string syntax is described by the
       :py:meth:`~MonoTable.table` argument **formats** below.
+
+    .. _alignment-label:
 
     * Heading alignment is determined by this decision order:
 
@@ -311,9 +313,10 @@ class MonoTable:
     align_spec_chars = '<^>'
     """Three characters to indicate justification.
 
-    Applies to align_spec scanning in heading, title, and format strings.
-    The first indicates left justification.  The second and third
-    indicate center and right justification.
+    Applies to align_spec scanning in heading, title, and format directive 
+    strings.
+    The first character indicates left justification.  The second and third
+    characters indicate center and right justification.
     Setting align_spec_chars to "" disables align_spec scanning.
     """
 
@@ -330,7 +333,7 @@ class MonoTable:
     The first and third chars enclose the options.
     The second char separates individual options. Setting
     option_spec_delimiters to "" disables option_spec scanning
-    in format strings.
+    in format directive strings.
     """
 
     guideline_chars = '---'
@@ -412,39 +415,16 @@ class MonoTable:
                 Iterable of strings for each column heading.
 
             formats (Iterable[str]):
-                Iterable of format strings of the form
+                Iterable of format directive strings of the form
                 ``[align_spec][option_spec][format_spec]``.
-
-                align_spec
-                    One of the characters '<', '^', '>' to
-                    override auto-alignment.
-
-                option_spec
-                    One or more of `options`_ enclosed by '(' and ')'
-                    separated by ';'.
-
-                        * Each option is allowed once in an option_spec.
-                        * Spacing before and after '=' is ignored except after
-                          ``sep =`` where spacing becomes part of sep.
-                        * Please see `options`_ for option_spec details.
-
-                format_spec
-                    String passed to the format function.
+                `Format directive string syntax`_
 
             cellgrid (Iterable[Iterable[object]]):
                 representing table cells.
 
             title (str): ``[align_spec][wrap_spec]string``.
                 Text to be aligned and printed above the text table.
-
-                align_spec
-                    One of the characters '<', '^', '>' to
-                    override auto-alignment.
-
-                wrap_spec
-                    Character '=' to indicate the title
-                    should be text wrapped to the width of the table.
-
+                `Title string syntax`_
 
         Returns:
             str : The text table as a single string.
@@ -472,26 +452,60 @@ class MonoTable:
         between columns in the heading line and between the columns in
         each of the 2 cell rows.
 
+
+        .. _Title string syntax:
+
+        **Title string syntax:**
+
+        ``[align_spec][wrap_spec]string``
+
+        align_spec
+            One of the characters '<', '^', '>' to
+            override auto-alignment.
+
+        wrap_spec
+            Character '=' to indicate the title
+            should be text wrapped to the width of the table.
+
+        .. _Format directive string syntax:
+
+        **Format directive string syntax:**
+
+        ``[align_spec][option_spec][format_spec]``.
+
+        align_spec
+            One of the characters '<', '^', '>' to
+            override auto-alignment.
+
+        option_spec
+            One or more of options enclosed by '(' and ')'
+            separated by ';'.
+
+        format_spec
+            String passed to the format function.
+
         .. _options:
 
         **Format string option_spec options:**
 
         The format string option_spec options described here apply to all
         MonoTable methods and monotable convenience functions that
-        take format strings.
+        take format directive strings.
 
-        The ``option_spec`` options are:
+        - Each option is allowed once in an option_spec.
+        - Spacing before and after '=' is ignored except after
+          ``sep =`` where spacing becomes part of sep.
 
         width=N
-            Truncate each formatted cell line to width N and
+            Truncate each formatted cell text line(s) to width N and
             insert the class variable :py:attr:`more_marker` if text was
             omitted.
 
         fixed
-            Format text to exactly width = N columns.
+            Used with width=N formats text to exactly width = N columns.
 
         wrap
-            Do textwrap of formatted cell to width = N.
+            Used with width=N does textwrap of formatted cell to width = N.
 
         sep=ccc
             Characters after 'sep=' are the column separator on the
@@ -518,7 +532,7 @@ class MonoTable:
             format_spec. :py:func:`monotable.plugin.trillions`
 
         milli
-            Select ormat function that multiplies by 10.0e3 before applying
+            Select format function that multiplies by 10.0e3 before applying
             the format_spec. :py:func:`monotable.plugin.milli`
 
         micro
@@ -566,10 +580,9 @@ class MonoTable:
             :py:func:`monotable.plugin.tformat`
 
         function-name
-            Use the function selected by key function-name
+            Select format function with key function-name
             in the dictionary supplied by class variable
             :py:attr:`~MonoTable.format_func_map`.
-
         """
 
         # convert, format, and justify headings/cells into MonoBlock objects
@@ -632,7 +645,8 @@ class MonoTable:
             See description for the constructor argument 'headings'.
 
         formats
-            Iterable of format strings used to format each column of cells.
+            Iterable of format directives strings used to format each
+            column of cells.
             See description for the constructor argument 'formats'.
 
         cellgrid
@@ -770,7 +784,7 @@ class MonoTable:
         """Scan format for align_spec, format_spec, and format options.
 
         Return list of FormatScanner instances that describe
-        information scanned from the format string.
+        information scanned from the format directive string.
         """
 
         processed_formats = []    # type: List[FormatScanner]
@@ -1121,38 +1135,16 @@ class MonoTable:
                 Iterable of strings for each column heading.
 
             formats (Iterable[str]):
-                Iterable of format strings of the form
+                Iterable of format directive strings of the form
                 ``[align_spec][option_spec][format_spec]``.
-
-                align_spec
-                    One of the characters '<', '^', '>' to
-                    override auto-alignment.
-
-                option_spec
-                    One or more of `options`_ enclosed by '(' and ')'
-                    separated by ';'.
-
-                        * Each option is allowed once in an option_spec.
-                        * Spacing before and after '=' is ignored except after
-                          ``sep =`` where spacing becomes part of sep.
-                        * Please see `options`_ for option_spec details.
-
-                format_spec
-                    String passed to the format function.
+                `Format directive string syntax`_
 
             cellgrid (Iterable[Iterable[object]]):
                 representing table cells.
 
             title (str): ``[align_spec][wrap_spec]string``.
                 Text to be aligned and printed above the text table.
-
-                align_spec
-                    One of the characters '<', '^', '>' to
-                    override auto-alignment.
-
-                wrap_spec
-                    Character '=' to indicate the title
-                    should be text wrapped to the width of the table.
+                `Title string syntax`_
 
         Returns:
             str : The text table as a single string.
@@ -1268,24 +1260,9 @@ class MonoTable:
                 Iterable of strings for each column heading.
 
             formats (Iterable[str]):
-                Iterable of format strings of the form
+                Iterable of format directive strings of the form
                 ``[align_spec][option_spec][format_spec]``.
-
-                align_spec
-                    One of the characters '<', '^', '>' to
-                    override auto-alignment.
-
-                option_spec
-                    One or more of `options`_ enclosed by '(' and ')'
-                    separated by ';'.
-
-                        * Each option is allowed once in an option_spec.
-                        * Spacing before and after '=' is ignored except after
-                          ``sep =`` where spacing becomes part of sep.
-                        * Please see `options`_ for option_spec details.
-
-                format_spec
-                    String passed to the format function.
+                `Format directive string syntax`_
 
             cellgrid (Iterable[Iterable[object]]):
                 representing table cells.
@@ -1338,7 +1315,7 @@ class MonoTable:
                 :py:meth:`~MonoTable.table` under the parameter headings.
                 The column tuple has a single heading string.
 
-                The format string syntax is described here
+                The format directive string syntax is described here
                 :py:meth:`~MonoTable.table` under the
                 parameter formats.
                 The column tuple has a single format string.
@@ -1347,14 +1324,7 @@ class MonoTable:
 
             title (str): ``[align_spec][wrap_spec]string``.
                 Text to be aligned and printed above the text table.
-
-                align_spec
-                    One of the characters '<', '^', '>' to
-                    override auto-alignment.
-
-                wrap_spec
-                    Character '=' to indicate the title
-                    should be text wrapped to the width of the table.
+                `Title string syntax`_
         """
         if len(column_tuples) == 0:
             return title
@@ -1380,7 +1350,7 @@ class MonoTable:
                 :py:meth:`~MonoTable.table` under the parameter headings.
                 The column tuple has a single heading string.
 
-                The format string syntax is described here
+                The format directive string syntax is described here
                 :py:meth:`~MonoTable.table` under the
                 parameter formats.
                 The column tuple has a single format string.
@@ -1389,14 +1359,7 @@ class MonoTable:
 
             title (str): ``[align_spec][wrap_spec]string``.
                 Text to be aligned and printed above the text table.
-
-                align_spec
-                    One of the characters '<', '^', '>' to
-                    override auto-alignment.
-
-                wrap_spec
-                    Character '=' to indicate the title
-                    should be text wrapped to the width of the table.
+                `Title string syntax`_
         """
         if len(column_tuples) == 0:
             return title

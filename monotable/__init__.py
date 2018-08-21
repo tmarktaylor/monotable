@@ -18,4 +18,10 @@
 
 """ASCII table: per column format specs, plug-in format functions, multi-line.
 """
-__version__ = '2.0.1'
+__version__ = '2.1.0'
+
+from .mono import HR_ROW
+from .mono import VR_COL
+from .mono import mono
+from .mono import monocol
+

@@ -122,6 +122,132 @@ formatted text will be padded or truncated to the exact width.
 
 - The align_spec_prefix '^' of the formats[1] center justifies the column.
 
+User defined format function (write your own formatting directive)
+------------------------------------------------------------------
+
+Set a user defined format function for the 3rd column.
+
+The user defined directive is plugged in to the table by overriding the
+MonoTable class variable **format_func_map** with a dictionary that contains
+the name of the format function as the key and function object as the value.
+
+The keys in **format_func_map** become directive names that can be specified
+in the directive.
+
+.. testcode::
+
+    import monotable.table
+
+    # User defined format function.
+    def fulfill_menu_request(value, spec):
+        _, _ = value, spec          # avoid unused variable nag
+        return 'Spam!'              # ignore both args
+
+    # Configure MonoTable subclass with the dictionary
+    # of user defined format functions.
+    class FormatFuncsMonoTable(monotable.table.MonoTable):
+        format_func_map = {'fulfill_menu_request': fulfill_menu_request}
+
+    headings = ['Id Number', 'Duties', 'Meal\nPreference']
+    formats = ['', '', '(fulfill_menu_request)']
+    t1 = FormatFuncsMonoTable()
+
+    cells = [[1, 'President and CEO', 'steak'],
+             [2, 'Raise capital', 'eggs'],
+             [3, 'Oversee day to day operations', 'toast']]
+
+    print(t1.table(headings, formats, cells,
+                   title='>User defined format function.'))
+
+.. testoutput::
+
+                           User defined format function.
+    ----------------------------------------------------
+                                              Meal
+    Id Number  Duties                         Preference
+    ----------------------------------------------------
+            1  President and CEO              Spam!
+            2  Raise capital                  Spam!
+            3  Oversee day to day operations  Spam!
+    ----------------------------------------------------
+
+- The user defined format function **fulfill_menu_request()**
+  ignores the arguments and returns the string 'Spam!'.
+- Keys in the dictionary **my_format_func_map** become directive names,
+- The dictionary is configured into a MonoTable subclass called
+  FormatFuncsMonoTable by overriding the class variable **format_func_map**.
+- Alternatively, you can override on an instance by assignment
+  like this:
+
+.. testcode::
+
+  t2 = monotable.table.MonoTable()
+  t2.format_func_map = {'fulfill_menu_request': fulfill_menu_request}
+
+- The Duties column auto-aligns to the left since the cells
+  are strings.
+- The headings auto-align to the alignment of the cell in the first row.
+- The title starts with an ``'>'`` align_spec_char which right aligns
+  the title over the table.
+
+Selecting keys from a dictionary and table borders
+--------------------------------------------------
+
+This example uses monotable's extended format string notation to set
+the format function of the second column. A format string has the form:
+
+    ``[align_spec][directive][format_spec]``
+
+align_spec is one of the characters '<', '^', '>' to override auto-alignment.
+align_spec is not used in this example.
+
+directive is one or more monotable options enclosed by ``'('``
+and ``')'`` separated by ``';'``.  In the second column the directive
+is ``(mformat)``.
+mformat selects the function **monotable.plugin.mformat()**
+as the format function.
+The API section MonoTable.__init__() in the docs describes the other options.
+
+.. testcode::
+
+    import monotable
+
+    headings = ['int', 'Formatted by mformat()']
+    formats = ['',
+        '(mformat)name= {name}\nage= {age:.1f}\ncolor= {favorite_color}']
+    cells = [[2345, dict(name='Row Zero',
+                         age=888.000,
+                         favorite_color='blue')],
+
+             [6789, dict(name='Row One',
+                         age=999.111,
+                         favorite_color='No! Red!')]]
+
+    print(monotable.mono(headings, formats, cells,
+                                         title='mformat() Formatting.',
+                                         bordered=True))
+
+.. testoutput::
+
+          mformat() Formatting.
+    +------+------------------------+
+    |  int | Formatted by mformat() |
+    +======+========================+
+    | 2345 | name= Row Zero         |
+    |      | age= 888.0             |
+    |      | color= blue            |
+    +------+------------------------+
+    | 6789 | name= Row One          |
+    |      | age= 999.1             |
+    |      | color= No! Red!        |
+    +------+------------------------+
+
+- Note the age fixed precision formatting.  This is not possible with
+  template substitution provided by option tformat.
+- Format a bordered table by calling **bordered_table()**
+  instead of **table()**.
+- This example also shows formatted cells with newlines.
+
 Selecting attributes or elements
 --------------------------------
 
@@ -192,50 +318,6 @@ the element indexed by [1] from a sequence.
     --------------
           1  bb
           2  dd
-    --------------
-
-Horizontal and vertical rules
------------------------------
-
-A cell row that starts with value **monotable.table.HR** will be replaced with a
-heading guideline.
-
-The text between columns can be changed with the format option sep.
-By default sep is two spaces.  In this example sep after the first
-column is changed to ``' | '``.  This creates an effect approximating
-a vertical rule.
-
-The last row only has one element.  **monotable** extends short heading,
-formats, and cell rows with the empty string value.  Extra format
-strings are silently ignored.
-
-.. testcode::
-
-    import monotable.table
-
-    headings = ['col-0', 'col-1']
-
-    # specify sep=' | ' between 1st and 2nd columns for vertical rule
-    formats = ['(sep= | )']
-
-    cells = [['time', '12:45'],
-             ['place', 'home'],
-             [monotable.table.HR],      # put a heading guideline here
-             ['sound', 'bell'],
-             ['volume']]          # short row is extended with empty string
-
-    print(monotable.table.table(headings, formats, cells))
-
-.. testoutput::
-
-    --------------
-    col-0  | col-1
-    --------------
-    time   | 12:45
-    place  | home
-    --------------
-    sound  | bell
-    volume |
     --------------
 
 .. _simple-table-label:
@@ -332,3 +414,11 @@ string.Template.substitute().
 - Title auto-alignment is overridden by placing an align_spec char at
   the beginning of the title string.
 
+Tiled table of four tables
+--------------------------
+
+.. _pytest cases of examples:
+   https://github.com/tmarktaylor/monotable/blob/master/test/test_examples.py
+
+See **test_tile_four_tables_together()** near the bottom of
+`pytest cases of examples`_.

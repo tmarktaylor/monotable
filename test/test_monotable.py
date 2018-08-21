@@ -135,7 +135,6 @@ def test_empty_headings_empty_formats_empty_cells():
     """Empty headings, empty formats, and no cells in the cellgrid."""
 
     expected_title = 'My Title is a Good Title'
-    tbl = monotable.table.MonoTable()
     text = monotable.table.table([], [], cellgrid=[[]], title=expected_title)
     assert text == expected_title
 

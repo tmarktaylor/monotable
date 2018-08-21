@@ -1,16 +1,24 @@
-HR, Vertical Align Constants
-============================
+Rules, Vertical Align Constants
+===============================
 
 .. toctree::
    :maxdepth: 2
 
 .. module:: monotable.table
 
+HR_ROW and VR_COL are accesible at the top level module level
+as monotable.HR_ROW and monotable.VR_COL.
+
 Horizontal Rule
 ---------------
+.. autodata:: monotable.mono.HR_ROW
 
 .. autodata:: HR
    :annotation:
+
+Vertical Rule Column
+--------------------
+.. autodata:: monotable.mono.VR_COL
 
 .. _vertical-alignment-constants-label:
 

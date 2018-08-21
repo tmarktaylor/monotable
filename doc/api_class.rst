@@ -11,7 +11,10 @@ Links:
 :py:meth:`~MonoTable.__init__` :py:meth:`~MonoTable.table`
 :py:meth:`~MonoTable.bordered_table` :py:meth:`~MonoTable.row_strings`
 :py:meth:`~MonoTable.cotable` :py:meth:`~MonoTable.cobordered_table`
-`options`_
+:ref:`Title string syntax<Title string syntax>`,
+:ref:`Format directive string syntax<Format directive string syntax>`,
+`options`_,
+:ref:`Auto-alignment<alignment-label>`
 
 .. autoclass:: MonoTable
 .. automethod:: MonoTable.__init__

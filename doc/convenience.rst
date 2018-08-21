@@ -8,25 +8,22 @@ Functions
 
 The convenience functions below are the quickest way to generate an
 Ascii table.
-They are module level functions in the module **monotable.table**.
-They create a temporary instance of the class MonoTable
-and call the same named MonoTable member function.
+They create and configure a temporary instance of the class MonoTable
+and call a member function.
 
-The details of the function parameters are provided in the class MonoTable
-docstrings located by following the links below.
+mono() and monocol() are accessible at the top level module level
+as monotable.mono() and monotable.monocol().
 
-These functions are useful when the default configuration of
-class MonoTable meets the caller's needs.
-
-If MonoTable configuration is required,
+To create a custom MonoTable class,
 please see section :ref:`configuring-label`.
 
-.. do not need links since descriptions are short
-.. Links:
-.. :py:func:`~table`
-.. :py:func:`~bordered_table`
-.. :py:func:`~cotable`
-.. :py:func:`~cobordered_table`
+.. autofunction:: monotable.mono.mono
+.. autofunction:: monotable.mono.monocol
+
+Legacy Functions
+================
+The details of the function parameters are provided in the class MonoTable
+docstrings located by following the links below.
 
 .. autofunction:: table
 .. autofunction:: bordered_table

@@ -8,11 +8,11 @@ How to Configure MonoTable
 
 .. module:: monotable
 
-Two Ways to Customize
----------------------
+Override class vars in subclass
+-------------------------------
 
-1. Create a subclass of MonoTable and override one or more
-   :ref:`class-vars-label`
+Create a subclass of MonoTable and override one or more
+:ref:`class-vars-label`
 
 .. testcode::
 
@@ -38,10 +38,13 @@ Two Ways to Customize
        123  import         4567  this
     ------  ------  -----------  --------------
 
-2. Assign to one or more :ref:`class-vars-label` on an instance.
+Assign to class var names
+-------------------------
 
-   This creates an instance variable that overrides the class variable
-   with an instance variable of the same name.
+Assign to one or more :ref:`class-vars-label` on an instance.
+
+This creates an instance variable that overrides the class variable
+with an instance variable of the same name.
 
 .. testcode::
 
