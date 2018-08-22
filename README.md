@@ -9,6 +9,8 @@ plug-in format functions, column width control.
 
 [Python Package Index/monotable](https://pypi.python.org/pypi/monotable)
 
+[Latest Docs](https://monotable.readthedocs.io/en/latest/?badge=latest#) 
+
 ### master branch status
 
 [![Documentation Status](https://readthedocs.org/projects/monotable/badge/?version=latest)](https://monotable.readthedocs.io/en/latest/?badge=latest) on [Read the Docs](https://readthedocs.org)
