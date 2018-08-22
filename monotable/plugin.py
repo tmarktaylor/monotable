@@ -21,11 +21,30 @@ Any of the functions can be configured into a subclass of
 MonoTable as the default format function or format error exception callback
 function.
 
+Maintainers- Please add new format functions to format_functions dict below.
+
+
    Functions:
+   boolean    Format function that converts the boolean values to strings.
+
+   thousands  Format function that divides by 1.0e3.
+   millions   Format function that divides by 1.0e6.
+   billions   Format function that divides by 1.0e9.
+   trillions  Format function that divides by 1.0e12.
+   milli      Format function that multiplies by 1.0e3.
+   micro      Format function that multiplies by 1.0e6.
+   nano       Format function that multiplies by 1.0e9.
+   pico       Format function that multiplies by 1.0e12.
+   kibi       Format function that divides by 1024.
+   mebi       Format function that divides by 1024^2.
+   gibi       Format function that divides by 1024^3.
+   tebi       Format function that divides by 1024^4.
+
    mformat    Format function adapter of a mapping to str.format().
    pformat    Format function adapter to % operator.
    sformat    Format function adapter to str.format().
    tformat    Format function adapter to Template.substitute().
+
    raise_it   Formatting error callback.  Exception is raised.
    print_it   Formatting error callback.  Exception is printed.
    ignore_it  Formatting error callback.  No action taken.
@@ -43,10 +62,9 @@ except ImportError:
     pass
 
 #
-# Format functions selectable by a format option of the same name.
+# Format functions selectable by a format directive of the same name.
 # These are also useful to override the class variable MonoTable.format_func
 # or on an instance.
-
 
 def boolean(bool_value, format_spec='T,F'):
     # type: (bool, str) -> str
@@ -224,6 +242,29 @@ def tformat(value, format_spec=''):
     return template.substitute(value)
 
 
+# Maintainers- Please add new format functions to format_functions dict.
+#                   directive name  function
+format_functions = {'boolean': boolean,
+                    'thousands': thousands,
+                    'millions': millions,
+                    'billions': billions,
+                    'trillions': trillions,
+                    'milli': milli,
+                    'micro': micro,
+                    'nano': nano,
+                    'pico': pico,
+                    'kibi': kibi,
+                    'mebi': mebi,
+                    'gibi': gibi,
+                    'tebi': tebi,
+                    'mformat': mformat,
+                    'pformat': pformat,
+                    'sformat': sformat,
+                    'tformat': tformat
+                   }
+"""Format functions selectable as format directives."""
+
+
 #
 # Format function error callbacks for use with MonoTable().
 #
@@ -256,7 +297,7 @@ def ignore_it(_):    # type: ignore
 # todo-
 # note-  Designating type: ignore on the callbacks because...
 #        When "from monotable.table import MonoTableCellError" is present
-#        plugin dissappears from dir(monotable).  I am guessing this is due
+#        plugin disappears from dir(monotable).  I am guessing this is due
 #        to a circular import (table <-> plugin), but have not investigated
 #        further to confirm or refute.  If true, it might indicate an
 #        issue with the design.  For now, since static type checking is

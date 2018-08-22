@@ -194,25 +194,9 @@ class FormatScanner:
 
         # Combine hard coded format function options with user supplied
         # format functions.  Note that a user name will hide a hard coded
-        # name.                 option name  function
-        self._format_functions = {'boolean': monotable.plugin.boolean,
-                                  'thousands': monotable.plugin.thousands,
-                                  'millions': monotable.plugin.millions,
-                                  'billions': monotable.plugin.billions,
-                                  'trillions': monotable.plugin.trillions,
-                                  'milli': monotable.plugin.milli,
-                                  'micro': monotable.plugin.micro,
-                                  'nano': monotable.plugin.nano,
-                                  'pico': monotable.plugin.pico,
-                                  'kibi': monotable.plugin.kibi,
-                                  'mebi': monotable.plugin.mebi,
-                                  'gibi': monotable.plugin.gibi,
-                                  'tebi': monotable.plugin.tebi,
-                                  'mformat': monotable.plugin.mformat,
-                                  'pformat': monotable.plugin.pformat,
-                                  'sformat': monotable.plugin.sformat,
-                                  'tformat': monotable.plugin.tformat
-                                  }
+        # name.
+        self._format_functions = dict()
+        self._format_functions.update(monotable.plugin.format_functions)
         if config.format_func_map is not None:
             self._format_functions.update(config.format_func_map)
 
