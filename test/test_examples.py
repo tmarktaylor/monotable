@@ -4,6 +4,7 @@ from collections import namedtuple
 import datetime
 import doctest
 import math
+import pytest
 
 # For experimental type checking this file was annotated such that the command
 # mypy test/test_examples.py --strict --no-strict-boolean doen't produce
@@ -28,6 +29,62 @@ def test_doctest_scanner_py():    # type: () -> None
     failure_count, test_count = doctest.testmod(m=monotable.scanner)
     assert test_count > 0
     assert failure_count == 0
+
+
+def test_py2_mono_extra_keyword_args():
+    """
+    Expect TypeError on unsupported keyword only arg 'bogus'.
+    This test is only required for Python 2.7 code that manually tests for
+    extra keyword only arguments.
+    """
+
+    with pytest.raises(TypeError) as exc_info:
+        _ = monotable.mono(
+            headings=(),
+            formats=(),
+            cellgrid=((),),
+            title='',
+            bogus='yes')
+    print(exc_info.value)
+    assert 'keyword' in str(exc_info.value)
+    assert 'bogus' in str(exc_info.value)
+
+
+def test_py2_monocol_extra_keyword_args():
+    """
+    Expect TypeError on unsupported keyword only arg 'bogus'.
+    This test is only required for Python 2.7 code that manually tests for
+    extra keyword only arguments.
+    """
+
+    column = ('', '', ())
+    columns = (column, column)
+
+    with pytest.raises(TypeError) as exc_info:
+        _ = monotable.monocol(
+            column_tuples=columns,
+            title='',
+            bogus='yes')
+    print(exc_info.value)
+    assert 'keyword' in str(exc_info.value)
+    assert 'bogus' in str(exc_info.value)
+
+
+def test_py2_mono_misspelled_cellgrid_keyword_arg():
+    """
+    Expect TypeError on keyword cells when intended to use cellgrid.
+    This test is only required for Python 2.7 code that manually tests for
+    extra keyword only arguments.
+    """
+
+    with pytest.raises(TypeError) as exc_info:
+        _ = monotable.mono(
+            headings=(),
+            formats=(),
+            cells=((),),    # should be cellgrid
+            title='')
+    assert 'keyword' in str(exc_info.value)
+    assert 'cells' in str(exc_info.value)
 
 
 def test_simple_data_types():    # type: () -> None
@@ -126,6 +183,7 @@ def test_float_and_boolean_formatting():    # type: () -> None
     text2 = monotable.mono(headings, formats, cells, title=title)
     assert text2 == expected
 
+
 def test_malformed_boolean_format_spec():    # type: () -> None
     headings = ['boolean\nno comma', 'boolean\n2 commas']
     formats = ['(boolean)missing-comma', '(boolean)yes,no,maybe']
@@ -195,15 +253,15 @@ def test_cotable_vr_col():    # type: () -> None
     text = monotable.table.cotable(columns, title=title)
 
     expected = '\n'.join([
-        " Float, thousands, datetime, boolean formatting.",
-        "-------------------------------------------------",
-        "    float             |",
-        "precision   units of  |  datetime         bool to",
-        "        3  thousands  |  9/16/16           yes/no",
-        "-------------------------------------------------",
-        "    1.235       35.2  |  week-37-day-260      yes",
-        "  999.877        1.7  |                        no",
-        "-------------------------------------------------"
+        "Float, thousands, datetime, boolean formatting.",
+        "-----------------------------------------------",
+        "    float            |",
+        "precision   units of | datetime         bool to",
+        "        3  thousands | 9/16/16           yes/no",
+        "-----------------------------------------------",
+        "    1.235       35.2 | week-37-day-260      yes",
+        "  999.877        1.7 |                       no",
+        "-----------------------------------------------"
     ])
     assert text == expected
     text2 = monotable.monocol(columns, title=title)
@@ -476,6 +534,9 @@ def test_horizontal_and_vertical_guidelines_and_indent():    # type: () -> None
         "*****------------------",
     ])
     assert text == expected
+
+    text2 = monotable.mono(headings, formats, cells, indent='*****')
+    assert text2 == expected
 
 
 def test_width_format_option():    # type: () -> None
@@ -754,6 +815,446 @@ def test_width_fixed_format_option_only_none_cells():    # type: () -> None
     assert text2 == expected
 
 
+def test_zero_with_numbers_arbitrary_precision():    # type: () -> None
+    """Check zero processing for numbers with non-default float precision."""
+    headings = ['Numbers']
+    formats = ['(zero=--).4f']
+    cells = [[0],
+             [1234567],
+             [0.000000e+00],
+             [1e-04],
+             [1e-05],
+             [-0],
+             [-1234567],
+             [-0.000000e+00],
+             [-1e-04],
+             [-1e-05],
+            ]
+    title = 'zero processing for numbers at arbitrary precision.'
+    text = monotable.mono(headings, formats, cells, title)
+    expected = '\n'.join([
+        "zero processing for numbers at arbitrary precision.",
+        "-------------",
+        "      Numbers",
+        "-------------",
+        "           --",
+        " 1234567.0000",
+        "           --",
+        "       0.0001",
+        "           --",
+        "           --",
+        "-1234567.0000",
+        "           --",
+        "      -0.0001",
+        "           --",
+        "-------------",
+    ])
+    assert text == expected
+
+
+def test_zero_with_numbers_default_precision():  # type: () -> None
+    """Check zero processing for numbers at default precision.
+
+     '...' replacement.
+     """
+
+    headings = ['Numbers']
+    formats = ['(zero=...)']
+    cells = [[0],
+             [8901],
+             [0.000000e+00],
+             [1e-06],
+             [1e-07],    # rounded to 0 by default_float_format_spec.
+             [-0],
+             [-8901],
+             [-0.000000e+00],
+             [-1e-06],
+             [-1e-07],  # rounded to 0 by default_float_format_spec.
+            ]
+    title = 'zero processing for numbers at default precision.'
+    text = monotable.mono(headings, formats, cells, title)
+    expected = '\n'.join([
+        "zero processing for numbers at default precision.",
+        "---------",
+        "  Numbers",
+        "---------",
+        "      ...",
+        "     8901",
+        "      ...",
+        " 0.000001",
+        "      ...",
+        "      ...",
+        "    -8901",
+        "      ...",
+        "-0.000001",
+        "      ...",
+        "---------",
+    ])
+    assert text == expected
+
+
+def test_zero_and_thousands_with_numbers():  # type: () -> None
+    """Check zero processing for numbers with (thousands). Empty replacement."""
+
+    headings = ['Numbers']
+    formats = ['(thousands;zero=).6f']
+    cells = [[0],
+             [8901],
+             [0.000000e+00],
+             [1e-03],
+             [1e-04],
+             [1e-07]]    # rounded to 0 by format_spec='.6f'
+    title = 'zero processing for numbers with (thousands).'
+    text = monotable.mono(headings, formats, cells, title)
+    expected = '\n'.join([
+        "zero processing for numbers with (thousands).",
+        "--------",
+        " Numbers",
+        "--------",
+        "",
+        "8.901000",
+        "",
+        "0.000001",
+        "",
+        "",
+        "--------",
+    ])
+    assert text == expected
+
+
+def test_zero_non_with_numbers():  # type: () -> None
+    """Check zero processing for mostly non numbers. '--' replacement."""
+
+    headings = ['Non-numbers']
+    # '>' align_spec needed since strings auto-align to left.
+    formats = ['>(zero=--)']
+    cells = [[0],
+             [-321],
+             ['1234567'],
+             ['-0.00'],
+             ['a-string'],
+             [tuple([3, 4])],
+             [list()],
+             [None]]
+    title = 'zero processing for non-numbers.'
+    text = monotable.mono(headings, formats, cells, title)
+    expected = '\n'.join([
+        "zero processing for non-numbers.",
+        "-----------",
+        "Non-numbers",
+        "-----------",
+        "         --",    # cell is a number
+        "       -321",
+        "    1234567",
+        "      -0.00",    # cell is not a number
+        "   a-string",
+        "     (3, 4)",
+        "         []",
+        "",               # note trailing spaces were trimmed
+        "-----------",
+    ])
+    assert text == expected
+
+
+def test_parentheses_mixed():  # type: () -> None
+    """Check parentheses processing for mix of () and no ()."""
+
+    headings = ['H', 'mixed ()', 'I']
+    formats = ['', '(parentheses).4f', '']
+    cells = [[3, 0, 'a'],
+             [4, 8901, 'b'],
+             [5, -1, 'c'],
+             [6, -1e-03, 'd'],
+             [7, -8901, 'e'],
+             [8, 1, 'f']]
+    title = 'parentheses processing.'
+    text = monotable.mono(headings, formats, cells, title)
+    expected = '\n'.join([
+        "parentheses processing.",
+        "-----------------",
+        "H     mixed ()  I",
+        "-----------------",
+        "3      0.0000   a",
+        "4   8901.0000   b",
+        "5     (1.0000)  c",
+        "6     (0.0010)  d",
+        "7  (8901.0000)  e",
+        "8      1.0000   f",
+        "-----------------",
+    ])
+    assert text == expected
+
+
+def test_parentheses_all():  # type: () -> None
+    """Check parentheses processing for all ()."""
+
+    headings = ['H', 'all ()', 'I']
+    formats = ['', '(parentheses).4f', '']
+    cells = [[3, -10, 'a'],
+             [4, -8901, 'b'],
+             [5, -1, 'c'],
+             [6, -1e-03, 'd'],
+             [7, -8901, 'e'],
+             [8, -1, 'f']]
+    title = 'parentheses processing all ().'
+    text = monotable.mono(headings, formats, cells, title)
+    expected = '\n'.join([
+        "parentheses processing all ().",
+        "-----------------",
+        "H       all ()  I",
+        "-----------------",
+        "3    (10.0000)  a",
+        "4  (8901.0000)  b",
+        "5     (1.0000)  c",
+        "6     (0.0010)  d",
+        "7  (8901.0000)  e",
+        "8     (1.0000)  f",
+        "-----------------",
+    ])
+    assert text == expected
+
+
+def test_parentheses_none():  # type: () -> None
+    """Check parentheses processing for no ()."""
+
+    headings = ['H', 'no ()', 'I']
+    formats = ['', '(parentheses).4f', '']
+    cells = [[3, 10, 'a'],
+             [4, 8901, 'b'],
+             [5, 1, 'c'],
+             [6, 1e-03, 'd'],
+             [7, 8901, 'e'],
+             [8, 1, 'f']]
+    title = 'parentheses processing no ().'
+    text = monotable.mono(headings, formats, cells, title)
+    expected = '\n'.join([
+        "parentheses processing no ().",
+        "---------------",
+        "H      no ()  I",
+        "---------------",
+        "3    10.0000  a",
+        "4  8901.0000  b",
+        "5     1.0000  c",
+        "6     0.0010  d",
+        "7  8901.0000  e",
+        "8     1.0000  f",
+        "---------------",
+    ])
+    assert text == expected
+
+
+def test_parentheses_ignores_string_numeric_literals():  # type: () -> None
+    """Check parentheses processing ignores strings that look like numbers.
+
+    Note that the (9) auto-aligns to the right since the cell type is a number.
+    """
+
+    headings = ['H', 'str', 'I']
+    formats = ['', '(parentheses)', '']
+    cells = [[3, '-10', 'a'],
+             [4, '8901', 'b'],
+             [5, -9, 'c'],
+             [6, '-1e-03', 'd'],
+             [7, '-8901', 'e'],
+             [8, '1', 'f']]
+    title = 'parentheses processing strings.'
+    text = monotable.mono(headings, formats, cells, title)
+    expected = '\n'.join([
+        "parentheses processing strings.",
+        "------------",
+        "H  str     I",
+        "------------",
+        "3  -10     a",
+        "4  8901    b",
+        "5     (9)  c",
+        "6  -1e-03  d",
+        "7  -8901   e",
+        "8  1       f",
+        "------------",
+    ])
+    assert text == expected
+
+
+def test_none_directive():  # type: () -> None
+    """Check none directive.
+
+    Since None auto-aligns to left, add '>' align spec prefix to the
+    column format string.
+
+    The second column cells contain None items but there is no none=
+    directive so None renders as empty string.
+    """
+
+    headings = ['none', 'hh']
+    formats = ['>(none=n/a).2f', '']
+    cells = [[None, 2],
+             [0, 'ab'],
+             [2134567, 0],
+             [-1, None],
+             [None, None],
+             [987.543, -1],
+             [-8901, 100],
+             [None, 0]]
+    title = 'Check none directive.'
+    text = monotable.mono(headings, formats, cells, title)
+    expected = '\n'.join([
+        "Check none directive.",
+        "---------------",
+        "      none   hh",
+        "---------------",
+        "       n/a    2",
+        "      0.00  ab",
+        "2134567.00    0",
+        "     -1.00",
+        "       n/a",
+        "    987.54   -1",
+        "  -8901.00  100",
+        "       n/a    0",
+        "---------------",
+    ])
+    assert text == expected
+
+
+def test_lsep_ignored_on_first_column():
+    """lsep on first column is silently ignored."""
+    headings = ['h1', 'h2', 'h3']
+    formats = ['(lsep=.!.)']
+    cells = [['A', 'B', 'C'], ['D', 'E', 'F'], ['G', 'H', 'I']]
+    text = monotable.mono(
+        headings, formats, cells, title='lsep 1st col')
+    expected = '\n'.join([
+        "lsep 1st col",
+        "----------",
+        "h1  h2  h3",
+        "----------",
+        "A   B   C",
+        "D   E   F",
+        "G   H   I",
+        "----------",
+    ])
+    assert text == expected
+
+
+def test_rsep_ignored_on_last_column():
+    """rsep on last column is silently ignored."""
+    headings = ['h1', 'h2', 'h3']
+    formats = ['', '', '(rsep=.!.)']
+    cells = [['A', 'B', 'C'], ['D', 'E', 'F'], ['G', 'H', 'I']]
+    text = monotable.mono(
+        headings, formats, cells, title='lsep 1st col')
+    expected = '\n'.join([
+        "lsep 1st col",
+        "----------",
+        "h1  h2  h3",
+        "----------",
+        "A   B   C",
+        "D   E   F",
+        "G   H   I",
+        "----------",
+    ])
+    assert text == expected
+
+
+def test_lsep():
+    """lsep on second column."""
+    headings = ['h1', 'h2', 'h3']
+    formats = ['', '(lsep=.!.)']
+    cells = [['A', 'B', 'C'], ['D', 'E', 'F'], ['G', 'H', 'I']]
+    text = monotable.mono(
+        headings, formats, cells, title='lsep')
+    expected = '\n'.join([
+        "    lsep",
+        "-----------",
+        "h1.!.h2  h3",
+        "-----------",
+        "A .!.B   C",
+        "D .!.E   F",
+        "G .!.H   I",
+        "-----------",
+    ])
+    assert text == expected
+
+
+def test_rsep_on_first_column():
+    """rsep on first column."""
+    headings = ['h1', 'h2', 'h3']
+    formats = ['(rsep=-I-)']
+    cells = [['A', 'B', 'C'], ['D', 'E', 'F'], ['G', 'H', 'I']]
+    text = monotable.mono(
+        headings, formats, cells, title='rsep')
+    expected = '\n'.join([
+        "    rsep",
+        "-----------",
+        "h1-I-h2  h3",
+        "-----------",
+        "A -I-B   C",
+        "D -I-E   F",
+        "G -I-H   I",
+        "-----------",
+    ])
+    assert text == expected
+
+
+def test_lsep_on_last_column():
+    """lsep on last column."""
+    headings = ['h1', 'h2', 'h3']
+    formats = ['', '', '(lsep=xDy)']
+    cells = [['A', 'B', 'C'], ['D', 'E', 'F'], ['G', 'H', 'I']]
+    text = monotable.mono(
+        headings, formats, cells, title='lsep')
+    expected = '\n'.join([
+        "    lsep",
+        "-----------",
+        "h1  h2xDyh3",
+        "-----------",
+        "A   B xDyC",
+        "D   E xDyF",
+        "G   H xDyI",
+        "-----------",
+    ])
+    assert text == expected
+
+
+def test_lsep_supersedes_previous_rsep():
+    """rsep on first column superseded by lsep on second column."""
+    headings = ['h1', 'h2', 'h3']
+    formats = ['(rsep=XXXXX)', '(lsep=.!.)']
+    cells = [['A', 'B', 'C'], ['D', 'E', 'F'], ['G', 'H', 'I']]
+    text = monotable.mono(
+        headings, formats, cells, title='rsep<lsep')
+    expected = '\n'.join([
+        " rsep<lsep",
+        "-----------",
+        "h1.!.h2  h3",
+        "-----------",
+        "A .!.B   C",
+        "D .!.E   F",
+        "G .!.H   I",
+        "-----------",
+    ])
+    assert text == expected
+
+
+def test_lsep_and_rsep():
+    """lsep and rsep on the same column (like VR_COLUMN)."""
+    headings = ['h1', 'h2', 'h3']
+    formats = ['', '(lsep=|| ;rsep= !!)']
+    cells = [['A', 'B', 'C'], ['D', 'E', 'F'], ['G', 'H', 'I']]
+    text = monotable.mono(
+        headings, formats, cells, title='lsep and rsep')
+    expected = '\n'.join([
+        "lsep and rsep",
+        "------------",
+        "h1|| h2 !!h3",
+        "------------",
+        "A || B  !!C",
+        "D || E  !!F",
+        "G || H  !!I",
+        "------------",
+    ])
+    assert text == expected
+
+
 def test_auto_align_mixed_cell_types_in_column():    # type: () -> None
     """Check auto alignment when a column has numeric and non-numeric types."""
 
@@ -916,6 +1417,51 @@ def test_user_defined_format_function():    # type: () -> None
     ])
     assert text == expected
 
+    text2 = monotable.mono(
+        headings, formats, cells,
+        title='>User defined format function.',
+        format_func_map=myformatfuncmap)
+    assert text2 == expected
+
+
+def test_example_guideline_chars_and_right_align():    # type: () -> None
+    """Omit bottom guideline, change others, right align left column.
+
+    Right align the left column, the None cell string 'rest' should be
+    right aligned.
+    """
+
+    headings = ['purchased\nparrot\nheart\nrate', 'life\nstate']
+    # > is needed to right align None cell since it auto-aligns to left.
+    # monotable uses empty string to format the second column.
+    formats = ['>(none=rest).0f']
+    cells = [[0, 'demised'],
+             [0.0, 'passed on'],
+             [None, 'is no more'],
+             [-1],
+             [0, 'ceased to be']]    # type: List[List[object]]
+    text = monotable.mono(
+        headings, formats, cells,
+        title='Complaint\n(registered)',
+        # top guideline is equals, heading is period, bottom is omitted.
+        guideline_chars='=. ')
+    expected = '\n'.join([
+        "       Complaint",
+        "      (registered)",
+        "=======================",
+        "purchased",
+        "   parrot",
+        "    heart  life",
+        "     rate  state",
+        ".......................",
+        "        0  demised",
+        "        0  passed on",
+        "     rest  is no more",
+        "       -1",
+        "        0  ceased to be"
+    ])
+    assert text == expected
+
 
 def test_default_float_format_spec():    # type: () -> None
     """Change default_float_format_spec.
@@ -928,8 +1474,7 @@ def test_default_float_format_spec():    # type: () -> None
     headings = ['.1f', '.3f', '.5f', 'default=.4f']
     formats = ['.1f', '.3f', '.5f']
     t = monotable.table.MonoTable()
-    floatspec = '.4f'
-    t.default_float_format_spec = floatspec
+    t.default_float_format_spec = '.4f'
     title = 'Different float precision in each column.'
     text = t.table(headings, formats, cells, title=title)
     expected = '\n'.join([
@@ -942,10 +1487,6 @@ def test_default_float_format_spec():    # type: () -> None
     ])
     assert text == expected
 
-    text2 = monotable.mono(headings, formats, cells, title=title,
-                           floatspec=floatspec)
-    assert text2 == expected
-
 
 def test_disable_default_float_format_spec():    # type: () -> None
     """Disable default_float_format_spec feature by setting to ''.
@@ -957,8 +1498,7 @@ def test_disable_default_float_format_spec():    # type: () -> None
     headings = ['.1f', '.3f', '.5f', 'disable\ndefault_float_format_spec']
     formats = ['.1f', '.3f', '.5f']
     t = monotable.table.MonoTable()
-    floatspec = ''
-    t.default_float_format_spec = floatspec
+    t.default_float_format_spec = ''
     title = '<Disable default in last column.'
     text = t.table(headings, formats, cells, title=title)
     expected = '\n'.join([
@@ -972,9 +1512,6 @@ def test_disable_default_float_format_spec():    # type: () -> None
     ])
     assert text == expected
 
-    text2 = monotable.mono(headings, formats, cells, title=title,
-                           floatspec=floatspec)
-    assert text2 == expected
 
 def test_override_format_none_as_with_auto_alignment():    # type: () -> None
     """Override class variable format_none_as."""
@@ -1053,8 +1590,7 @@ def test_heading_left_align_spec_and_format_left_align_spec():    # type: () -> 
     headings = ['.1f', '.3f', '<.5f', 'default=.4f']
     formats = ['.1f', '<.3f', '.5f']
     t = monotable.table.MonoTable()
-    floatspec = '.4f'
-    t.default_float_format_spec = floatspec
+    t.default_float_format_spec = '.4f'
     title = 'Different float precision in each column.'
     text = t.table(headings, formats, cells, title=title)
     expected = '\n'.join([
@@ -1068,10 +1604,6 @@ def test_heading_left_align_spec_and_format_left_align_spec():    # type: () -> 
     ])
     assert text == expected
 
-    text2 = monotable.mono(headings, formats, cells, title=title,
-                           floatspec=floatspec)
-    assert text2 == expected
-
 
 def test_heading_center_align_spec_and_format_center_align_spec():    # type: () -> None
     """Test center align_spec.
@@ -1084,8 +1616,7 @@ def test_heading_center_align_spec_and_format_center_align_spec():    # type: ()
     headings = ['.1f', '.3f', '^.5f', 'default=.4f']
     formats = ['.1f', '^.3f', '.5f']
     t = monotable.table.MonoTable()
-    floatspec = '.4f'
-    t.default_float_format_spec = floatspec
+    t.default_float_format_spec = '.4f'
     title = 'Different float precision in each column.'
     text = t.table(headings, formats, cells, title=title)
     expected = '\n'.join([
@@ -1097,10 +1628,6 @@ def test_heading_center_align_spec_and_format_center_align_spec():    # type: ()
         "--------------------------------",
     ])
     assert text == expected
-
-    text2 = monotable.mono(headings, formats, cells, title=title,
-                           floatspec=floatspec)
-    assert text2 == expected
 
 
 def test_heading_and_format_right_align_spec():    # type: () -> None
@@ -1116,7 +1643,8 @@ def test_heading_and_format_right_align_spec():    # type: () -> None
     class FloatPoint4MonoTable(monotable.table.MonoTable):
         default_float_format_spec = '.4f'
     t = FloatPoint4MonoTable()
-    text = t.table(headings, formats, cells, title='Different float precision in each column.')
+    text = t.table(headings, formats, cells,
+                   title='Different float precision in each column.')
     expected = '\n'.join([
         "Different float precision in each column.",
         "--------------------------------",
@@ -1226,8 +1754,9 @@ def test_override_guideline_chars():    # type: () -> None
     assert text == expected
 
     text2 = monotable.mono(headings, formats, cells, title=title,
-                           guidelines=guidelines)
+                           guideline_chars=guidelines)
     assert text2 == expected
+
 
 def test_override_separated_guidelines():    # type: () -> None
     class SeparatedMonoTable(monotable.table.MonoTable):
@@ -1242,7 +1771,7 @@ def test_override_separated_guidelines():    # type: () -> None
              ['pformat', 'monotable.plugin.pformat', 'printf style'],
              ['sformat', 'monotable.plugin.sformat', 'str.format()'],
              ['tformat', 'monotable.plugin.tformat', 'string.Template()'],
-             ['function-name', '\\', 'user defined function']]
+             ['function-name', '--', 'user defined function']]
 
     text = t.table(headings, [], cells)
     expected = '\n'.join([
@@ -1253,7 +1782,7 @@ def test_override_separated_guidelines():    # type: () -> None
         "pformat        monotable.plugin.pformat  printf style",
         "sformat        monotable.plugin.sformat  str.format()",
         "tformat        monotable.plugin.tformat  string.Template()",
-        "function-name  \                         user defined function",
+        "function-name  --                        user defined function",
         "=============  ========================  =========================",
     ])
     assert text == expected
@@ -1305,7 +1834,7 @@ def test_omit_top_and_bottom_guidelines():    # type: () -> None
     assert text == expected
 
     text2 = monotable.mono(headings, formats, cells, title=title,
-                           guidelines=guidelines)
+                           guideline_chars=guidelines)
     assert text2 == expected
 
 def test_top_guideline_is_dots_and_only_guideline():    # type: () -> None
@@ -1331,7 +1860,7 @@ def test_top_guideline_is_dots_and_only_guideline():    # type: () -> None
     assert text == expected
 
     text2 = monotable.mono(headings, formats, cells, title=title,
-                           guidelines=guidelines)
+                           guideline_chars=guidelines)
     assert text2 == expected
 
 

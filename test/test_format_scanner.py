@@ -124,7 +124,6 @@ def test_allowed_format_functions_user_hides_default_format_function():
     list of expected format functions returned by _allowed_format_functions().
     """
 
-
     # note- The user defined format
     expected_user_defined_format_functions = [
         '  myformat - <function ',
@@ -173,7 +172,11 @@ def test_allowed_options(format_scanner):
         '            Use to qualify width=N option.',
         '  wrap    - wrap/re-wrap to width=N.',
         '            Use to qualify width=N option.',
-        '  sep=ccc - characters after sep= are the column separator.',
+        '  lsep=ccc - characters after lsep= go to left of column.',
+        '  rsep=ccc - characters after rsep= go to right of column.',
+        '  none=ccc - None formats as the characters after none=.',
+        '  zero=ccc - if all digits are zero replace with ccc.',
+        '  parentheses if minus sign, enclose in parentheses.',
         ''
     ])
 
@@ -258,13 +261,20 @@ def test_parse_nested_start_end_char_pairs(format_scanner):
 def test_init_parse_all_good_options():
     """Prove a complex valid format_str produces expected attributes."""
 
-    format_str = '(width=22;wrap;sep= | ;pformat){:2.7d}'
+    format_str = '(width=22;wrap;sep= | ;none=...;pformat){:2.7d}'
     fs = monotable.scanner.FormatScanner(format_str, MONOTABLE_CONFIG)
     assert fs.error_text == ''
     assert fs.width == 22
     assert fs.wrap is True
     assert fs.sep == ' | '
     assert fs.format_func == monotable.plugin.pformat
+
+    assert fs.format_spec == '{:2.7d}'
+    assert fs.align == monotable.alignment.NOT_SPECIFIED
+    assert fs.fixed is False
+    assert fs.zero is None
+    assert fs.none == '...'
+    assert fs.parentheses is False
 
 
 # List of good format_str concentrating on the option_spec part
@@ -291,9 +301,30 @@ good_format_str_list = [
     '(  width  =  3)'
     '( width = 4;fixed)',
     '(  width = 4; fixed )',
+    '(fixed)',    # note- fixed w/o width= is silently ignored
+    '(wrap)',     # note- wrap w/o width= is silently ignored
+    '( fixed),'
+    '(fixed '
+    '(none=...)'
+    'none=)',
+    'none=  )',
+    '(zero=--)'
+    '( zero=--)'
+    '(zero=...)'
+    'zero=)',
+    'zero=  )',
+    '(parentheses)'
+    '( parentheses)'
+    '(parentheses )'
     '(sep=)',
     '( sep=)',
     '(  sep= )',
+    '(lsep=)',
+    '( lsep=)',
+    '(  lsep= )',
+    '(rsep=)',
+    '( rsep=)',
+    '(  rsep= )',
     '( sformat)',
     '(sformat )',
     '( pformat)',
@@ -322,7 +353,7 @@ def test_init_parse_extra_spacing(a_good_format_str):
 
 
 # List of illegal format_str concentrating on the option_spec part
-# with various typos in the options.
+# of the formatting directive with various typos.
 bad_format_str_list = [
     # comma is a bad delimiter
     '(width=22;wrap,sep= | ;pformat){:2.7d}',
@@ -348,6 +379,23 @@ bad_format_str_list = [
     # sep option has no '='
     '(sep){:2.7d}',
 
+    # lsep option has no '='
+    '(lsep){:2.7d}',
+
+    # rsep option has no '='
+    '(rsep){:2.7d}',
+
+    # none option has no '='
+    '(none){:2.7d}',
+
+    # zero option has no '='
+    '(zero){:2.7d}',
+
+    # specify unexpected = for non format function options (directives).
+    '(fixed=ccc)',
+    '(wrap=ccc)',
+    '(parentheses=ccc)',
+
     # extra '='
     '(width=4=){:2.7d}',
 
@@ -370,7 +418,12 @@ bad_format_str_list = [
     # illegal wrap arg
     '(wrap=A;width=10)',
     '(wrap=1)',
-    ]
+
+    # illegal parentheses arg
+    '(parentheses=)',
+    '(parentheses=A)',
+    '(parentheses=1)',
+]
 
 
 @pytest.mark.parametrize("a_bad_format_str", bad_format_str_list)
@@ -379,40 +432,74 @@ def test_parse_assorted_bad_options(a_bad_format_str):
     assert fs.error_text[:14] == 'In option_spec'
 
 
+def make_shuffled_option_list():
+    """Run off line to produce a shuffled_option_list to paste in below.
+
+    Note: The correctness of the output depends on the correctness
+    of the list options below.
+
+    Note: The options list below does not cover all options.
+
+    These are cmd.exe commands on Windows that will invoke this function.
+    The virtual env is in a folder at the same level as monotable top level.
+    You will need pytest in the virtual env.  I am using py 3.7.0.
+    I just cut and paste the 8 commands into cmd.
+
+    cd <YOUR_PATH_TO_MONOTABLE>
+    set PYTHONPATH=%PYTHONPATH%;<YOUR_PATH_TO_MONOTABLE>\test
+    ..\venv\scripts\activate
+    py
+    import test_format_scanner
+    test_format_scanner.make_shuffled_option_list()
+    exit()
+    deactivate
+    """
+    import random
+    options = [' sep =ZZZ',
+               'wrap',
+               'width= 10',
+               'pformat',
+               'fixed',
+               'zero=...',
+               'parentheses'
+               ]
+    shuffled = []
+    for _ in range(10):
+        random.shuffle(options)
+        directive_string = "    '" + '<(' + ';'.join(options) + ')F' + "',"
+        shuffled.append(directive_string)
+    print('\n'.join(shuffled))
+
+
 def valid_options_shuffled_helper(fs):
     """Check a FormatScanner instance in test_valid_options_shuffled()."""
-
+    assert fs.format_spec == 'F'
     assert fs.error_text == ''
     assert fs.align == LEFT
     assert fs.width == 10
     assert fs.fixed is True
     assert fs.wrap is True
     assert fs.sep == 'ZZZ'
+    assert fs.zero == '...'
+    assert fs.none is None
+    assert fs.parentheses is True
 
 
 # List of good format_str where the option_spec part has the same
 # valid options, just in different orders.
+# Maintainers Use make_shuffled_option_list() above to generate the list.
 shuffled_option_list = [
-    '<( sep =ZZZ;wrap;width= 10;pformat;fixed)my_format_spec',
-    '<( sep =ZZZ;fixed;wrap;pformat;width= 10)my_format_spec',
-    '<(width= 10;pformat;wrap;fixed; sep =ZZZ)my_format_spec',
-    '<( sep =ZZZ;width= 10;wrap;fixed;pformat)my_format_spec',
-    '<(pformat;wrap;fixed;width= 10; sep =ZZZ)my_format_spec',
-    '<( sep =ZZZ;pformat;fixed;wrap;width= 10)my_format_spec',
-    '<(fixed;pformat;width= 10; sep =ZZZ;wrap)my_format_spec',
-    '<(pformat;wrap; sep =ZZZ;fixed;width= 10)my_format_spec',
-    '<(wrap;pformat;fixed; sep =ZZZ;width= 10)my_format_spec',
-    '<(pformat;fixed; sep =ZZZ;wrap;width= 10)my_format_spec',
-    '<( pformat;width= 10;wrap; sep =ZZZ;fixed)my_format_spec',
-    '<(fixed;width= 10; sep =ZZZ;wrap;pformat)my_format_spec',
-    '<( wrap; sep =ZZZ;fixed;width= 10;pformat)my_format_spec',
-    '<( sep =ZZZ;fixed;width= 10;pformat;wrap)my_format_spec',
-    '<( sep =ZZZ;wrap;pformat;width= 10;fixed)my_format_spec',
-    '<(wrap;pformat; sep =ZZZ;fixed;width= 10)my_format_spec',
-    '<(pformat;fixed; sep =ZZZ;width= 10;wrap)my_format_spec',
-    '<( pformat;width= 10; sep =ZZZ;fixed;wrap)my_format_spec',
-    '<( wrap;pformat; sep =ZZZ;width= 10;fixed)my_format_spec',
-    '<(width= 10; sep =ZZZ;fixed;pformat;wrap)my_format_spec']
+    '<(width= 10;pformat;zero=...;fixed;parentheses; sep =ZZZ;wrap)F',
+    '<(fixed;width= 10;wrap;zero=...;pformat;parentheses; sep =ZZZ)F',
+    '<(pformat;wrap; sep =ZZZ;parentheses;fixed;width= 10;zero=...)F',
+    '<(pformat;zero=...;parentheses;fixed;wrap; sep =ZZZ;width= 10)F',
+    '<(parentheses;fixed; sep =ZZZ;pformat;zero=...;width= 10;wrap)F',
+    '<(width= 10;parentheses;fixed; sep =ZZZ;pformat;wrap;zero=...)F',
+    '<(fixed;parentheses;wrap; sep =ZZZ;pformat;width= 10;zero=...)F',
+    '<( sep =ZZZ;width= 10;zero=...;wrap;pformat;parentheses;fixed)F',
+    '<(parentheses;width= 10;fixed;pformat;zero=...; sep =ZZZ;wrap)F',
+    '<(pformat;parentheses;wrap;width= 10;zero=...; sep =ZZZ;fixed)F',
+]
 
 
 @pytest.mark.parametrize("a_shuffled_option_format_str",
@@ -480,7 +567,75 @@ def test_sep_is_spaces():
 
     fs = monotable.scanner.FormatScanner('(sep=     )F', MONOTABLE_CONFIG)
     assert fs.error_text == ''
+    assert fs.format_spec == 'F'
+    assert fs.align == monotable.alignment.NOT_SPECIFIED
+    assert fs.width is None
+    assert fs.fixed is False
+    assert fs.wrap is False
     assert fs.sep == '     '
+    assert fs.none is None
+    assert fs.zero is None
+    assert fs.parentheses is False
+
+
+def test_zero():
+    fs = monotable.scanner.FormatScanner('(zero=+++)F', MONOTABLE_CONFIG)
+    assert fs.error_text == ''
+    assert fs.format_spec == 'F'
+    assert fs.align == monotable.alignment.NOT_SPECIFIED
+    assert fs.width is None
+    assert fs.fixed is False
+    assert fs.wrap is False
+    assert fs.sep == MONOTABLE_CONFIG.sep
+    assert fs.none is None
+    assert fs.zero == '+++'
+    assert fs.parentheses is False
+
+
+def test_empty_zero():
+    """Test scanning valid sep= with no text."""
+
+    fs = monotable.scanner.FormatScanner('(zero=)F', MONOTABLE_CONFIG)
+    assert fs.error_text == ''
+    assert fs.format_spec == 'F'
+    assert fs.align == monotable.alignment.NOT_SPECIFIED
+    assert fs.width is None
+    assert fs.fixed is False
+    assert fs.wrap is False
+    assert fs.sep == MONOTABLE_CONFIG.sep
+    assert fs.none is None
+    assert fs.zero == ''
+    assert fs.parentheses is False
+
+
+def test_zero_is_spaces():
+    """Test scanning valid sep= with no text."""
+
+    fs = monotable.scanner.FormatScanner('(zero=    )F', MONOTABLE_CONFIG)
+    assert fs.error_text == ''
+    assert fs.format_spec == 'F'
+    assert fs.align == monotable.alignment.NOT_SPECIFIED
+    assert fs.width is None
+    assert fs.fixed is False
+    assert fs.wrap is False
+    assert fs.sep == MONOTABLE_CONFIG.sep
+    assert fs.none is None
+    assert fs.zero == '    '
+    assert fs.parentheses is False
+
+
+def test_parentheses():
+    fs = monotable.scanner.FormatScanner('(parentheses)F', MONOTABLE_CONFIG)
+    assert fs.error_text == ''
+    assert fs.format_spec == 'F'
+    assert fs.align == monotable.alignment.NOT_SPECIFIED
+    assert fs.width is None
+    assert fs.fixed is False
+    assert fs.wrap is False
+    assert fs.sep == MONOTABLE_CONFIG.sep
+    assert fs.none is None
+    assert fs.zero is None
+    assert fs.parentheses is True
 
 
 def test_align_left():

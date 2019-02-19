@@ -1,4 +1,4 @@
-# Copyright 2018 Mark Taylor
+# Copyright 2019 Mark Taylor
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -50,28 +50,11 @@ class FormatScanner:
     The format string takes the form [align_spec][option_spec][format_spec].
     See formats description in MonoTable.__init().
 
-    The following format functions are selectable using an option_spec
-    in addition to any supplied by format_func_map.
+    The option_spec may select a format function and may select other options.
 
-        option name     function
-        --------------------------
-        'boolean'        boolean
-        'thousands'      thousands
-        'millions'       millions
-        'billions'       billions
-        'trillions'      trillions
-        'milli'          milli
-        'micro'          micro
-        'nano'           nano
-        'pico'           pico
-        'kibi'           kibi
-        'mebi'           mebi
-        'gibi'           gibi
-        'tebi'           tebi
-        'mformat'        mformat
-        'pformat'        pformat
-        'sformat'        sformat
-        'tformat'        tformat
+    The format functions in monotable.plugin.format_functions
+    are selectable using an option_spec in addition to any supplied by
+    format_func_map.
 
     An example usage:
 
@@ -138,6 +121,15 @@ class FormatScanner:
             Specifies separator string to be placed after the formatted
             text.
 
+        none
+            Specifies the formatted text for None cell value.
+
+        zero
+            Specifies the string to replace numbers that format to
+            all digits of 0.
+
+        parentheses
+            When formatted text starts with '-', enclose in parentheses.
     """
 
     def __init__(self, format_str, config):
@@ -201,11 +193,18 @@ class FormatScanner:
             self._format_functions.update(config.format_func_map)
 
         self.error_text = ''
+        # if an arg is expected and there is no default value, set to None,
         self.width = None    # type: Optional[int]
         self.fixed = False
         self.wrap = False
+        self.lsep = None
+        self.rsep = None
         self.sep = config.sep
+        self.zero = None
+        self.none = None
+        self.parentheses = False
         self.format_func = config.format_func
+
         self.align, option_format_spec = monotable.alignment.split_up(
             format_str, align_spec_chars)
         if not option_spec_delimiters:
@@ -246,7 +245,8 @@ class FormatScanner:
         """Scan option_spec string for options and values.
 
         Updates instance variables align, error_text, format_func,
-        format_spec, width, fixed, wrap, and sep per scan results.
+        format_spec, width, fixed, wrap, sep, zero, none, and parentheses
+        per scan results.
 
         option_spec
             (*)  where * is one or more option names separated by ;.
@@ -265,16 +265,27 @@ class FormatScanner:
         option_list = option_spec.split(self._between)    # type: List[str]
 
         # scan for each option, process, and remove from option_list
-        self._scan_width(option_list)
-        self._scan_fixed(option_list)
-        self._scan_wrap(option_list)
-        self._scan_sep(option_list)
+        self._scan_int_arg('width', option_list)
+        self._scan_no_arg('fixed', option_list)
+        self._scan_no_arg('wrap', option_list)
+        self._scan_str_arg('lsep', option_list)
+        self._scan_str_arg('rsep', option_list)
+        self._scan_str_arg('sep', option_list)
+        self._scan_str_arg('none', option_list)
+        self._scan_str_arg('zero', option_list)
+        self._scan_no_arg('parentheses', option_list)
+
         self._scan_format_func(option_list)
 
         # silently ignore fixed or wrap options if no width=N option
         if self.width is None:
             self.wrap = False
             self.fixed = False
+
+        # rsep is an alias for sep since version 2.1.0
+        # unconditionally replace sep with rsep if rsep is specified.
+        if self.rsep is not None:
+            self.sep = self.rsep
 
         if len(option_list) > 0:
             # All the allowed option expressions have been removed from
@@ -290,49 +301,38 @@ class FormatScanner:
             error_messages.extend(self._allowed_options())
             self.error_text = '\n'.join(error_messages)
 
-    def _scan_width(self, option_list):
-        # type: (List[str]) -> None
-        """Scan option_list for width option and arg, remove if found."""
+    def _scan_no_arg(self, option_name, option_list):
+        # type: (str, List[str]) -> None
+        """Scan option_list for option_name option, remove if found."""
         for option in option_list:
             name, arg = self._option_and_arg(option)
-            if name == 'width':
+            if name == option_name:
+                if arg is None:
+                    setattr(self, option_name, True)
+                    option_list.remove(option)
+                    break
+
+    def _scan_int_arg(self, option_name, option_list):
+        # type: (str, List[str]) -> None
+        """Scan option_list for option_name option + int arg and remove."""
+        for option in option_list:
+            name, arg = self._option_and_arg(option)
+            if name == option_name:
                 value = self._scan_gt_value(arg)
                 if value is not None:
-                    self.width = value
+                    setattr(self, option_name, value)
                     option_list.remove(option)
                     break
 
-    def _scan_fixed(self, option_list):
-        # type: (List[str]) -> None
-        """Scan option_list for fixed option, remove if found."""
+    def _scan_str_arg(self, option_name, option_list):
+        # type: (str, List[str]) -> None
+        """Scan option_list for option_name option + string arg and remove."""
         for option in option_list:
             name, arg = self._option_and_arg(option)
-            if name == 'fixed':
-                if arg is None:
-                    self.fixed = True
-                    option_list.remove(option)
-                    break
-
-    def _scan_wrap(self, option_list):
-        # type: (List[str]) -> None
-        """Scan option_list for wrap option, remove if found."""
-        for option in option_list:
-            name, arg = self._option_and_arg(option)
-            if name == 'wrap':
-                if arg is None:
-                    self.wrap = True
-                    option_list.remove(option)
-                    break
-
-    def _scan_sep(self, option_list):
-        # type: (List[str]) -> None
-        """Scan option_list for sep option and arg, remove if found."""
-        for option in option_list:
-            name, arg = self._option_and_arg(option)
-            if name == 'sep':
+            if name == option_name:
                 # Keep rest after '='.  OK if empty string after '='.
                 if arg is not None:
-                    self.sep = arg
+                    setattr(self, option_name, arg)
                     option_list.remove(option)
                     break
 
@@ -400,7 +400,11 @@ class FormatScanner:
                  '            Use to qualify width=N option.',
                  '  wrap    - wrap/re-wrap to width=N.',
                  '            Use to qualify width=N option.',
-                 '  sep=ccc - characters after sep= are the column separator.',
+                 '  lsep=ccc - characters after lsep= go to left of column.',
+                 '  rsep=ccc - characters after rsep= go to right of column.',
+                 '  none=ccc - None formats as the characters after none=.',
+                 '  zero=ccc - if all digits are zero replace with ccc.',
+                 '  parentheses if minus sign, enclose in parentheses.',
                  ]
         lines.extend(self._allowed_format_functions())
         return lines

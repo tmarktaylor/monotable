@@ -559,17 +559,22 @@ def test_column_oriented_middle_column_shorter():
 
 
 def test_mixed_float_and_string_columns():
-    column0 = ('', '', ('col0', 'col1'))
+    # column 1 has no format_spec so empty string is used to
+    # format the string 'abc' and the default float format spec is used
+    # to format the two floats.
+    column0 = ('', '', ('row0', 'row1'))
     column1 = ('', '>', (1.5, 4.56, 'abc'))
     column_tuples = (column0, column1)
-    text = monotable.table.cobordered_table([column0, column1])
+    text = monotable.table.cotable(column_tuples)
     expected = '\n'.join([
-        "----------"
-        "col0   1.5",
-        "col1  4.56",
-        "       abc",
-        "----------"
+        "--------------",
+        "row0  1.500000",
+        "row1  4.560000",
+        "           abc",
+        "--------------"
     ])
+    print(text)
+    assert text == expected
 
 
 def test_bordered_column_oriented_left_column_shorter():

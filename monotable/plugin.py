@@ -1,4 +1,4 @@
-# Copyright 2018 Mark Taylor
+# Copyright 2019 Mark Taylor
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -65,6 +65,7 @@ except ImportError:
 # Format functions selectable by a format directive of the same name.
 # These are also useful to override the class variable MonoTable.format_func
 # or on an instance.
+
 
 def boolean(bool_value, format_spec='T,F'):
     # type: (bool, str) -> str
@@ -243,27 +244,27 @@ def tformat(value, format_spec=''):
 
 
 # Maintainers- Please add new format functions to format_functions dict.
-#                   directive name  function
-format_functions = {'boolean': boolean,
-                    'thousands': thousands,
-                    'millions': millions,
-                    'billions': billions,
-                    'trillions': trillions,
-                    'milli': milli,
-                    'micro': micro,
-                    'nano': nano,
-                    'pico': pico,
-                    'kibi': kibi,
-                    'mebi': mebi,
-                    'gibi': gibi,
-                    'tebi': tebi,
-                    'mformat': mformat,
-                    'pformat': pformat,
-                    'sformat': sformat,
-                    'tformat': tformat
-                   }
+# directive name: function
+format_functions = {
+    'boolean': boolean,
+    'thousands': thousands,
+    'millions': millions,
+    'billions': billions,
+    'trillions': trillions,
+    'milli': milli,
+    'micro': micro,
+    'nano': nano,
+    'pico': pico,
+    'kibi': kibi,
+    'mebi': mebi,
+    'gibi': gibi,
+    'tebi': tebi,
+    'mformat': mformat,
+    'pformat': pformat,
+    'sformat': sformat,
+    'tformat': tformat
+}
 """Format functions selectable as format directives."""
-
 
 #
 # Format function error callbacks for use with MonoTable().
