@@ -64,8 +64,7 @@ def make_long_description():
     which installs sphinx including the script rst2html5.py
     (rst2html.py in py 2.7).
     Then run a shell command something like this:
-    python setup.py --long-description |
-        C:\Python27\Scripts\rst2html.py - readme.html
+    python readme_preview.py <path to>\Scripts\rst2html5.py readme.html
     """
     here = path.abspath(path.dirname(__file__))
     with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
@@ -86,7 +85,7 @@ setup(
     name='monotable',
     version='2.1.0',
     description=('ASCII table with per column format specs, '
-                 'multi-line content, integrated formatting, '
+                 'multi-line content, formatting directives, '
                  'column width control.'),
     long_description=make_long_description(),
     url='https://github.com/tmarktaylor/monotable',
