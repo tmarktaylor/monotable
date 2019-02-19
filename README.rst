@@ -19,8 +19,6 @@
    https://monotable.readthedocs.io/en/latest//index.html
 .. _More Examples:
    https://monotable.readthedocs.io/en/latest/more_examples.html
-.. _Full List of Features:
-   https://monotable.readthedocs.io/en/latest/features.html
 .. _Read the Docs:
    https://readthedocs.org
 .. _Repository:
@@ -38,21 +36,20 @@ Introduction, Installation
 Monotable is a Python library that generates an ASCII table from
 tabular cell data that looks *pretty* in a monospaced font.
 
-In many applications the cell data requires pre-formatting.
-Monotable offers formatting directives for individual columns.
-You can also write and plug in your own formatting directives.
+Monotable offers formatting directives to reduce messy table
+pre-formatting code.  You can set directives for each column.
+You can also write and plug in your own format function directives.
 
 Here is a list of some of the things Monotable does:
 
 - Allows multi-line title, heading, and cell strings.
 - Supports column oriented cell data.
 - Generate a table with borders.
-- Directives to limit column width.
+- Directives to limit column width and text wrap.
 - Add horizontal and vertical rules.
+- `List of format directives`_.
+- `List of format function directives`_.
 - Is *thoroughly* documented and tested.
-
-More features are described in `Full List of Features`_  on ReadTheDocs.
-
 
 Installation
 ------------
@@ -67,130 +64,196 @@ Examples
 Per column format specifications
 --------------------------------
 
+Specify format string for each column.
+
 .. testcode::
 
-    import monotable
-    headings = ['int', 'percent']
+    from monotable import mono
+    headings = ['comma', 'percent']
     formats = [',', '.1%']
     cells = [[123456789, 0.33], [2345678, 0.995]]
-    print(monotable.mono(headings, formats, cells,
-                   title='=Comma and percent formats.'))
+    print(mono(
+        headings, formats, cells, title="',' and '%' formats."))
 
 .. testoutput::
 
-     Comma and percent
-          formats.
+    ',' and '%' formats.
     --------------------
-            int  percent
+          comma  percent
     --------------------
     123,456,789    33.0%
       2,345,678    99.5%
     --------------------
 
-- When no directive is specified is supplied
-  the built-in function **format(value, format_spec)** is used.
-- Format directives in the list **formats** are assigned to columns from
-  left to right.
-- The rest of the string after the (*) is passed to format
-  function as the format_spec parameter.
+- List **formats** contains the format directives.
+  They are assigned to columns from left to right.
+- Here the format directives are just format specifications.
+- For each cell in the column, it and the format specification is passed
+  to the built-in function **format(value, format_spec)**.
 - To write a format_spec, consult Python's
   `Format Specification Mini-Language`_.
+- The cells are organized as a list of rows where each row is a list
+  of cells.
 
-Format directives
------------------
+zero and none format directives
+-------------------------------
 
+Special handling for zero values and cell type None.
+
+.. testcode::
+
+    from datetime import datetime
+    from monotable import mono
+
+    headings = [
+        'hour',
+        '24 hour\ntemp\nchange',
+        'wind\nspeed',
+        ]
+
+    formats = [
+        '%H',
+        '(zero=same)+.0f',
+        '(zero=calm;none=offline).0f',
+        ]
+
+    h7 = datetime(2019, 2, 28, 7, 0, 0)
+    h8 = datetime(2019, 2, 28, 8, 0, 0)
+    h9 = datetime(2019, 2, 28, 9, 0, 0)
+
+    cells = [
+        [h7, -2.3,   11],
+        [h8,  0.1,    0],
+        [h9,    5, None]
+        ]
+
+    print(mono(
+        headings, formats, cells, title='=Formatting directives.'))
+
+.. testoutput::
+
+    Formatting directives.
+    ----------------------
+          24 hour
+             temp     wind
+    hour   change    speed
+    ----------------------
+    07         -2       11
+    08       same     calm
+    09         +5  offline
+    ----------------------
+
+- The ``'%H'`` format gets passed by built-in function **format()** to
+  datetime.__format__().
+- The ``'(zero=same)+.0f'`` format string is split into two parts.
+
+  - ``(zero=same)`` selects the zero directive with the value ``same``.
+  - ``+.0f`` gets passed to the format function as format_spec.
+
+- The zero= format directive applies when the cell is a Number and the
+  formatted text contains no non-zero digits.  The characters after zero= are
+  the formatted text for the cell.
+- Format directives are enclosed by ``(`` and ``)``.
+- Separate multiple format directives with ``;``.
+- The none= format directive formats the cell value None as the characters
+  after none=.
+
+parentheses format directive
+----------------------------
+
+Enclose negative numbers with parentheses.
+
+.. testcode::
+
+    from monotable import mono, HR_ROW
+
+    headings = ['Description', 'Amount']
+    formats = ['', '(zero=n/a;parentheses),']
+
+    cells = [
+        ['receivables', 51],
+        ['other assets', 9050],
+        ['gifts', 0],
+        ['pending payments',  -75],
+        ['other liabilities', -623]
+        ]
+
+    print(mono(
+        headings, formats, cells, title='parentheses directive.'))
+
+.. testoutput::
+
+      parentheses directive.
+    -------------------------
+    Description        Amount
+    -------------------------
+    receivables           51
+    other assets       9,050
+    gifts                n/a
+    pending payments     (75)
+    other liabilities   (623)
+    -------------------------
+
+Format function directives
+--------------------------
+
+Format function directives select the format function used for the column.
+These are useful for scaling numbers, showing truth values, and changing
+the format function.
 
 .. testcode::
 
     import datetime
-    import monotable
-
+    from monotable import mono
 
     d = datetime.datetime(2016, 9, 16)
 
-    headings = ['float\nprecision\n3',
-                'units of\nthousands',
-                'datetime\n9/16/16',
-                'bool to\nyes/no']
+    headings = [
+        'units of\nthousands',
+        'bool to\nyes/no'
+        ]
 
-    formats = ['.3f',
-               '(thousands).1f',
-               'week-%U-day-%j',
-               '(boolean)yes,no']
+    formats = [
+        '(thousands).1f',
+        '(boolean)yes,no'
+        ]
 
-    cells = [[1.23456789,   35200,    d, True],
-             [999.87654321,  1660,  None, False]]
+    cells = [
+        [35200, True],
+        [1660, False]
+        ]
 
-    print(monotable.mono(headings, formats, cells,
-        title='Float, thousands, datetime, boolean formatting.'))
+    print(mono(
+        headings, formats, cells, title='Format function directives.'))
 
 .. testoutput::
 
-    Float, thousands, datetime, boolean formatting.
-    ----------------------------------------------
-        float
-    precision   units of  datetime         bool to
-            3  thousands  9/16/16           yes/no
-    ----------------------------------------------
-        1.235       35.2  week-37-day-260      yes
-      999.877        1.7                        no
-    ----------------------------------------------
+    Format function directives.
+    ------------------
+     units of  bool to
+    thousands   yes/no
+    ------------------
+         35.2      yes
+          1.7       no
+    ------------------
 
-- Note the format directives (thousands) and (boolean).
-- '(thousands)' divides the cell value by 1000.0.
-- '(boolean)yes,no' formats the cell value True as 'yes' and False as 'no'.
+- Note the format function directives thousands and boolean.
+- '(thousands)' divides the cell value by 1000.0 and then calls **format()**.
+- '(boolean)yes,no' formats the cells that test True as 'yes'
+  and False as 'no'.
 - You can substitute any text you want for 'yes,no' for example 'on,off'.
-
-
-Column oriented input
----------------------
-
-The input is specified as a list of tuples, one per column:
-``(heading string, format directive, list of cells)``.
-
-.. testcode::
-
-    import datetime
-    import monotable
-
-    d = datetime.datetime(2016, 9, 16)
-
-    column0 = ('float\nprecision\n3', '.3f',[1.23456789, 999.87654321])
-    column1 = ('units of\nthousands', '(thousands).1f', [35200, 1660])
-    column2 = ('datetime\n9/16/16', 'week-%U-day-%j', [d])
-    column3 = ('bool to\nyes/no', '(boolean)yes,no', [True, False])
-    columns = [column0, column1, column2, column3]
-
-    print(monotable.monocol(columns,
-        title='Float, thousands, datetime, boolean formatting.'))
-
-.. testoutput::
-
-    Float, thousands, datetime, boolean formatting.
-    ----------------------------------------------
-        float
-    precision   units of  datetime         bool to
-            3  thousands  9/16/16           yes/no
-    ----------------------------------------------
-        1.235       35.2  week-37-day-260      yes
-      999.877        1.7                        no
-    ----------------------------------------------
-
-
-- Note only one cell was specified for column2.
-- The output is identical to that from the earlier example.
+- You can also write and plug in an unlimited number of custom format
+  function directives.
+- The format function directives are implemented in the file plugin.py.
 
 
 Column oriented input with vertical rule column
 -----------------------------------------------
 
-- In the previous example insert monotable.VR_COL as the third column in
-  ``columns =`` below.
-
 .. testcode::
 
     import datetime
-    import monotable
+    from monotable import monocol, VR_COL
 
     d = datetime.datetime(2016, 9, 16)
 
@@ -198,33 +261,39 @@ Column oriented input with vertical rule column
     column1 = ('units of\nthousands', '(thousands).1f', [35200, 1660])
     column2 = ('datetime\n9/16/16', 'week-%U-day-%j', [d])
     column3 = ('bool to\nyes/no', '(boolean)yes,no', [True, False])
-    columns = [column0, column1, monotable.VR_COL, column2, column3]
+    columns = [column0, column1, VR_COL, column2, column3]
 
-    print(monotable.monocol(columns,
-        title='Float, thousands, datetime, boolean formatting.'))
+    print(monocol(columns,
+        title='Float, thousands, datetime, and boolean.'))
 
 
 .. testoutput::
 
-     Float, thousands, datetime, boolean formatting.
-    -------------------------------------------------
-        float             |
-    precision   units of  |  datetime         bool to
-            3  thousands  |  9/16/16           yes/no
-    -------------------------------------------------
-        1.235       35.2  |  week-37-day-260      yes
-      999.877        1.7  |                        no
-    -------------------------------------------------
+        Float, thousands, datetime, and boolean.
+    -----------------------------------------------
+        float            |
+    precision   units of | datetime         bool to
+            3  thousands | 9/16/16           yes/no
+    -----------------------------------------------
+        1.235       35.2 | week-37-day-260      yes
+      999.877        1.7 |                       no
+    -----------------------------------------------
 
+- Note only one cell was specified for column2.
+- VR_COL in the third column renders the vertical bars.
+- The title is center aligned.
 
 Horizontal and vertical rules in a row oriented table
 -----------------------------------------------------
 
-A cell row that starts with value **monotable.table.HR** will be replaced with a
-heading guideline.
+The cell row **monotable.HR_ROW** will be replaced with
+a heading guideline.
 
-The text between columns can be changed with the format option sep.
-By default sep is two spaces.  In this example sep after the first
+The text between columns can be changed with the format directive lsep.
+lsep specifies the separator between this column and the left side
+neighbor column.
+
+By default lsep is two spaces.  In this example lsep in the second
 column is changed to ``' | '``.  This creates an effect approximating
 a vertical rule.
 
@@ -234,20 +303,18 @@ directive strings are silently ignored.
 
 .. testcode::
 
-    import monotable
+    from monotable import mono, HR_ROW
 
     headings = ['col-0', 'col-1']
-
-    # specify sep=' | ' between 1st and 2nd columns for vertical rule
-    formats = ['(sep= | )']
+    formats = ['', '(lsep= | )']
 
     cells = [['time', '12:45'],
              ['place', 'home'],
-             monotable.HR_ROW,      # put a heading guideline here
+             HR_ROW,              # put a heading guideline here
              ['sound', 'bell'],
              ['volume']]          # short row is extended with empty string
 
-    print(monotable.mono(headings, formats, cells))
+    print(mono(headings, formats, cells))
 
 .. testoutput::
 
@@ -266,48 +333,75 @@ directive strings are silently ignored.
 
 `More Examples`_
 
+List of format directives
+=========================
 
-Some useful format directives
-=============================
+Read about all the format directive syntax in "Functions" section in the
+full `Documentation`_. Look for `formats` argument in
+**monotable.mono()**.
 
-(boolean)
-    substitutes caller's strings for True, False
+none=ccc
+    render cell type None as characters ccc.
 
-(thousands)
-    divide cell value by 1000.0
+zero=ccc
+    render numeric cell that formats to zero to characters ccc.
 
-(milli)
-    multiply cell value by 1000.0
+parentheses
+    remove minus sign and enclose negative cell value in parentheses.
 
-(pformat)
-    cell is formatted by python printf-style percent operator '%'
+lsep=ccc
+    Characters ccc separate this column and the column to the left.
 
-(function-name)
-    directive is implemented by configuring class MonoTable with user defined
-    function.
+rsep=ccc
+    Characters ccc separate this column and the column to the right.
 
-(width=N)
+width=N
     sets maximum width of column to N characters, content is truncated
 
-(width=N;wrap)
+width=N;wrap
     sets maximum width of column to N characters, content is text wrapped
 
-(width=N;fixed)
+width=N;fixed
     Pads or truncates content to N characters.
 
-(width=N;fixed;wrap)
+width=N;fixed;wrap
     Pads or text wraps content to N characters.
 
-There are 12 number scaling directives: thousands, millions, billions,
-trillions, milli, micro, nano, pico, kibi, mebi, gibi, tebi.
 
-There are 4 directives that select alternate Python format functions:
-mformat, pformat, sformat, tformat.  These are useful for selecting items
-from containers.
+List of format function directives
+==================================
 
-Read more about format directive syntax in "Functions" section in the
-full `Documentation`_. Look for `formats` argument in
-**monotable.mono.mono()**.
+boolean
+    test cell truthiness and substitute caller's strings for True, False.
+    The format_spec is ttt,fff where characters ttt are rendered for True and
+    the characters fff are rendered for False.  If no format_spec is
+    present, ``'T,F'`` is used.
+
+function-name
+    selects user defined function function-name.
+    User can plug in an unlimited number of format functions.
+
+thousands millions billions trillions
+    divide cell value by 1000.0 (1.0e6, 1.0e9, 1,0e12).
+
+milli micro nano pico
+    multiply cell value by 1000.0 (1.0e6, 1.0e9, 1,0e12).
+
+kibi mebi gibi tebi
+    divide cell value by 1024. (1024**2, 1024**3, 1024**4).
+
+mformat
+   format cells that are mappings by selecting keys with the format_spec.
+
+pformat
+    cell is formatted by python printf-style percent operator '%'.
+
+sformat
+   format cell with str.format().
+
+tformat
+   format cell using string.Template.substitute().
+
 
 Auto-alignment and how to override it
 =====================================
@@ -318,7 +412,7 @@ Auto-alignment is overridden by
 using one of ``'<'``, ``'^'``, ``'>'`` prefixes
 on a heading string, format directive string, or title.
 
-Read more about auto-alignment in "Class Monotable" section in the
+Read more about auto-alignment in "Class MonoTable" section in the
 full `Documentation`_. Follow the link `Auto-alignment`.
 
 
@@ -332,15 +426,16 @@ Links to License, Docs, Repos, Issues, PYPI page
 - `Python Package Index/monotable`_
 - `Master branch build status, coverage, testing`_
 
-What Monotable does not do
+What monotable does not do
 ==========================
 
 - Produce terminal graphics characters.  Try PYPI terminaltables.
 - Handle CJK wide characters.
 - Handle ANSI escape terminal color sequences. Try PYPI terminaltables.
 - Produce arbritrary markup source text.  Try PYPI tabulate instead.
-  However monotable.table.bordered_table() produces valid
-  reStructuredText grid table and simple table markup is possible.
+  However calling mono() or monocol() with keyword argument
+  bordered=True produces valid reStructuredText grid table and
+  simple table markup is possible.
 
 Monotable does make the output of its formatting and
 alignment engine available in list form.  Please look for the function
@@ -352,12 +447,12 @@ alignment engine available in list form.  Please look for the function
 
 Recent Changes
 ==============
-2.1.0 - TBD
+2.1.0 - 2019-02-20
 
 - Add module level convenience functions mono(), monocol() and
-  constants HR, HR_ROW, VR_COL.  Update pytests.
-- Rename 'format strings' to 'format directive strings' in docs.
-- Reorder/rework README.rst examples and other sections.
+  constants HR_ROW, VR_COL.
+- Add formatting directives none, zero, parentheses, lsep, and rsep.
+- Reorder/rework docs examples and other sections.
 
 2.0.1 - 2018-05-12
 

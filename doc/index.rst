@@ -9,27 +9,23 @@ monotable Documentation
 monotable version 2.1.0.
 
 ASCII table with per column format specs, multi-line content,
-plug-in format functions, column width control.
+formatting directives, column width control.
 
 - Licensed under Apache 2.0.
-- Python versions 2.7, 3.3-3.6, and pypy2-3
+- Python versions 2.7, 3.4-3.6, and pypy2-3
   default versions supported by Travis-CI.
 - No required dependencies.
 
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
    introduction
    more_examples
    convenience
-   api_class
-   api_class_var
-   api_format_functions
-   api_error
-   api_hr_align_constants
-   features
+   quicklinks
+   api
    configuring
    hints
    contributing

@@ -1,29 +1,43 @@
-Functions
-=========
+.. _convenience-label:
+
+API Functions and Constants
+===========================
 
 .. toctree::
    :maxdepth: 2
 
-.. module:: monotable.table
+.. module:: monotable
+
+Functions
+---------
 
 The convenience functions below are the quickest way to generate an
 Ascii table.
 They create and configure a temporary instance of the class MonoTable
 and call a member function.
 
-mono() and monocol() are accessible at the top level module level
-as monotable.mono() and monotable.monocol().
+.. autofunction:: mono
+.. autofunction:: monocol
 
-To create a custom MonoTable class,
-please see section :ref:`configuring-label`.
+Constants
+---------
 
-.. autofunction:: monotable.mono.mono
-.. autofunction:: monotable.mono.monocol
+.. autodata:: monotable.mono.HR_ROW
+   :annotation:
+
+   HR_ROW is available at the module top level as monotable.HR_ROW.
+
+.. autodata:: monotable.mono.VR_COL
+   :annotation:
+
+   VR_COL is available at the module top level as monotable.VR_COL.
 
 Legacy Functions
-================
+----------------
 The details of the function parameters are provided in the class MonoTable
 docstrings located by following the links below.
+
+.. module:: monotable.table
 
 .. autofunction:: table
 .. autofunction:: bordered_table

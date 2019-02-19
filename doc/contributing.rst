@@ -26,6 +26,7 @@ Here are some suggestions:
     and applicable to more than one application domain.  (Whatever that
     means).
 
+- Monotable should still run with no required PYPI dependencies.
 - Handle ANSI escape terminal color sequences.  Please keep in mind colors
   should be preserved when a cell is:
 

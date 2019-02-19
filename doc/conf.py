@@ -54,7 +54,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'monotable'
-copyright = u'2018, Mark Taylor'
+copyright = u'2019, Mark Taylor'
 author = u'Mark Taylor'
 
 # The version info for the project you're documenting, acts as replacement for
