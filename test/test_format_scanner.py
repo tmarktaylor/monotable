@@ -446,8 +446,8 @@ def make_shuffled_option_list():
     I just cut and paste the 8 commands into cmd.
 
     cd <YOUR_PATH_TO_MONOTABLE>
-    set PYTHONPATH=%PYTHONPATH%;<YOUR_PATH_TO_MONOTABLE>\test
-    ..\venv\scripts\activate
+    set PYTHONPATH=%PYTHONPATH%;<YOUR_PATH_TO_MONOTABLE>/test
+    ../venv/scripts/activate
     py
     import test_format_scanner
     test_format_scanner.make_shuffled_option_list()
