@@ -24,3 +24,8 @@ script: tox -e $TOXENV
 after_success:
   - coverage combine
   - coveralls
+  
+branches:
+  only:
+  - master
+  - mono-proto
