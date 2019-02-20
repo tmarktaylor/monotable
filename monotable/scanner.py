@@ -187,6 +187,7 @@ class FormatScanner:
         # Combine hard coded format function options with user supplied
         # format functions.  Note that a user name will hide a hard coded
         # name.
+        # todo- mypy error error: Need type annotation for '_format_functions'
         self._format_functions = dict()
         self._format_functions.update(monotable.plugin.format_functions)
         if config.format_func_map is not None:

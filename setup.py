@@ -64,7 +64,7 @@ def make_long_description():
     which installs sphinx including the script rst2html5.py
     (rst2html.py in py 2.7).
     Then run a shell command something like this:
-    python readme_preview.py <path to>\Scripts\rst2html5.py readme.html
+    python readme_preview.py <path to>Scripts/rst2html5.py readme.html
     """
     here = path.abspath(path.dirname(__file__))
     with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
@@ -100,8 +100,6 @@ setup(
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',

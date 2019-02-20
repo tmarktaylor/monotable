@@ -924,7 +924,7 @@ class MonoTable:
             ):
         # type: (...) -> List[Union[MonoBlock, str]]
         """Format cells in the column and handle special case cells."""
-        formatted_column = []
+        formatted_column = []    # type: List[Union[MonoBlock, str]]
         for row_index, item in enumerate(cell_column):
 
             # for special cases a MonoBlock is created immediately.
@@ -945,7 +945,7 @@ class MonoTable:
                     column_index,
                     item_format_spec,
                     msg)  # type: MonoTableCellError
-                text = self.format_exc_callback(exc)  # type: ignore #todo-
+                text = self.format_exc_callback(exc)
 
             # for parentheses directive enclose negative numbers with (, ).
             if formatobj.parentheses and isinstance(item, numbers.Number):
@@ -983,7 +983,9 @@ class MonoTable:
 
         # for the formatted numbers, determine if any but not all
         # are enclosed by parentheses.
-        has_parentheses = [text.endswith(')') for text in formatted_numbers]
+        # todo- issue- formatted_column contains a mix of str and MonoBlock...
+        # ... see todo- a few lines below.
+        has_parentheses = [text.endswith(')') for text in formatted_numbers]    # type: ignore    # noqa : E501
         if not any(has_parentheses) or all(has_parentheses):
             return formatted_column    # not a mix of (xxx) and yyy.
 
@@ -992,9 +994,20 @@ class MonoTable:
         # to maintain vertical alignment of the digits/decimal point.
         # (provided the column is ultimately right justified).
         parentheses_column = []
+
+        # todo- issue- formatted_column contains a mix of str and MonoBlock...
+        # ... This causes mypy error: Item "MonoBlock" of
+        # "Union[MonoBlock, str]" has no attribute "endswith".
+        # This won't happen because the cell type will not be Number in any
+        # of the special cases.  A MonoBlock can come from special cases
+        # like caller's cell, _HR, or a None cell.
+        # This issue should be addressed so that changes to _special_cases()
+        # won't cause breakage here.
+        # Also, it is desirable that all format directives can be applied
+        # to caller supplied MonoBlocks.
         for item, text in zip(cell_column, formatted_column):
-            if isinstance(item, numbers.Number) and not text.endswith(')'):
-                parentheses_column.append(text + ' ')
+            if isinstance(item, numbers.Number) and not text.endswith(')'):    # type: ignore    # noqa : E501
+                parentheses_column.append(text + ' ')    # type: ignore    # noqa : E501
             else:
                 # This branch handles:
                 # 1. formatted text for items that aren't numbers
@@ -1017,7 +1030,8 @@ class MonoTable:
         if formatobj.width is not None and formatobj.wrap:
             text_wrapper = textwrap.TextWrapper(
                 width=formatobj.width,
-                break_long_words=True)
+                break_long_words=True)    # type: Optional[textwrap.TextWrapper]    # noqa : E501
+
         else:
             text_wrapper = None
 
@@ -1135,7 +1149,7 @@ class MonoTable:
         The last column's separator string will be the empty string,
         """
 
-        rseps = []
+        rseps = []    # type: List[str]
         for formatobj in processed_formats:
             # if lsep= option for this column, unconditionally set the
             # previous coloumn's rsep to lsep,
@@ -1462,14 +1476,14 @@ class MonoTable:
 
     def cotable(
             self,
-            column_tuples=(),  # type: Sequence[Tuple[str, str, Sequence[object]]]    # noqa : E501
+            column_tuples=(),  # type: Sequence[Tuple[str, str, Iterable[object]]]    # noqa : E501
             title='',          # type: str
             ):
         # type: (...) -> str
         """Format printable text table from tuples describing columns.
 
         Args:
-            column_tuples (List[Tuple[str, str, List[object]]]):
+            column_tuples (Sequence[Tuple[str, str, Iterable[object]]]):
                 List of tuple of (heading string, format string,
                 iterable of cell objects).
 
@@ -1498,14 +1512,14 @@ class MonoTable:
 
     def cobordered_table(
             self,
-            column_tuples=(),  # type: Sequence[Tuple[str, str, Sequence[object]]]    # noqa : E501
+            column_tuples=(),  # type: Sequence[Tuple[str, str, Iterable[object]]]    # noqa : E501
             title='',          # type: str
             ):
         # type: (...) -> str
         """Format printable bordered text table from tuples describing columns.
 
         Args:
-            column_tuples (List[Tuple[str, str, List[object]]]):
+            column_tuples (Sequence[Tuple[str, str, Iterable[object]]]):
                 List of tuple of (heading string, format string,
                 iterable of cell objects).
 
@@ -1560,7 +1574,7 @@ def bordered_table(
 
 
 def cotable(
-        column_tuples=(),  # type: Sequence[Tuple[str, str, Sequence[object]]]    # noqa : E501
+        column_tuples=(),  # type: Sequence[Tuple[str, str, Iterable[object]]]    # noqa : E501
         title='',          # type: str
         ):
     # type: (...) -> str
@@ -1570,7 +1584,7 @@ def cotable(
 
 
 def cobordered_table(
-        column_tuples=(),  # type: Sequence[Tuple[str, str, Sequence[object]]]
+        column_tuples=(),  # type: Sequence[Tuple[str, str, Iterable[object]]]    # noqa : E501
         title='',          # type: str
         ):
     # type: (...) -> str

@@ -22,6 +22,12 @@
 from .table import HR
 from .table import MonoTable
 
+# These imports are for PEP484, PYPI package mypy static type checking.
+try:
+    from typing import Dict, Sequence, Tuple, Iterable, Union, Callable    # noqa F401 E501
+except ImportError:
+    pass
+
 
 HR_ROW = (HR,)
 """Row containing a horizontal rule to use as a row in cellgrid."""
@@ -61,7 +67,7 @@ def mono(
         bordered (bool):
             True means generate table with ASCII cell border characters.
 
-        format_func_map (Dict[str, Callable[[object, str], str]])
+        format_func_map (Mapping[str, Callable[[object, str], str]])
             Dictionary of format functions keyed by name.
             name, when used as a format directive in a format string,
             selects the corresponding function from the dictionary.
@@ -83,7 +89,7 @@ def mono(
             String added to the beginning of each line in the text table.
    """
 
-    indent = kargs.pop('indent', '')
+    indent = kargs.pop('indent', '')    # type: str
     tbl = MonoTable(indent=indent)
     tbl.guideline_chars = kargs.pop(
         'guideline_chars', '---')
@@ -101,7 +107,7 @@ def mono(
 
 
 def monocol(
-        column_tuples=(),   # type: Sequence[Tuple[str, str, Sequence[object]]]    # noqa : E501
+        column_tuples=(),   # type: Sequence[Tuple[str, str, Iterable[object]]]    # noqa : E501
         title='',           # type: str
         **kargs
         ):
@@ -109,7 +115,7 @@ def monocol(
     """Generate ASCII table from column tuples.
 
     Args:
-        column_tuples (List[Tuple[str, str, List[object]]]):
+        column_tuples (Sequence[Tuple[str, str, Iterable[object]]]):
             List of tuple of (heading string, format string,
             iterable of cell objects).
 
@@ -133,7 +139,7 @@ def monocol(
         bordered (bool):
             True means generate table with ASCII cell border characters.
 
-        format_func_map (Dict[str, Callable[[object, str], str]])
+        format_func_map (Mapping[str, Callable[[object, str], str]])
             Dictionary of format functions keyed by name.
             name, when used as a format directive in a format string,
             selects the corresponding function from the dictionary.

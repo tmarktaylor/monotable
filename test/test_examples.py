@@ -4,16 +4,16 @@ from collections import namedtuple
 import datetime
 import doctest
 import math
-import pytest
+import pytest    # todo- mypy error no stub file
 
 # For experimental type checking this file was annotated such that the command
-# mypy test/test_examples.py --strict --no-strict-boolean doen't produce
+# mypy test/test_examples.py --strict doesn't produce
 # any output.  The :type ignore directive was added to prevent mypy errors
 # that I was not able to fix.
 
 # These imports are for PEP484, PYPI package mypy static type checking.
 try:
-    from typing import List, Any, Tuple
+    from typing import List, Any, Tuple, Iterable, Sequence
 except ImportError:
     pass
 
@@ -31,7 +31,7 @@ def test_doctest_scanner_py():    # type: () -> None
     assert failure_count == 0
 
 
-def test_py2_mono_extra_keyword_args():
+def test_py2_mono_extra_keyword_args():    # type: () -> None
     """
     Expect TypeError on unsupported keyword only arg 'bogus'.
     This test is only required for Python 2.7 code that manually tests for
@@ -50,7 +50,7 @@ def test_py2_mono_extra_keyword_args():
     assert 'bogus' in str(exc_info.value)
 
 
-def test_py2_monocol_extra_keyword_args():
+def test_py2_monocol_extra_keyword_args():    # type: () -> None
     """
     Expect TypeError on unsupported keyword only arg 'bogus'.
     This test is only required for Python 2.7 code that manually tests for
@@ -70,7 +70,7 @@ def test_py2_monocol_extra_keyword_args():
     assert 'bogus' in str(exc_info.value)
 
 
-def test_py2_mono_misspelled_cellgrid_keyword_arg():
+def test_py2_mono_misspelled_cellgrid_keyword_arg():    # type: () -> None
     """
     Expect TypeError on keyword cells when intended to use cellgrid.
     This test is only required for Python 2.7 code that manually tests for
@@ -81,7 +81,7 @@ def test_py2_mono_misspelled_cellgrid_keyword_arg():
         _ = monotable.mono(
             headings=(),
             formats=(),
-            cells=((),),    # should be cellgrid
+            cells=((),),    # error should be cellgrid
             title='')
     assert 'keyword' in str(exc_info.value)
     assert 'cells' in str(exc_info.value)
@@ -243,11 +243,11 @@ def test_cotable_vr_col():    # type: () -> None
     """Add a vertical rule column to previous example."""
     d = datetime.datetime(2016, 9, 16)
 
-    column0 = ('float\nprecision\n3', '.3f', [1.23456789, 999.87654321])    # type: Tuple[str, str, List[object]]
-    column1 = ('units of\nthousands', '(thousands).1f', [35200, 1660])    # type: Tuple[str, str, List[object]]
-    column2 = ('datetime\n9/16/16', 'week-%U-day-%j', [d])    # type: Tuple[str, str, List[object]]
-    column3 = ('bool to\nyes/no', '(boolean)yes,no', [True, False])    # type: Tuple[str, str, List[object]]
-    columns = [column0, column1, monotable.VR_COL, column2, column3]   # type: List[Tuple[str, str, List[object]]]
+    column0 = ('float\nprecision\n3', '.3f', [1.23456789, 999.87654321])    # type: Tuple[str, str, Iterable[object]]
+    column1 = ('units of\nthousands', '(thousands).1f', [35200, 1660])    # type: Tuple[str, str, Iterable[object]]
+    column2 = ('datetime\n9/16/16', 'week-%U-day-%j', [d])    # type: Tuple[str, str, Iterable[object]]
+    column3 = ('bool to\nyes/no', '(boolean)yes,no', [True, False])    # type: Tuple[str, str, Iterable[object]]
+    columns = [column0, column1, monotable.VR_COL, column2, column3]   # type: List[Tuple[str, str, Iterable[object]]]
 
     title = 'Float, thousands, datetime, boolean formatting.'
     text = monotable.table.cotable(columns, title=title)
@@ -829,7 +829,7 @@ def test_zero_with_numbers_arbitrary_precision():    # type: () -> None
              [-0.000000e+00],
              [-1e-04],
              [-1e-05],
-            ]
+            ]    # type: List[List[object]]
     title = 'zero processing for numbers at arbitrary precision.'
     text = monotable.mono(headings, formats, cells, title)
     expected = '\n'.join([
@@ -870,7 +870,7 @@ def test_zero_with_numbers_default_precision():  # type: () -> None
              [-0.000000e+00],
              [-1e-06],
              [-1e-07],  # rounded to 0 by default_float_format_spec.
-            ]
+            ]    # type: List[List[object]]
     title = 'zero processing for numbers at default precision.'
     text = monotable.mono(headings, formats, cells, title)
     expected = '\n'.join([
@@ -903,7 +903,7 @@ def test_zero_and_thousands_with_numbers():  # type: () -> None
              [0.000000e+00],
              [1e-03],
              [1e-04],
-             [1e-07]]    # rounded to 0 by format_spec='.6f'
+             [1e-07]]    # type: List[List[object]]    # rounded to 0 by format_spec='.6f'    # noqa: E501
     title = 'zero processing for numbers with (thousands).'
     text = monotable.mono(headings, formats, cells, title)
     expected = '\n'.join([
@@ -935,7 +935,7 @@ def test_zero_non_with_numbers():  # type: () -> None
              ['a-string'],
              [tuple([3, 4])],
              [list()],
-             [None]]
+             [None]]    # type: List[List[object]]
     title = 'zero processing for non-numbers.'
     text = monotable.mono(headings, formats, cells, title)
     expected = '\n'.join([
@@ -1094,7 +1094,7 @@ def test_none_directive():  # type: () -> None
              [None, None],
              [987.543, -1],
              [-8901, 100],
-             [None, 0]]
+             [None, 0]]    # type: List[List[object]]
     title = 'Check none directive.'
     text = monotable.mono(headings, formats, cells, title)
     expected = '\n'.join([
@@ -1115,7 +1115,7 @@ def test_none_directive():  # type: () -> None
     assert text == expected
 
 
-def test_lsep_ignored_on_first_column():
+def test_lsep_ignored_on_first_column():  # type: () -> None
     """lsep on first column is silently ignored."""
     headings = ['h1', 'h2', 'h3']
     formats = ['(lsep=.!.)']
@@ -1135,7 +1135,7 @@ def test_lsep_ignored_on_first_column():
     assert text == expected
 
 
-def test_rsep_ignored_on_last_column():
+def test_rsep_ignored_on_last_column():  # type: () -> None
     """rsep on last column is silently ignored."""
     headings = ['h1', 'h2', 'h3']
     formats = ['', '', '(rsep=.!.)']
@@ -1155,7 +1155,7 @@ def test_rsep_ignored_on_last_column():
     assert text == expected
 
 
-def test_lsep():
+def test_lsep():  # type: () -> None
     """lsep on second column."""
     headings = ['h1', 'h2', 'h3']
     formats = ['', '(lsep=.!.)']
@@ -1175,7 +1175,7 @@ def test_lsep():
     assert text == expected
 
 
-def test_rsep_on_first_column():
+def test_rsep_on_first_column():  # type: () -> None
     """rsep on first column."""
     headings = ['h1', 'h2', 'h3']
     formats = ['(rsep=-I-)']
@@ -1195,7 +1195,7 @@ def test_rsep_on_first_column():
     assert text == expected
 
 
-def test_lsep_on_last_column():
+def test_lsep_on_last_column():  # type: () -> None
     """lsep on last column."""
     headings = ['h1', 'h2', 'h3']
     formats = ['', '', '(lsep=xDy)']
@@ -1215,7 +1215,7 @@ def test_lsep_on_last_column():
     assert text == expected
 
 
-def test_lsep_supersedes_previous_rsep():
+def test_lsep_supersedes_previous_rsep():  # type: () -> None
     """rsep on first column superseded by lsep on second column."""
     headings = ['h1', 'h2', 'h3']
     formats = ['(rsep=XXXXX)', '(lsep=.!.)']
@@ -1235,7 +1235,7 @@ def test_lsep_supersedes_previous_rsep():
     assert text == expected
 
 
-def test_lsep_and_rsep():
+def test_lsep_and_rsep():  # type: () -> None
     """lsep and rsep on the same column (like VR_COLUMN)."""
     headings = ['h1', 'h2', 'h3']
     formats = ['', '(lsep=|| ;rsep= !!)']
