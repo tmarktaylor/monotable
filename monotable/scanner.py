@@ -45,9 +45,9 @@ MonoTableConfig = collections.namedtuple('MonoTableConfig',
 
 
 class FormatScanner:
-    """Scans a format string for align, format_spec, and options.
+    """Scans a format string for align, format_spec, and format directives.
 
-    The format string takes the form [align_spec][option_spec][format_spec].
+    The format string takes the form [align_spec][directives][format_spec].
     See formats description in MonoTable.__init().
 
     The option_spec may select a format function and may select other options.
@@ -63,9 +63,9 @@ class FormatScanner:
     ...    pass
 
     >>> align_spec = '<'
-    >>> option_spec = '(width=17;wrap;sep= | ;my_format)'
+    >>> directives = '(width=17;wrap;sep= | ;my_format)'
     >>> format_spec = '.0f'
-    >>> format_str = align_spec + option_spec + format_spec
+    >>> format_str = align_spec + directives + format_spec
     >>> config = monotable.scanner.MonoTableConfig(
     ...         align_spec_chars='<^>',
     ...         sep='  ',
@@ -138,7 +138,7 @@ class FormatScanner:
         Scan the string per delimiters, return results as instance vars.
 
         format_str
-            String: [align_spec][option_spec][format_spec]
+            String: [align_spec][directives][format_spec]
             See formats description in MonoTable.__init__().
 
         config
@@ -163,6 +163,11 @@ class FormatScanner:
 
         # renames to shorten long lines
         align_spec_chars = config.align_spec_chars
+
+        # Since v2.1.0 formatting options are called format directives.
+        # The option_spec_* variable names below refer to format
+        # directives.
+
         option_spec_delimiters = config.option_spec_delimiters
 
         # Verify that the start delimiter of option_spec_delimiters cannot
@@ -225,11 +230,12 @@ class FormatScanner:
         option_format_spec
             [option_spec][format_spec]
             option_spec == (*)  where * is 0 or more characters
-            See option_spec description in MonoTable.__init__().
+            See directives description in MonoTable.__init__().
 
         Returns a tuple consisting of:
             The option_spec including the enclosing delimiters or empty string.
             The rest of the string after closing delimiter or entire string.
+            Since v2.1.0 option_spec refers to format directives.
         """
 
         startswith_match = self._start + '*' + self._end + '*'
@@ -248,6 +254,7 @@ class FormatScanner:
         Updates instance variables align, error_text, format_func,
         format_spec, width, fixed, wrap, sep, zero, none, and parentheses
         per scan results.
+        Since v2.1.0 option_spec refers to format directives.
 
         option_spec
             (*)  where * is one or more option names separated by ;.
@@ -388,10 +395,9 @@ class FormatScanner:
         return lines
 
     def _allowed_options(self):    # type: () -> List[str]
-        lines = ['Options are enclosed by "{}" and "{}".  '
-                 'Options are separated by "{}".'.format(self._start,
-                                                         self._end,
-                                                         self._between),
+        lines = ['Directives are enclosed by "{}" and "{}", '
+                 'and are separated by "{}".'.format(
+                     self._start, self._end, self._between),
                  'For example: "{}width=22{}sep=   {}"'.format(
                      self._start, self._between, self._end),
                  'Case is significant.  Whitespace is not significant except',

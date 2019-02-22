@@ -16,9 +16,9 @@ Create a subclass of MonoTable and override one or more
 
 .. testcode::
 
-    import monotable.table
+    import monotable
 
-    class SeparatedMonoTable(monotable.table.MonoTable):
+    class SeparatedMonoTable(monotable.MonoTable):
        guideline_chars = '-=-'
        separated_guidelines = True
 
@@ -48,10 +48,10 @@ with an instance variable of the same name.
 
 .. testcode::
 
-    import monotable.table
+    import monotable
 
     headings = ['an int', 'string', 'another int', 'another string']
-    tbl = monotable.table.MonoTable()
+    tbl = monotable.MonoTable()
     tbl.guideline_chars = '-=-'
     tbl.separated_guidelines = True
 

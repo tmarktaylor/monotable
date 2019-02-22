@@ -100,9 +100,11 @@ Change or omit the guidelines
 Limit column width
 ------------------
 
-Here we employ the option_spec **(width=15)** to limit the width of the second
-column to 15 characters or less.  The **more_marker** '...' shows where text
-was omitted.
+Here we employ the format directive **(width=15)** to limit the width of
+the second column to 15 characters or less.  The **more_marker** '...'
+shows where text was omitted.
+
+The width=N format directive applies only to the cells, not the heading.
 
 .. testcode::
 
@@ -128,16 +130,13 @@ was omitted.
             3  Oversee day ...  06/21/2016
     --------------------------------------
 
-- Note that there is no format string for the third column.  Missing
-  format strings default to the empty string.
-- The width=N format option applies only to the cells, not the heading.
-
 Wrap a column and limit cell height
 -----------------------------------
 
 The second column is wrapped to a maximum width of 12 characters.
 
-Here we customize an instance of class MonoTable and call the table() method.
+Here we customize an instance of class MonoTable in order to change
+the class variable max_cell_height.  We call MonoTable's table() method.
 
 .. testcode::
 
@@ -180,9 +179,9 @@ Here we customize an instance of class MonoTable and call the table() method.
 - Changing **max_cell_height** to 1 assures there will be no multi-line
   cells in the table.
 - The second column ended up wrapping to 11 characters wide,
-  one character less than the format string (width=12;wrap) specified.  This
-  behaviour is a side affect of using Python textwrap to implement the
-  format option.
+  one character less than the format directive (width=12;wrap) specified.
+  This behaviour is a side affect of using Python textwrap to implement the
+  format directive.
 
 Fix column width
 ----------------
@@ -223,21 +222,21 @@ formatted text will be padded or truncated to the exact width.
 Selecting keys from a dictionary and table borders
 --------------------------------------------------
 
-This example uses monotable's extended format string notation to set
-the format function of the second column. A format string has the form:
+This example sets the format function of the second column.
+A format string has the form:
 
-    ``[align_spec][directive][format_spec]``
+    ``[align_spec][directives][format_spec]``
 
 align_spec is one of the characters '<', '^', '>' to override auto-alignment.
 align_spec is not used in this example.
 
-directive is one or more monotable options enclosed by ``'('``
+directives is one or more format directives enclosed by ``'('``
 and ``')'`` separated by ``';'``.  In the second column the directive
 is ``(mformat)``.
 mformat selects the function **monotable.plugin.mformat()**
 as the format function.
-The Subpackage API section MonoTable.__init__() in the docs
-describes the other options.
+
+This example also shows formatted cells with newlines.
 
 .. testcode::
 
@@ -272,10 +271,6 @@ describes the other options.
     |      | age= 999.1             |
     |      | color= No! Red!        |
     +------+------------------------+
-
-- Note the age fixed precision formatting.  This is not possible with
-  template substitution provided by option tformat.
-- This example also shows formatted cells with newlines.
 
 Selecting attributes or elements
 --------------------------------
@@ -313,13 +308,14 @@ the element indexed by [1] from a sequence.
     2        dd
     --------------
 
-- Set the option_spec to '(sformat)' to select **monotable.plugin.sformat()**
+- Set the format directive to '(sformat)' to select
+  **monotable.plugin.sformat()**
   as the format function.  It is an adapter to string.format().
 - The format_spec ``'{.x}'`` selects the attribute named 'x' of the cell.
 - The format_spec ``'{[1]}'`` selects the element at index 1 of the cell.
 - Note that a cell passed to str.format() satisfies
   only the first replacement field of the Python Format String Syntax.  You
-  can only use one replacement field with the sformat format option.
+  can only use one replacement field with the sformat format directive.
 - Note that the first column auto-aligns to the left.  This is because
   auto-align senses the cell type which is class MyCell.  Only cells that
   inherit from numbers.Number are auto-aligned to the right.  MyCell does not
@@ -366,45 +362,45 @@ markup.
         separated_guidelines = True
         guideline_chars = '==='
 
-    headings = ['option name', 'format function', 'description']
+    headings = ['directive name', 'format function', 'description']
     t4 = SeparatedMonoTable()
 
     cells = [['mformat', 'monotable.plugin.mformat', 'mapping with str.format()'],
              ['pformat', 'monotable.plugin.pformat', 'printf style'],
              ['sformat', 'monotable.plugin.sformat', 'str.format()'],
              ['tformat', 'monotable.plugin.tformat', 'string.Template()'],
-             ['function-name', '\\', 'user defined function']]
+             ['function-name', '--', 'user defined function']]
 
     print(t4.table(headings, [], cells))
 
 .. testoutput::
 
-    =============  ========================  =========================
-    option name    format function           description
-    =============  ========================  =========================
-    mformat        monotable.plugin.mformat  mapping with str.format()
-    pformat        monotable.plugin.pformat  printf style
-    sformat        monotable.plugin.sformat  str.format()
-    tformat        monotable.plugin.tformat  string.Template()
-    function-name  \                         user defined function
-    =============  ========================  =========================
+    ==============  ========================  =========================
+    directive name  format function           description
+    ==============  ========================  =========================
+    mformat         monotable.plugin.mformat  mapping with str.format()
+    pformat         monotable.plugin.pformat  printf style
+    sformat         monotable.plugin.sformat  str.format()
+    tformat         monotable.plugin.tformat  string.Template()
+    function-name   --                        user defined function
+    ==============  ========================  =========================
 
 Which looks like this when rendered.
 
-=============  ========================  =========================
-option name    format function           description
-=============  ========================  =========================
-mformat        monotable.plugin.mformat  mapping with str.format()
-pformat        monotable.plugin.pformat  printf style
-sformat        monotable.plugin.sformat  str.format()
-tformat        monotable.plugin.tformat  string.Template()
-function-name  \                         user defined function
-=============  ========================  =========================
+==============  ========================  =========================
+directive name    format function           description
+==============  ========================  =========================
+mformat         monotable.plugin.mformat  mapping with str.format()
+pformat         monotable.plugin.pformat  printf style
+sformat         monotable.plugin.sformat  str.format()
+tformat         monotable.plugin.tformat  string.Template()
+function-name   --                        user defined function
+==============  ========================  =========================
 
 String template substitution
 ----------------------------
 
-The format option tformat is used to select keys from a
+The format directive tformat is used to select keys from a
 dictionary.  It is implemented by an adapter to Python standard library
 string.Template.substitute().
 

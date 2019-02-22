@@ -29,6 +29,8 @@
    https://pypi.python.org/pypi/monotable
 .. _Master branch build status, coverage, testing:
    https://github.com/tmarktaylor/monotable/blob/master/README.md
+.. _Contributing:
+   https://github.com/tmarktaylor/monotable/blob/master/contributing.md
 
 Introduction, Installation
 ==========================
@@ -85,9 +87,10 @@ Specify format string for each column.
       2,345,678    99.5%
     --------------------
 
-- List **formats** contains the format directives.
+- List **formats** supplies the format strings containing the
+  formatting instructions.
   They are assigned to columns from left to right.
-- Here the format directives are just format specifications.
+- Here the format strings are just format specifications.
 - For each cell in the column, it and the format specification is passed
   to the built-in function **format(value, format_spec)**.
 - To write a format_spec, consult Python's
@@ -143,25 +146,26 @@ Special handling for zero values and cell type None.
     09         +5  offline
     ----------------------
 
-- The ``'%H'`` format gets passed by built-in function **format()** to
-  datetime.__format__().
+- The ``'%H'`` format specification is passed by built-in function
+  **format()** to datetime.__format__().
 - The ``'(zero=same)+.0f'`` format string is split into two parts.
 
   - ``(zero=same)`` selects the zero directive with the value ``same``.
-  - ``+.0f`` gets passed to the format function as format_spec.
+  - ``+.0f`` is passed to the format function as format_spec.
 
-- The zero= format directive applies when the cell is a Number and the
+- The zero format directive applies when the cell is a Number and the
   formatted text contains no non-zero digits.  The characters after zero= are
   the formatted text for the cell.
 - Format directives are enclosed by ``(`` and ``)``.
 - Separate multiple format directives with ``;``.
-- The none= format directive formats the cell value None as the characters
+- The none format directive formats the cell value None as the characters
   after none=.
 
 parentheses format directive
 ----------------------------
 
-Enclose negative numbers with parentheses.
+Enclose negative numbers with parentheses.  The 1's digit remains in
+the same column.
 
 .. testcode::
 
@@ -244,7 +248,7 @@ the format function.
 - You can substitute any text you want for 'yes,no' for example 'on,off'.
 - You can also write and plug in an unlimited number of custom format
   function directives.
-- The format function directives are implemented in the file plugin.py.
+- monotable format function directives are implemented in the file plugin.py.
 
 
 Column oriented input with vertical rule column
@@ -336,9 +340,8 @@ directive strings are silently ignored.
 List of format directives
 =========================
 
-Read about all the format directive syntax in "Functions" section in the
-full `Documentation`_. Look for `formats` argument in
-**monotable.mono()**.
+Read about all the format directive syntax in the full `Documentation`_.
+Follow the Format directives link the Quick Links section.
 
 none=ccc
     render cell type None as characters ccc.
@@ -372,7 +375,7 @@ List of format function directives
 ==================================
 
 boolean
-    test cell truthiness and substitute caller's strings for True, False.
+    test cell truth value and substitute caller's strings for True, False.
     The format_spec is ttt,fff where characters ttt are rendered for True and
     the characters fff are rendered for False.  If no format_spec is
     present, ``'T,F'`` is used.
@@ -412,8 +415,8 @@ Auto-alignment is overridden by
 using one of ``'<'``, ``'^'``, ``'>'`` prefixes
 on a heading string, format directive string, or title.
 
-Read more about auto-alignment in "Class MonoTable" section in the
-full `Documentation`_. Follow the link `Auto-alignment`.
+Read more about auto-alignment in "Quick Links"
+section in the full `Documentation`_. Follow the link `Auto-alignment`.
 
 
 Links to License, Docs, Repos, Issues, PYPI page
@@ -447,12 +450,13 @@ alignment engine available in list form.  Please look for the function
 
 Recent Changes
 ==============
-2.1.0 - 2019-02-21
+2.1.0 - 2019-02-23
 
 - Add module level convenience functions mono(), monocol() and
   constants HR_ROW, VR_COL.
 - Add formatting directives none, zero, parentheses, lsep, and rsep.
 - Reorder/rework docs examples and other sections.
+- Change what (boolean) prints when malformed format spec.
 - Drop Python 3.3 and 3.4 classifiers. Drop Python 3.4 tests from Travis CI.
 
 2.0.1 - 2018-05-12
@@ -490,3 +494,8 @@ Recent Changes
 
    If you are not already there, please continue reading
    `More Examples`_ in the `Documentation`_ on `Read the Docs`_.
+
+Contributing and Developing
+===========================
+
+Please see `Contributing`_.

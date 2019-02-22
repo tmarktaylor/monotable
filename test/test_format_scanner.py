@@ -163,7 +163,7 @@ def test_allowed_format_functions_user_hides_default_format_function():
 
 def test_allowed_options(format_scanner):
     first_part_expected_options = '\n'.join([
-        'Options are enclosed by "(" and ")".  Options are separated by ";".',
+        'Directives are enclosed by "(" and ")", and are separated by ";".',
         'For example: "(width=22;sep=   )"',
         'Case is significant.  Whitespace is not significant except',
         'after the "=" in "sep =".  Allowed options are:',

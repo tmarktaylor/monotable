@@ -13,7 +13,7 @@ Links:
 :py:meth:`~MonoTable.cotable` :py:meth:`~MonoTable.cobordered_table`
 :ref:`Title string syntax<Title string syntax>`,
 :ref:`Format directive string syntax<Format directive string syntax>`,
-:ref:`Options<Options>`,
+:ref:`Format directives<format-directives-label>`,
 :ref:`Auto-alignment<alignment-label>`
 
 .. autoclass:: MonoTable

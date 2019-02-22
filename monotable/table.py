@@ -96,6 +96,7 @@ class _HR:
 HR = _HR()
 """Placed in column 0 of a *row* in a cellgrid to insert a horizontal rule.
 
+Since v2.1.0 monotable.HR_ROW can be used instead.
 A row that starts with a HR is omitted from the
 table and a heading guideline is inserted in its place.
 """
@@ -104,9 +105,8 @@ table and a heading guideline is inserted in its place.
 class MonoTable:
     """Create an aligned and formatted text table from a grid of cells.
 
-    Pass  to the constructor.  Call
-    :py:meth:`~MonoTable.table` passing a sequence of heading strings,
-    a sequence of format directive strings, a sequence of sequence of
+    Call :py:meth:`~MonoTable.table` passing a sequence of heading strings,
+    a sequence of format strings, a sequence of sequence of
     cells, and a title string.
     The return value is a string ready for printing.
 
@@ -122,7 +122,7 @@ class MonoTable:
     column; and a title string.
 
     Call :py:meth:`~MonoTable.row_strings` passing a sequence of heading
-    strings, a sequence of format directive strings, a sequence of sequence of
+    strings, a sequence of format strings, a sequence of sequence of
     cells to return a tuple of lists of formatted headings and
     list of list of cells.
 
@@ -141,7 +141,7 @@ class MonoTable:
 
     :Heading String: [align_spec]string
 
-    :Format String: [align_spec][option_spec][format_spec]
+    :Format String: [align_spec][directives][format_spec]
 
     :Title String: [align_spec][wrap_spec]string
 
@@ -149,6 +149,8 @@ class MonoTable:
       :py:meth:`~MonoTable.table` argument **formats** below.
 
     .. _alignment-label:
+
+    **Auto-alignment:**
 
     * Heading alignment is determined by this decision order:
 
@@ -165,7 +167,7 @@ class MonoTable:
 
     :note: The align_spec prefix may be omitted, but is required if the
         rest of the string starts with one of the align_spec_chars.
-        Or the user can put in any empty option_spec for example '()'.
+        Or the user can put in an empty directives for example '()'.
 
     :note: align_spec scanning/parsing can be disabled by setting the
         class variable :py:attr:`~MonoTable.align_spec_chars` to
@@ -178,12 +180,13 @@ class MonoTable:
         * The user can specify a different default format function for the
           table by overriding the class variable
           :py:attr:`~MonoTable.format_func`.
-        * In option_spec the user can specify a format function for
+        * In directives the user can specify a format function for
           a column which takes precedence over the table default format
-          function.  They are listed here: `Options`_.
+          function.  They are listed here:
+          :ref:`Format directives<format-directives-label>`.
         * Any user defined function in the dict assigned to the class variable
           :py:attr:`~MonoTable.format_func_map`
-          may be selected by putting its key as an option in option_spec.
+          may be selected by putting its key as a formatting directive.
 
     Here is the data flow through the formatting engine:
 
@@ -195,6 +198,7 @@ class MonoTable:
                                                   |      (width=)
         cell is None ------------(none=)----------+      (max)
                                                          (wrap)
+                                                         (fixed)
 
         * format directives are shown enclosed by ().
         * format_func may be selected by a format function directive.
@@ -202,14 +206,14 @@ class MonoTable:
 
     * If cell is None an empty string is formatted.
       Configure for a column by using the `none=` format directive in
-      option_spec.
+      directives.
       Configure for the whole table by overriding class variable
       :py:attr:`~MonoTable.format_none_as`.
     * If a cell is type float, and format_spec is an empty string, and the
       format function is <built-in function format>, the cell
       is formatted using class variable :py:attr:`~default_float_format_spec`.
 
-    option_spec can contain the format directives `lsep=` and `rsep=`
+    directives can contain the format directives `lsep=` and `rsep=`
     which sets the separator string placed before/after the column.
 
     If wrap_spec_char is present in table title the title is text wrapped
@@ -231,7 +235,7 @@ class MonoTable:
     """User defined function with signature of <built-in function format>.
 
     This function is selected for cell formatting except when
-    a column format string option_spec specifies a format function.
+    a column format string directives specifies a format function.
 
     These :ref:`format-functions-label` can be used here.
 
@@ -241,13 +245,13 @@ class MonoTable:
     >>> import monotable
     >>> def your_user_defined_format_function(value, format_spec):
     ...    pass
-    >>> class SubclassMonoTable(monotable.table.MonoTable):
+    >>> class SubclassMonoTable(monotable.MonoTable):
     ...     format_func = staticmethod(your_user_defined_format_function)
     >>> tbl = SubclassMonoTable()
     >>>
     >>> # When overriding on an instance do not use staticmethod like this:
     >>>
-    >>> tbl = monotable.table.MonoTable()
+    >>> tbl = monotable.MonoTable()
     >>> tbl.format_func = your_user_defined_format_function
 
     .. _Docs Here:
@@ -293,8 +297,7 @@ class MonoTable:
     sep = '  '
     """String that separates columns in non-bordered tables.
 
-    sep after a column can be overridden by the format string
-    option_spec option called rsep.
+    sep after a column can be overridden by the format string directive rsep.
     """
 
     separated_guidelines = False
@@ -306,7 +309,7 @@ class MonoTable:
     cell columns in the table.
     """
     format_func_map = None    # type: Dict[str, Callable[[object, str], str]]
-    """Adds format functions selectable by a column format string option_spec.
+    """Adds format functions selectable by a format directive.
 
     Dictionary of format functions keyed by name.
     name, when used as a format directive in a format string,
@@ -340,12 +343,12 @@ class MonoTable:
     """
 
     option_spec_delimiters = '(;)'
-    """Three characters to enclose and separate format options.
+    """Three characters to enclose and separate format directives.
 
     The first and third chars enclose the options.
     The second char separates individual options. Setting
-    option_spec_delimiters to "" disables option_spec scanning
-    in format directive strings.
+    option_spec_delimiters to "" disables format directive scanning
+    in format strings.
     """
 
     guideline_chars = '---'
@@ -428,8 +431,8 @@ class MonoTable:
                 Iterable of strings for each column heading.
 
             formats (Iterable[str]):
-                Iterable of format directive strings of the form
-                ``[align_spec][option_spec][format_spec]``.
+                Iterable of format strings of the form
+                ``[align_spec][directives][format_spec]``.
                 `Format directive string syntax`_
 
             cellgrid (Iterable[Iterable[object]]):
@@ -459,7 +462,7 @@ class MonoTable:
 
                      ^^           ^^
                       |            |
-                     sep          sep
+                   sep/rsep     sep/rsep
 
         This example has 6 sep strings of 2 spaces each.  The seps are placed
         between columns in the heading line and between the columns in
@@ -484,28 +487,29 @@ class MonoTable:
 
         **Format directive string syntax:**
 
-        ``[align_spec][option_spec][format_spec]``.
+        ``[align_spec][directives][format_spec]``.
 
         align_spec
             One of the characters '<', '^', '>' to
             override auto-alignment.
 
-        option_spec
-            One or more of options enclosed by '(' and ')'
+        directives
+            One or more of format directives enclosed by '(' and ')'
             separated by ';'.
 
         format_spec
             String passed to the format function.
 
-        .. _Options:
+        .. _format-directives-label:
 
-        **Options for Format string option_spec:**
+        **Format directives:**
 
-        The format string option_spec options described here apply to all
+        The format string directives described here apply to all
         MonoTable methods and monotable convenience functions that
-        take format directive strings.
+        take format strings.
 
-        - Each option is allowed once in an option_spec.
+        - At most, one format function directive is allowed.
+        - Each directive is allowed once.
         - Spacing before and after '=' is ignored except after
           ``sep =`` where spacing becomes part of sep.
 
@@ -536,6 +540,10 @@ class MonoTable:
             Same as rsep.  sep is an alias for rsep since version 2.1.0.
             New code should use rsep=ccc since the meaning is more explicit.
 
+        .. _Format function directives:
+
+        **Format function directives:**
+
         boolean
             Convert boolean cell truth value to one of two strings supplied
             by the format_spec.  Implemented by
@@ -546,12 +554,13 @@ class MonoTable:
 
         zero=ccc
             For cells that are numbers, when all digits in formatted text
-            are zero replace the formatted text with ccc.  ``0.00e00 -> --``.
+            are zero replace the formatted text with ccc.  ``0.00e00 -> ccc``.
 
         parentheses
             For cells that are numbers, when formatted text starts with a
             minus sign, remove the minus sign and add enclosing parentheses.
-            ``-100.1 -> (100.1)``.
+            ``-100.1 -> (100.1)``.  Maintains alignment with
+            numbers not enclosed by parentheses.
 
         thousands
             Select format function that divides by 10.0e3 before applying the
@@ -833,6 +842,8 @@ class MonoTable:
         processed_formats = []    # type: List[FormatScanner]
 
         # Copy class vars to pass to monotable.scanner.FormatScanner().
+        # option_spec_delimiters refers to the delimiters for the
+        # format directives.
         instance_config = monotable.scanner.MonoTableConfig(
             align_spec_chars=self.align_spec_chars,
             sep=self.sep,
@@ -1307,8 +1318,8 @@ class MonoTable:
                 Iterable of strings for each column heading.
 
             formats (Iterable[str]):
-                Iterable of format directive strings of the form
-                ``[align_spec][option_spec][format_spec]``.
+                Iterable of format strings of the form
+                ``[align_spec][directives][format_spec]``.
                 `Format directive string syntax`_
 
             cellgrid (Iterable[Iterable[object]]):
@@ -1435,8 +1446,8 @@ class MonoTable:
                 Iterable of strings for each column heading.
 
             formats (Iterable[str]):
-                Iterable of format directive strings of the form
-                ``[align_spec][option_spec][format_spec]``.
+                Iterable of format strings of the form
+                ``[align_spec][directives][format_spec]``.
                 `Format directive string syntax`_
 
             cellgrid (Iterable[Iterable[object]]):

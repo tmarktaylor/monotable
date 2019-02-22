@@ -4,9 +4,9 @@ Quick Links
 .. toctree::
    :maxdepth: 2
 
-Format directive options
-------------------------
-:ref:`Options<Options>`
+Format directives
+-----------------
+:ref:`Format directives<format-directives-label>`
 
 Auto-alignment rules
 --------------------

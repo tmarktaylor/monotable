@@ -52,7 +52,7 @@ def mono(
 
         formats (Iterable[str]):
             Iterable of format strings of the form
-            ``[align_spec][option_spec][format_spec]``.
+            ``[align_spec][directives][format_spec]``.
             Please see :ref:`Format directive string syntax
             <Format directive string syntax>`.
 

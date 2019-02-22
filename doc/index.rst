@@ -28,7 +28,6 @@ Contents:
    api
    configuring
    hints
-   contributing
 
 
 Indices and tables

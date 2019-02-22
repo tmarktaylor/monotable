@@ -74,6 +74,7 @@ cell -> format_func ---> (parentheses) ------> width control,
                                           |      (width=)
 cell is None ------------(none=)----------+      (max)
                                                  (wrap)
+                                                 (fixed)
 
 * format directives are shown enclosed by ().
 * format_func may be selected by a format function directive.

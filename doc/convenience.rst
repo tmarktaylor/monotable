@@ -1,12 +1,21 @@
 .. _convenience-label:
 
-API Functions and Constants
-===========================
+Module Level API
+================
 
 .. toctree::
    :maxdepth: 2
 
 .. module:: monotable
+
+monotable.HR_ROW
+    Row containing a horizontal rule to use as a row in cellgrid.
+
+monotable.VR_COL
+    Vertical rule column for use as a column_tuple with monocol().
+
+monotable.MonoTable
+    Class to create an aligned and formatted text table from a grid of cells.
 
 Functions
 ---------
@@ -19,18 +28,8 @@ and call a member function.
 .. autofunction:: mono
 .. autofunction:: monocol
 
-Constants
----------
-
-.. autodata:: monotable.mono.HR_ROW
-   :annotation:
-
-   HR_ROW is available at the module top level as monotable.HR_ROW.
-
-.. autodata:: monotable.mono.VR_COL
-   :annotation:
-
-   VR_COL is available at the module top level as monotable.VR_COL.
+.. issue- using autodata:: monotable.HR_ROW and others here included
+.. unwanted text
 
 Legacy Functions
 ----------------
