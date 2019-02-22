@@ -198,8 +198,8 @@ def test_malformed_boolean_format_spec():    # type: () -> None
         " boolean   boolean",
         "no comma  2 commas",
         "------------------",
-        "    True     False",
-        "   False      True",
+        "   fspec    !fspec",
+        "  !fspec     fspec",
         "------------------"
         ])
 
@@ -207,6 +207,40 @@ def test_malformed_boolean_format_spec():    # type: () -> None
 
     text2 = monotable.mono(headings, formats, cells, title=title)
     assert text2 == expected
+
+
+def test_boolean_on_non_boolean_type_cells():    # type: () -> None
+    """
+    Check boolean format function directive with non-boolean cell type.
+
+    True and False are
+    """
+    headings = ['', 'bad\nformat\ndirective']
+    formats = ['>(boolean)on,off', '>(boolean)yes,no']
+    empty_list = []
+    non_empty_dict = {'spam': False}    # True truth value since non-empty dict
+    cells = [[1,   empty_list],
+             [0.0, non_empty_dict]]
+    title = 'Non boolean cells.'
+    text = monotable.table.table(headings, formats, cells, title=title)
+
+    expected = '\n'.join([
+        "Non boolean cells.",
+        "--------------",
+        "           bad",
+        "        format",
+        "     directive",
+        "--------------",
+        " on         no",
+        "off        yes",
+        "--------------"
+        ])
+
+    assert text == expected
+
+    text2 = monotable.mono(headings, formats, cells, title=title)
+    assert text2 == expected
+
 
 def test_cotable_missing_cell():    # type: () -> None
     """Column 2 only has one cell."""

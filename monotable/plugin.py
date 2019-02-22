@@ -74,6 +74,8 @@ def boolean(bool_value, format_spec='T,F'):
     The format_spec is a string ``'true-truth-value,false-truth-value'`` of
     the true and false truth value strings joined by comma where
     true-truth-value is returned when bool_value evaluates to logical True.
+    The default value for argument format_spec above is a good example.
+    If fspec or !fspec is rendered check for an incorrect format_spec.
     """
 
     truth_values = format_spec.split(',')
@@ -82,7 +84,12 @@ def boolean(bool_value, format_spec='T,F'):
             return truth_values[0]
         else:
             return truth_values[1]
-    return format(bool_value)
+    else:
+        # the format_spec is malformed
+        if bool_value:
+            return 'fspec'
+        else:
+            return '!fspec'
 
 
 # Note- For the Mypy type annotations below int and float are duck type
