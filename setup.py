@@ -93,7 +93,7 @@ setup(
     author_email='mark66547ta2' '@' 'gmail' '.com',
     license='Apache 2.0',
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'License :: OSI Approved :: Apache Software License',
         'Operating System :: OS Independent',
         'Intended Audience :: Developers',
