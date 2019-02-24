@@ -443,7 +443,7 @@ alignment engine available in list form.  Please look for the function
 
 Recent Changes
 ==============
-2.1.0 - 2019-02-24
+2.1.0 - 2019-02-25
 
 - Add module level convenience functions mono(), monocol() and
   constants HR_ROW, VR_COL.
