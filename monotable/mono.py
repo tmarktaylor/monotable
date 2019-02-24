@@ -71,9 +71,11 @@ def mono(
             Dictionary of format functions keyed by name.
             name, when used as a format directive in a format string,
             selects the corresponding function from the dictionary.
+
             If a key is one of the included format directive function
             names like 'boolean', 'mformat', etc. the included format
             directive function is hidden.
+
             This value overrides
             :py:attr:`~monotable.table.MonoTable.format_func_map`
             in the MonoTable instance that generates the table.
@@ -91,11 +93,9 @@ def mono(
 
     indent = kargs.pop('indent', '')    # type: str
     tbl = MonoTable(indent=indent)
-    tbl.guideline_chars = kargs.pop(
-        'guideline_chars', '---')
+    tbl.guideline_chars = kargs.pop('guideline_chars', '---')
     bordered = kargs.pop('bordered', False)
-    tbl.format_func_map = kargs.pop(
-        'format_func_map', None)
+    tbl.format_func_map = kargs.pop('format_func_map', None)
 
     if kargs:
         raise TypeError('unexpected keywords: %s' % kargs)
@@ -143,9 +143,11 @@ def monocol(
             Dictionary of format functions keyed by name.
             name, when used as a format directive in a format string,
             selects the corresponding function from the dictionary.
+
             If a key is one of the included format directive function
             names like 'boolean', 'mformat', etc. the included format
             directive function is hidden.
+
             This value overrides
             :py:attr:`~monotable.table.MonoTable.format_func_map`
             in the MonoTable instance that generates the table.
@@ -163,11 +165,9 @@ def monocol(
 
     indent = kargs.pop('indent', '')
     tbl = MonoTable(indent=indent)
-    tbl.guideline_chars = kargs.pop(
-        'guideline_chars', '---')
+    tbl.guideline_chars = kargs.pop('guideline_chars', '---')
     bordered = kargs.pop('bordered', False)
-    tbl.format_func_map = kargs.pop(
-        'format_func_map', None)
+    tbl.format_func_map = kargs.pop('format_func_map', None)
 
     if kargs:
         raise TypeError('unexpected keywords: %s' % kargs)

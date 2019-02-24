@@ -1,7 +1,7 @@
 .. _convenience-label:
 
-Module Level API
-================
+API
+===
 
 .. toctree::
    :maxdepth: 2
@@ -33,6 +33,7 @@ and call a member function.
 
 Legacy Functions
 ----------------
+Since v2.1.0 these functions are superseded by mono() and monocol() above.
 The details of the function parameters are provided in the class MonoTable
 docstrings located by following the links below.
 

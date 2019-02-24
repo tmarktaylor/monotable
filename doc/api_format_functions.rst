@@ -52,7 +52,6 @@ for the monotable's adapters to Python formatting functions.
 ========  =======================
 function  Python 3 Documentation
 ========  =======================
-format    `Format Spec`_
 sformat   `Format String Syntax`_
 mformat   same as sformat
 tformat   `Template Strings`_

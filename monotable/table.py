@@ -115,11 +115,10 @@ class MonoTable:
     column; and a title string.  The prefix co stands for column oriented.
 
     Call :py:meth:`~MonoTable.bordered_table` with the same arguments
-    to format a table with character borders.
+    as table() to format a table with character borders.
 
-    Call :py:meth:`~MonoTable.cobordered_table` passing a sequence of tuples of
-    (heading, format, list of cells in the column); one tuple for each
-    column; and a title string.
+    Call :py:meth:`~MonoTable.cobordered_table` with the same arguments
+    as cotable() to format a table with character borders.
 
     Call :py:meth:`~MonoTable.row_strings` passing a sequence of heading
     strings, a sequence of format strings, a sequence of sequence of
@@ -510,8 +509,9 @@ class MonoTable:
 
         - At most, one format function directive is allowed.
         - Each directive is allowed once.
-        - Spacing before and after '=' is ignored except after
-          ``sep =`` where spacing becomes part of sep.
+        - Spacing before '=' is always ignored.
+        - Spacing after '=' is significant for none, zero, lsep, and rsep.
+
 
         width=N
             Truncate each formatted cell text line(s) to width N and

@@ -38,7 +38,7 @@ Introduction, Installation
 Monotable is a Python library that generates an ASCII table from
 tabular cell data that looks *pretty* in a monospaced font.
 
-Monotable offers formatting directives to reduce messy table
+Monotable offers formatting directives_ to reduce messy table
 pre-formatting code.  You can set directives for each column.
 You can also write and plug in your own format function directives.
 
@@ -49,8 +49,6 @@ Here is a list of some of the things Monotable does:
 - Generate a table with borders.
 - Directives to limit column width and text wrap.
 - Add horizontal and vertical rules.
-- `List of format directives`_.
-- `List of format function directives`_.
 - Is *thoroughly* documented and tested.
 
 Installation
@@ -101,7 +99,8 @@ Specify format string for each column.
 zero and none format directives
 -------------------------------
 
-Special handling for zero values and cell type None.
+Improve the appearance of zero values.
+Show the meaning of cell type None.
 
 .. testcode::
 
@@ -112,12 +111,14 @@ Special handling for zero values and cell type None.
         'hour',
         '24 hour\ntemp\nchange',
         'wind\nspeed',
+        'precip.\n(inches)'
         ]
 
     formats = [
         '%H',
         '(zero=same)+.0f',
         '(zero=calm;none=offline).0f',
+        '(zero=).2f',
         ]
 
     h7 = datetime(2019, 2, 28, 7, 0, 0)
@@ -125,9 +126,9 @@ Special handling for zero values and cell type None.
     h9 = datetime(2019, 2, 28, 9, 0, 0)
 
     cells = [
-        [h7, -2.3,   11],
-        [h8,  0.1,    0],
-        [h9,    5, None]
+        [h7, -2.3,   11, 3.4],
+        [h8,  0.1,    0, 0.0],
+        [h9,    5, None, 0.6734]
         ]
 
     print(mono(
@@ -135,16 +136,16 @@ Special handling for zero values and cell type None.
 
 .. testoutput::
 
-    Formatting directives.
-    ----------------------
+         Formatting directives.
+    --------------------------------
           24 hour
-             temp     wind
-    hour   change    speed
-    ----------------------
-    07         -2       11
+             temp     wind   precip.
+    hour   change    speed  (inches)
+    --------------------------------
+    07         -2       11      3.40
     08       same     calm
-    09         +5  offline
-    ----------------------
+    09         +5  offline      0.67
+    --------------------------------
 
 - The ``'%H'`` format specification is passed by built-in function
   **format()** to datetime.__format__().
@@ -169,7 +170,7 @@ the same column.
 
 .. testcode::
 
-    from monotable import mono, HR_ROW
+    from monotable import mono
 
     headings = ['Description', 'Amount']
     formats = ['', '(zero=n/a;parentheses),']
@@ -202,15 +203,11 @@ Format function directives
 --------------------------
 
 Format function directives select the format function used for the column.
-These are useful for scaling numbers, showing truth values, and changing
-the format function.
+These are useful for scaling numbers and showing truth values.
 
 .. testcode::
 
-    import datetime
     from monotable import mono
-
-    d = datetime.datetime(2016, 9, 16)
 
     headings = [
         'units of\nthousands',
@@ -248,7 +245,7 @@ the format function.
 - You can substitute any text you want for 'yes,no' for example 'on,off'.
 - You can also write and plug in an unlimited number of custom format
   function directives.
-- monotable format function directives are implemented in the file plugin.py.
+- monotable's format function directives are implemented in the file plugin.py.
 
 
 Column oriented input with vertical rule column
@@ -256,35 +253,28 @@ Column oriented input with vertical rule column
 
 .. testcode::
 
-    import datetime
     from monotable import monocol, VR_COL
 
-    d = datetime.datetime(2016, 9, 16)
-
-    column0 = ('float\nprecision\n3', '.3f',[1.23456789, 999.87654321])
-    column1 = ('units of\nthousands', '(thousands).1f', [35200, 1660])
-    column2 = ('datetime\n9/16/16', 'week-%U-day-%j', [d])
-    column3 = ('bool to\nyes/no', '(boolean)yes,no', [True, False])
-    columns = [column0, column1, VR_COL, column2, column3]
+    column0 = ('award', '', ['nominated', 'won'])
+    column1 = ('bool to\nyes/no', '(boolean)yes,no', [True, False])
+    columns = [column0, VR_COL, column1]
 
     print(monocol(columns,
-        title='Float, thousands, datetime, and boolean.'))
-
+        title='Columns with\nvertical rule.'))
 
 .. testoutput::
 
-        Float, thousands, datetime, and boolean.
-    -----------------------------------------------
-        float            |
-    precision   units of | datetime         bool to
-            3  thousands | 9/16/16           yes/no
-    -----------------------------------------------
-        1.235       35.2 | week-37-day-260      yes
-      999.877        1.7 |                       no
-    -----------------------------------------------
+        Columns with
+       vertical rule.
+    -------------------
+              | bool to
+    award     |  yes/no
+    -------------------
+    nominated |     yes
+    won       |      no
+    -------------------
 
-- Note only one cell was specified for column2.
-- VR_COL in the third column renders the vertical bars.
+- VR_COL in the second column renders the vertical bars.
 - The title is center aligned.
 
 Horizontal and vertical rules in a row oriented table
@@ -297,7 +287,8 @@ The text between columns can be changed with the format directive lsep.
 lsep specifies the separator between this column and the left side
 neighbor column.
 
-By default lsep is two spaces.  In this example lsep in the second
+By default the column separator is two spaces.
+In this example lsep in the second
 column is changed to ``' | '``.  This creates an effect approximating
 a vertical rule.
 
@@ -337,11 +328,13 @@ directive strings are silently ignored.
 
 `More Examples`_
 
+.. _directives:
+
 List of format directives
 =========================
 
 Read about all the format directive syntax in the full `Documentation`_.
-Follow the Format directives link the Quick Links section.
+Follow the Format directives link in the Quick Links section.
 
 none=ccc
     render cell type None as characters ccc.
@@ -435,7 +428,7 @@ What monotable does not do
 - Produce terminal graphics characters.  Try PYPI terminaltables.
 - Handle CJK wide characters.
 - Handle ANSI escape terminal color sequences. Try PYPI terminaltables.
-- Produce arbritrary markup source text.  Try PYPI tabulate instead.
+- Produce arbitrary markup source text.  Try PYPI tabulate instead.
   However calling mono() or monocol() with keyword argument
   bordered=True produces valid reStructuredText grid table and
   simple table markup is possible.
@@ -450,7 +443,7 @@ alignment engine available in list form.  Please look for the function
 
 Recent Changes
 ==============
-2.1.0 - 2019-02-23
+2.1.0 - 2019-02-24
 
 - Add module level convenience functions mono(), monocol() and
   constants HR_ROW, VR_COL.

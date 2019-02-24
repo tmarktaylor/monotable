@@ -64,20 +64,3 @@ Please note the sample here in README.md is not doctested.
 
 ### Dropping Python 2 soon
 The next feature update version of monotable will run only on Python 3.
-
-### Formatting Engine Block Diagram
-
-```
-                    text              MonoBlock
-cell -> format_func ---> (parentheses) ------> width control,
-        format_spec      (zero=)          |    justification  
-                                          |      (width=)
-cell is None ------------(none=)----------+      (max)
-                                                 (wrap)
-                                                 (fixed)
-
-* format directives are shown enclosed by ().
-* format_func may be selected by a format function directive.
-* user can plug in new format function directives.
-```
-
