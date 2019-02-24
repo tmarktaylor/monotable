@@ -852,7 +852,7 @@ def test_width_fixed_format_option_only_none_cells():    # type: () -> None
 def test_zero_with_numbers_arbitrary_precision():    # type: () -> None
     """Check zero processing for numbers with non-default float precision."""
     headings = ['Numbers']
-    formats = ['(zero=--).4f']
+    formats = ['(zero =--).4f']    # test with space before equals sign
     cells = [[0],
              [1234567],
              [0.000000e+00],
