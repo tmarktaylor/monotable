@@ -20,14 +20,9 @@ matrix:
       install: *utest_install
       script: *utest_run
 
-    # todo- build failing
-    #- python: pypy
-    #  install: *utest_install
-    #  script: *utest_run
-
-    #- python: pypy3
-    #  install: *utest_install
-    #  script: *utest_run
+    - python: pypy3.5
+      install: *utest_install
+      script: *utest_run
 
 branches:
   only:
