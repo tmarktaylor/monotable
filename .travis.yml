@@ -1,23 +1,32 @@
+dist: xenial
 language: python
 sudo: false
 
 matrix:
   include:
-    - python: 2.7
-      env: TOXENV=py27,cover
     - python: 3.5
-      env: TOXENV=py35,cover,inspect,readme
+      # just run pytest
+      install: &utest_install pip install "." pytest
+      script: &utest_run py.test --strict
+
     - python: 3.6
-      env: TOXENV=py36,docs,experimental_static_type_checking
+      script: tox -e py36, cover, inspect, readme, manifest, docs,
+        experimental_static_type_checking
+
+    - python: 3.7
+      install: *utest_install
+      script: *utest_run
+
     - python: pypy
-      env: TOXENV=pypy
+      install: *utest_install
+      script: *utest_run
+
     - python: pypy3
-      env: TOXENV=pypy3
+      install: *utest_install
+      script: *utest_run
 
 install:
-  - pip install tox coverage coveralls
-
-script: tox -e $TOXENV
+  - pip install coverage coveralls
 
 after_success:
   - coverage combine
