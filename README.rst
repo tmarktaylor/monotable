@@ -370,8 +370,7 @@ List of format function directives
 boolean
     test cell truth value and substitute caller's strings for True, False.
     The format_spec is ttt,fff where characters ttt are rendered for True and
-    the characters fff are rendered for False.  If no format_spec is
-    present, ``'T,F'`` is used.
+    the characters fff are rendered for False.
 
 function-name
     selects user defined function function-name.
