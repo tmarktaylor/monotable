@@ -88,6 +88,7 @@ setup(
                  'multi-line content, formatting directives, '
                  'column width control.'),
     long_description=make_long_description(),
+    long_description_content_type='text/x-rst',
     url='https://github.com/tmarktaylor/monotable',
     author='Mark Taylor',
     author_email='mark66547ta2' '@' 'gmail' '.com',
