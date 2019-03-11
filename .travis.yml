@@ -5,8 +5,14 @@ sudo: false
 matrix:
   include:
     - python: 3.5
-      # just run pytest
-      install: &utest_install pip install "." pytest
+      # install monotable from the source
+      # install pytest
+      # delete the python source to prove the installed monotable is run
+      # run pytest
+      install:
+        &utest_install
+        - pip install "." pytest
+        - rm -fr monotable
       script: &utest_run py.test --strict
 
     - python: 3.6
