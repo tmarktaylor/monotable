@@ -27,8 +27,10 @@ def make_badge_text():
         "",
         "",
         ".. |coverage| image::",
-        "    https://codecov.io/gh/tmarktaylor/monotable/coverage.svg?branch=master",
-        "    :target: https://codecov.io/gh/tmarktaylor/monotable?branch=master",
+        "    https://codecov.io/gh/tmarktaylor/monotable/"
+        "coverage.svg?branch=master",
+        "    :target: https://codecov.io/gh/tmarktaylor/"
+        "monotable?branch=master",
         "    :alt: Code Coverage",
         "",
         "|apache| |py_versions| |build_status| |coverage|",
