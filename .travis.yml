@@ -17,7 +17,7 @@ matrix:
 
     - python: 3.6
       install: pip install tox coverage coveralls
-      script: tox -e py36,cover,inspect,manifest,docs,experimental_static_type_checking,readme
+      script: tox -e py36,cover,inspect,docs
       after_success:
         - coverage combine
         - coveralls
