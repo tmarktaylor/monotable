@@ -120,6 +120,7 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: Utilities',
     ],
+    python_requires='>=3.5',
     packages=['monotable'],
     keywords='ascii table pretty',
 
