@@ -7,7 +7,7 @@
 - Run code inspections.
 - Run pytest cases.
 - Run pytest cases with python warnings enabled. 'python -W once -m pytest'
-- Run tests against 2.7 and 3.x python versions.
+- Run tests against Python 3 versions.
 - Run pytest with statement and branch coverage.
 - Run Sphinx doctest.
 - Run readme_preview.py.

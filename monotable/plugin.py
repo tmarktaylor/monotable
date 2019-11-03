@@ -50,16 +50,8 @@ Maintainers- Please add new format functions to format_functions dict below.
    ignore_it  Formatting error callback.  No action taken.
 """
 
-from __future__ import print_function
-
 import string
-import sys
-
-# These imports are for PEP484, PYPI package mypy static type checking.
-try:
-    from typing import Tuple, Union, Any, Mapping, Sequence    # noqa : F401
-except ImportError:
-    pass
+from typing import Tuple, Union, Mapping    # noqa : F401
 
 #
 # Format functions selectable by a format directive of the same name.
@@ -290,9 +282,8 @@ def print_it(cell_error_exception):    # type: ignore
     """Format function error callback.  Prints exception. Returns '???'."""
 
     print(cell_error_exception)
-    if sys.version_info > (3,):
-        print('{} raised after catching:'.format(cell_error_exception.name))
-        print(cell_error_exception.trace_text)
+    print('{} raised after catching:'.format(cell_error_exception.name))
+    print(cell_error_exception.trace_text)
     return '???'
 
 

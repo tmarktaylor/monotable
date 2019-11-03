@@ -23,15 +23,10 @@
 
 import collections
 import fnmatch
+from typing import Callable, Dict, List, Tuple, Optional    # noqa : F401
 
 import monotable.plugin
 import monotable.alignment
-
-# These imports are for PEP484, PYPI package mypy static type checking.
-try:
-    from typing import List, Tuple, Optional, Any    # noqa : F401
-except ImportError:
-    pass
 
 MonoTableConfig = collections.namedtuple('MonoTableConfig',
                                          ['align_spec_chars',

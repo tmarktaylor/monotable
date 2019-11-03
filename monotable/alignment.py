@@ -32,11 +32,7 @@
    BOTTOM         Align vertically to bottom.
 """
 
-# These imports are for PEP484, PYPI package mypy static type checking.
-try:
-    from typing import Tuple    # noqa : F401
-except ImportError:
-    pass
+from typing import Tuple    # noqa : F401
 
 # repository: https://github.com/tmarktaylor/monotable
 

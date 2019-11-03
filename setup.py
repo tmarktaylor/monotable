@@ -75,7 +75,6 @@ def make_long_description():
     To preview the long-description locally requires
         pip install sphinx
     which installs sphinx including the script rst2html5.py
-    (rst2html.py in py 2.7).
     Then run a shell command something like this:
     python readme_preview.py <path to>Scripts/rst2html5.py readme.html
     """
@@ -96,7 +95,7 @@ def make_long_description():
 
 setup(
     name='monotable',
-    version='2.1.0',
+    version='3.0.0',
     description=('ASCII table with per column format specs, '
                  'multi-line content, formatting directives, '
                  'column width control.'),
@@ -111,8 +110,6 @@ setup(
         'License :: OSI Approved :: Apache Software License',
         'Operating System :: OS Independent',
         'Intended Audience :: Developers',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',

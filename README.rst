@@ -442,6 +442,10 @@ alignment engine available in list form.  Please look for the function
 
 Recent Changes
 ==============
+3.0.0 - 2019-xx-xx
+
+- Remove Python 2.7 compatibility.
+
 2.1.0 - 2019-02-25
 
 - Add module level convenience functions mono(), monocol() and

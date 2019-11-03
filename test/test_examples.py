@@ -4,87 +4,25 @@ from collections import namedtuple
 import datetime
 import doctest
 import math
-import pytest    # todo- mypy error no stub file
-
-# For experimental type checking this file was annotated such that the command
-# mypy test/test_examples.py --strict doesn't produce
-# any output.  The :type ignore directive was added to prevent mypy errors
-# that I was not able to fix.
-
-# These imports are for PEP484, PYPI package mypy static type checking.
-try:
-    from typing import List, Any, Tuple, Iterable, Sequence
-except ImportError:
-    pass
+from typing import List, Any, Tuple, Iterable
 
 import monotable.alignment
 import monotable.plugin
 import monotable.scanner
 import monotable.table
 
+# For experimental type checking this file was annotated such that the command
+# mypy test/test_examples.py --strict doesn't produce
+# any output.  The :type ignore directive was added to prevent mypy errors
+# that I was not able to fix.
+
 
 def test_doctest_scanner_py():    # type: () -> None
 
-    # mypy is expecting module=monotable.scanner, py -2 expects m=.
+    # mypy is expecting module=monotable.scanner, py expects m=.
     failure_count, test_count = doctest.testmod(m=monotable.scanner)
     assert test_count > 0
     assert failure_count == 0
-
-
-def test_py2_mono_extra_keyword_args():    # type: () -> None
-    """
-    Expect TypeError on unsupported keyword only arg 'bogus'.
-    This test is only required for Python 2.7 code that manually tests for
-    extra keyword only arguments.
-    """
-
-    with pytest.raises(TypeError) as exc_info:
-        _ = monotable.mono(
-            headings=(),
-            formats=(),
-            cellgrid=((),),
-            title='',
-            bogus='yes')
-    print(exc_info.value)
-    assert 'keyword' in str(exc_info.value)
-    assert 'bogus' in str(exc_info.value)
-
-
-def test_py2_monocol_extra_keyword_args():    # type: () -> None
-    """
-    Expect TypeError on unsupported keyword only arg 'bogus'.
-    This test is only required for Python 2.7 code that manually tests for
-    extra keyword only arguments.
-    """
-
-    column = ('', '', ())
-    columns = (column, column)
-
-    with pytest.raises(TypeError) as exc_info:
-        _ = monotable.monocol(
-            column_tuples=columns,
-            title='',
-            bogus='yes')
-    print(exc_info.value)
-    assert 'keyword' in str(exc_info.value)
-    assert 'bogus' in str(exc_info.value)
-
-
-def test_py2_mono_misspelled_cellgrid_keyword_arg():    # type: () -> None
-    """
-    Expect TypeError on keyword cells when intended to use cellgrid.
-    This test is only required for Python 2.7 code that manually tests for
-    extra keyword only arguments.
-    """
-
-    with pytest.raises(TypeError) as exc_info:
-        _ = monotable.mono(
-            headings=(),
-            formats=(),
-            cells=((),),    # error should be cellgrid
-            title='')
-    assert 'keyword' in str(exc_info.value)
-    assert 'cells' in str(exc_info.value)
 
 
 def test_simple_data_types():    # type: () -> None
