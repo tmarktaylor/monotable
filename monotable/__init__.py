@@ -18,7 +18,7 @@
 
 """ASCII table: per column format specs, formatting directives, multi-line.
 """
-__version__ = '2.1.0'
+__version__ = '2.1.1'
 
 __all__ = ['HR_ROW', 'VR_COL', 'mono', 'monocol', 'MonoTable']
 

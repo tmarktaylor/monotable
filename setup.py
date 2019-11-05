@@ -83,7 +83,7 @@ def make_long_description():
 
 setup(
     name='monotable',
-    version='2.1.0',
+    version='2.1.1',
     description=('ASCII table with per column format specs, '
                  'multi-line content, formatting directives, '
                  'column width control.'),
@@ -109,6 +109,7 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: Utilities',
     ],
+    python_requires='>=2.7',
     packages=['monotable'],
     keywords='ascii table pretty',
 
