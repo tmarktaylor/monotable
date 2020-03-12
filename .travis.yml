@@ -5,22 +5,18 @@ sudo: false
 matrix:
   include:
     - python: 3.5
-      # install monotable from the source
       # install pytest
       # delete the python source to prove the installed monotable is run
       # run pytest
       install:
         &utest_install
-        - pip install "." pytest
+        - pip install pytest
         - rm -fr monotable
       script: &utest_run py.test --strict
 
     - python: 3.6
-      install: pip install tox coverage coveralls
-      script: tox -e py36,cover,inspect,docs
-      after_success:
-        - coverage combine
-        - coveralls
+      install: pip install tox
+      script: tox -e cover,inspect,docs
 
     - python: 3.7
       install: *utest_install
