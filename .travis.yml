@@ -5,14 +5,14 @@ sudo: false
 matrix:
   include:
     - python: 3.5
-      # install pytest
+      # install monotable via setup.py at "." pytest
       # delete the python source to prove the installed monotable is run
       # run pytest
       install:
         &utest_install
-        - pip install pytest
+        - pip install "." pytest
         - rm -fr monotable
-      script: &utest_run py.test --strict
+      script: &utest_run pytest --strict test
 
     - python: 3.6
       install: pip install tox
