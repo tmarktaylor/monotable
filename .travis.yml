@@ -18,11 +18,6 @@ matrix:
       install: pip install tox
       script: tox -e cover,inspect,docs
 
-    # experimental
-    - python: 3.7
-      install: *utest_install
-      script: *utest_run
-
     - python: 3.7
       install: *utest_install
       script: *utest_run
