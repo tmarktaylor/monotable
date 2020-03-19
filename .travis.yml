@@ -11,8 +11,12 @@ matrix:
       install:
         &utest_install
         - pip install "." pytest
+        - pip install phmdoctest
         - rm -fr monotable
-      script: &utest_run pytest --strict test
+      script: &utest_run
+        - mkdir test/tmp
+        - phmdoctest README.md --outfile test/tmp/test_README.py
+        - pytest --strict test
 
     - python: 3.6
       install: pip install tox

@@ -59,8 +59,5 @@ heart rate  state
          0  ceased to be
 ```
 
-Please note the sample here in README.md is not doctested.
-[doctested version.](https://monotable.readthedocs.io/en/latest/more_examples.html#change-or-omit-the-guidelines)
-
 ### Dropping Python 2 soon
 The next feature update version of monotable will run only on Python 3.
