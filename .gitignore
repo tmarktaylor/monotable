@@ -16,6 +16,7 @@ MANIFEST
 .coverage
 .pypirc
 htmlcov/
+.exportToPDF
 
 # PyCharm
 .idea/
