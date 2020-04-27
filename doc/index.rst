@@ -6,13 +6,13 @@
 monotable Documentation
 =======================
 
-monotable version 2.1.1.
+monotable version 3.0.0.
 
 ASCII table with per column format specs, multi-line content,
 formatting directives, column width control.
 
 - Licensed under Apache 2.0.
-- Python versions 2.7, 3.5-3.7, and pypy2-3
+- Python versions 3.5-3.7, and pypy3
   default versions supported by Travis-CI.
 - No required dependencies.
 

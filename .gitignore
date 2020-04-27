@@ -5,7 +5,7 @@ dist/
 *.egg
 *.py[cod]
 __pycache__/
-.pytest_cache/
+.mypy_cache/
 *.so
 *~
 
@@ -16,6 +16,7 @@ MANIFEST
 .coverage
 .pypirc
 htmlcov/
+.exportToPDF
 
 # PyCharm
 .idea/

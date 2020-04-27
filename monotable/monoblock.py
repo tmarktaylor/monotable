@@ -20,6 +20,8 @@
    MonoBlock   manages a two dimensional block of text.
 """
 
+from typing import Optional    # noqa : F401
+
 import monotable.alignment
 from monotable.alignment import LEFT
 from monotable.alignment import CENTER
@@ -29,12 +31,6 @@ from monotable.alignment import TOP
 from monotable.alignment import BOTTOM
 from monotable.alignment import CENTER_TOP
 from monotable.alignment import CENTER_BOTTOM
-
-
-try:
-    from typing import List, Any, Optional    # noqa : F401
-except ImportError:
-    pass
 
 
 class MonoBlock:

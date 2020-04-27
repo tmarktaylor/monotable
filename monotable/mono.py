@@ -19,14 +19,10 @@
 """Convenience function access to ASCII table class.
 """
 
+from typing import Dict, Callable, Optional, Sequence, Tuple, Iterable    # noqa F401 E501
+
 from .table import HR
 from .table import MonoTable
-
-# These imports are for PEP484, PYPI package mypy static type checking.
-try:
-    from typing import Dict, Sequence, Tuple, Iterable, Union, Callable    # noqa F401 E501
-except ImportError:
-    pass
 
 
 HR_ROW = (HR,)
@@ -41,7 +37,11 @@ def mono(
         formats=(),         # type: Iterable[str]
         cellgrid=((),),     # type: Iterable[Iterable[object]]
         title='',           # type: str
-        **kargs
+        *,
+        bordered=False,  # type: bool
+        format_func_map=None,  # type: Optional[Dict[str, Callable[[object, str], str]]]   # noqa E501
+        guideline_chars='---',  # type: str
+        indent=''  # type: str
         ):
     # type: (...) -> str
     """Generate ASCII table from cellgrid.
@@ -90,16 +90,9 @@ def mono(
         indent (str):
             String added to the beginning of each line in the text table.
    """
-
-    indent = kargs.pop('indent', '')    # type: str
     tbl = MonoTable(indent=indent)
-    tbl.guideline_chars = kargs.pop('guideline_chars', '---')
-    bordered = kargs.pop('bordered', False)
-    tbl.format_func_map = kargs.pop('format_func_map', None)
-
-    if kargs:
-        raise TypeError('unexpected keywords: %s' % kargs)
-
+    tbl.format_func_map = format_func_map
+    tbl.guideline_chars = guideline_chars
     if not bordered:
         return tbl.table(headings, formats, cellgrid, title)
     else:
@@ -109,8 +102,12 @@ def mono(
 def monocol(
         column_tuples=(),   # type: Sequence[Tuple[str, str, Iterable[object]]]    # noqa : E501
         title='',           # type: str
-        **kargs
-        ):
+        *,
+        bordered=False,  # type: bool
+        format_func_map=None,  # type: Optional[Dict[str, Callable[[object, str], str]]]   # noqa E501
+        guideline_chars='---',  # type: str
+        indent=''  # type: str
+):
     # type: (...) -> str
     """Generate ASCII table from column tuples.
 
@@ -163,14 +160,9 @@ def monocol(
             String added to the beginning of each line in the text table.
     """
 
-    indent = kargs.pop('indent', '')
     tbl = MonoTable(indent=indent)
-    tbl.guideline_chars = kargs.pop('guideline_chars', '---')
-    bordered = kargs.pop('bordered', False)
-    tbl.format_func_map = kargs.pop('format_func_map', None)
-
-    if kargs:
-        raise TypeError('unexpected keywords: %s' % kargs)
+    tbl.format_func_map = format_func_map
+    tbl.guideline_chars = guideline_chars
 
     if not bordered:
         return tbl.cotable(column_tuples, title)

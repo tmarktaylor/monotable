@@ -442,9 +442,9 @@ alignment engine available in list form.  Please look for the function
 
 Recent Changes
 ==============
-2.1.1 - 2019-11-06
+3.0.0 - 2020-04-xx
 
-- Add setup() arg python_requires='>=2.7' for future drop of support of 2.7.
+- Remove Python 2.7 compatibility.
 
 2.1.0 - 2019-02-25
 

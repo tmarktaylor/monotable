@@ -40,30 +40,20 @@
 import copy
 import numbers
 import string
-import sys
 import textwrap
 import traceback
-
-try:
-    from itertools import zip_longest
-except ImportError:
-    from itertools import izip_longest as zip_longest    # type: ignore
+from itertools import zip_longest
+from typing import List, Dict, Tuple, Optional, Callable    # noqa : F401
+from typing import Union, Any, Sequence, Iterable    # noqa : F401
 
 import monotable.plugin
 import monotable.scanner
+from monotable.scanner import FormatScanner    # noqa : F401
 from monotable.monoblock import MonoBlock
 
 from monotable.alignment import NOT_SPECIFIED
 from monotable.alignment import LEFT
 from monotable.alignment import RIGHT
-
-# These imports are for PEP484, PYPI package mypy static type checking.
-try:
-    from typing import List, Dict, Tuple, Optional, Callable    # noqa : F401
-    from typing import Union, Any, Mapping, Sequence, Iterable    # noqa : F401
-    from monotable.scanner import FormatScanner    # noqa : F401
-except ImportError:
-    pass
 
 # repository: https://github.com/tmarktaylor/monotable
 # Docstrings are Google Style for Sphinx plugin sphinx.ext.napoleon.
@@ -307,7 +297,7 @@ class MonoTable:
     of the table.  seps refers to characters placed between heading and
     cell columns in the table.
     """
-    format_func_map = None    # type: Dict[str, Callable[[object, str], str]]
+    format_func_map = None    # type: Optional[Dict[str, Callable[[object, str], str]]]   # noqa E501
     """Adds format functions selectable by a format directive.
 
     Dictionary of format functions keyed by name.
@@ -1643,13 +1633,7 @@ class MonoTableCellError(Exception):
             self.row,
             self.column,
             self.format_spec)
-
-        if sys.version_info < (3,):
-            # Python 2.x
-            tfmt = '\n' + self.name + ' raised after catching:\n{:s}'
-            return exception_msg + tfmt.format(self.trace_text)
-        else:
-            return exception_msg
+        return exception_msg
 
 
 class _InternalGuideline(MonoBlock):
