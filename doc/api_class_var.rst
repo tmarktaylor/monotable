@@ -6,7 +6,7 @@ MonoTable Class Variables
 .. toctree::
    :maxdepth: 2
 
-.. module:: monotable.table
+.. currentmodule:: monotable.table
 
 .. |format_func| replace:: :py:attr:`~MonoTable.format_func`
 .. |format_exc_callback| replace:: :py:attr:`~MonoTable.format_exc_callback`

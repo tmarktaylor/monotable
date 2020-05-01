@@ -1,4 +1,4 @@
-# Copyright 2019 Mark Taylor
+# Copyright 2020 Mark Taylor
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -215,7 +215,7 @@ class FormatScanner:
 
         self._start, self._between, self._end = option_spec_delimiters
         option_spec, self.format_spec = (
-            self._parse(option_format_spec))    # type: Tuple[str, str]
+            self._parse(option_format_spec))
         self._scan(option_spec)
 
     def _parse(self, option_format_spec):

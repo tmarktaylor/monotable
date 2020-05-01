@@ -1,4 +1,4 @@
-# Copyright 2019 Mark Taylor
+# Copyright 2020 Mark Taylor
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -52,6 +52,8 @@ Maintainers- Please add new format functions to format_functions dict below.
 
 import string
 from typing import Tuple, Union, Mapping    # noqa : F401
+
+from . import table
 
 #
 # Format functions selectable by a format directive of the same name.
@@ -270,15 +272,15 @@ format_functions = {
 #
 
 
-def raise_it(cell_error_exception):    # type: ignore
-    # type: (monotable.table.MonoTableCellError) -> None
+def raise_it(cell_error_exception):
+    # type:(table.MonoTableCellError)->None
     """Format function error callback.  Exception is raised."""
 
     raise cell_error_exception
 
 
-def print_it(cell_error_exception):    # type: ignore
-    # type: (monotable.table.MonoTableCellError) -> str
+def print_it(cell_error_exception):
+    # type: (table.MonoTableCellError) -> str
     """Format function error callback.  Prints exception. Returns '???'."""
 
     print(cell_error_exception)
@@ -287,8 +289,8 @@ def print_it(cell_error_exception):    # type: ignore
     return '???'
 
 
-def ignore_it(_):    # type: ignore
-    # type: (monotable.table.MonoTableCellError) -> str
+def ignore_it(_):
+    # type: (table.MonoTableCellError) -> str
     """Format function error callback.  No action taken.  Returns '???'."""
 
     return '???'

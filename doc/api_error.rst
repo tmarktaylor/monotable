@@ -7,7 +7,7 @@ Exception and Error Callbacks
 Exception
 ---------
 
-.. module:: monotable.table
+.. currentmodule:: monotable.table
 .. autoexception:: MonoTableCellError
 
 .. _callbacks-label:
@@ -22,6 +22,7 @@ These are used to override the class variable
 :py:attr:`~MonoTable.format_exc_callback` in a subclass or on an instance.
 
 .. module:: monotable.plugin
+   :noindex:
 .. autofunction:: raise_it
 .. autofunction:: print_it
 .. autofunction:: ignore_it
