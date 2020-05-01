@@ -442,7 +442,7 @@ alignment engine available in list form.  Please look for the function
 
 Recent Changes
 ==============
-3.0.0 - 2020-04-xx
+3.0.0 - 2020-05-xx
 
 - Remove Python 2.7 compatibility.
 

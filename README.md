@@ -58,6 +58,3 @@ heart rate  state
         -1
          0  ceased to be
 ```
-
-### Dropping Python 2 soon
-The next feature update version of monotable will run only on Python 3.
