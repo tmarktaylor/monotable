@@ -10,6 +10,7 @@ import monotable.alignment
 import monotable.plugin
 import monotable.scanner
 import monotable.table
+from monotable.table import CellGrid, ColumnTuple
 
 # For experimental type checking this file was annotated such that the command
 # mypy test/test_examples.py --strict doesn't produce
@@ -17,7 +18,7 @@ import monotable.table
 # that I was not able to fix.
 
 
-def test_doctest_scanner_py():    # type: () -> None
+def test_doctest_scanner_py() -> None:
 
     # mypy is expecting module=monotable.scanner, py expects m=.
     failure_count, test_count = doctest.testmod(m=monotable.scanner)
@@ -25,7 +26,7 @@ def test_doctest_scanner_py():    # type: () -> None
     assert failure_count == 0
 
 
-def test_simple_data_types():    # type: () -> None
+def test_simple_data_types() -> None:
     """Simple data types.
 
     Automatic justification.
@@ -50,8 +51,7 @@ def test_simple_data_types():    # type: () -> None
     assert text == expected
 
 
-def test_an_attribute_and_an_index_with_instance_assigned_format_func():
-    # type: () -> None
+def test_an_attribute_and_an_index_with_instance_assigned_format_func() -> None:
     """
     Show an attribute of an cell object and an item of a sequence.
 
@@ -85,7 +85,8 @@ def test_an_attribute_and_an_index_with_instance_assigned_format_func():
        ])
     assert text == expected
 
-def test_float_and_boolean_formatting():    # type: () -> None
+
+def test_float_and_boolean_formatting() -> None:
     d = datetime.datetime(2016, 9, 16)
 
     headings = ['float\nprecision\n3',
@@ -99,7 +100,7 @@ def test_float_and_boolean_formatting():    # type: () -> None
                '(boolean)yes,no']
 
     cells = [[1.23456789,   35200,    d, True],
-             [999.87654321,  1660,  None, False]]    # type: List[List[object]]
+             [999.87654321,  1660,  None, False]]    # type: CellGrid
 
     title = 'Float, thousands, datetime, boolean formatting.'
     text = monotable.table.table(headings, formats, cells,
@@ -122,7 +123,7 @@ def test_float_and_boolean_formatting():    # type: () -> None
     assert text2 == expected
 
 
-def test_malformed_boolean_format_spec():    # type: () -> None
+def test_malformed_boolean_format_spec() -> None:
     headings = ['boolean\nno comma', 'boolean\n2 commas']
     formats = ['(boolean)missing-comma', '(boolean)yes,no,maybe']
     cells = [[True, False], [False, True]]
@@ -147,7 +148,7 @@ def test_malformed_boolean_format_spec():    # type: () -> None
     assert text2 == expected
 
 
-def test_boolean_on_non_boolean_type_cells():    # type: () -> None
+def test_boolean_on_non_boolean_type_cells() -> None:
     """
     Check boolean format function directive with non-boolean cell type.
 
@@ -155,7 +156,7 @@ def test_boolean_on_non_boolean_type_cells():    # type: () -> None
     """
     headings = ['', 'bad\nformat\ndirective']
     formats = ['>(boolean)on,off', '>(boolean)yes,no']
-    empty_list = []
+    empty_list = []    # type: List[Any]
     non_empty_dict = {'spam': False}    # True truth value since non-empty dict
     cells = [[1,   empty_list],
              [0.0, non_empty_dict]]
@@ -180,19 +181,18 @@ def test_boolean_on_non_boolean_type_cells():    # type: () -> None
     assert text2 == expected
 
 
-def test_cotable_missing_cell():    # type: () -> None
+def test_cotable_missing_cell() -> None:
     """Column 2 only has one cell."""
     d = datetime.datetime(2016, 9, 16)
 
-    column0 = ('float\nprecision\n3', '.3f', [1.23456789, 999.87654321])    # type: Tuple[str, str, List[object]]
-    column1 = ('units of\nthousands', '(thousands).1f', [35200, 1660])    # type: Tuple[str, str, List[object]]
-    column2 = ('datetime\n9/16/16', 'week-%U-day-%j', [d])    # type: Tuple[str, str, List[object]]
-    column3 = ('bool to\nyes/no', '(boolean)yes,no', [True, False])    # type: Tuple[str, str, List[object]]
-    columns = [column0, column1, column2, column3]   # type: List[Tuple[str, str, List[object]]]
+    column0 = ('float\nprecision\n3', '.3f', [1.23456789, 999.87654321])    # type: ColumnTuple
+    column1 = ('units of\nthousands', '(thousands).1f', [35200, 1660])     # type: ColumnTuple
+    column2 = ('datetime\n9/16/16', 'week-%U-day-%j', [d])     # type: ColumnTuple
+    column3 = ('bool to\nyes/no', '(boolean)yes,no', [True, False])     # type: ColumnTuple
+    columns = [column0, column1, column2, column3]   # type: List[ColumnTuple]
 
     title = 'Float, thousands, datetime, boolean formatting.'
     text = monotable.table.cotable(columns, title=title)
-
 
     expected = '\n'.join([
         "Float, thousands, datetime, boolean formatting.",
@@ -211,15 +211,15 @@ def test_cotable_missing_cell():    # type: () -> None
     assert text2 == expected
 
 
-def test_cotable_vr_col():    # type: () -> None
+def test_cotable_vr_col() -> None:
     """Add a vertical rule column to previous example."""
     d = datetime.datetime(2016, 9, 16)
 
-    column0 = ('float\nprecision\n3', '.3f', [1.23456789, 999.87654321])    # type: Tuple[str, str, Iterable[object]]
-    column1 = ('units of\nthousands', '(thousands).1f', [35200, 1660])    # type: Tuple[str, str, Iterable[object]]
-    column2 = ('datetime\n9/16/16', 'week-%U-day-%j', [d])    # type: Tuple[str, str, Iterable[object]]
-    column3 = ('bool to\nyes/no', '(boolean)yes,no', [True, False])    # type: Tuple[str, str, Iterable[object]]
-    columns = [column0, column1, monotable.VR_COL, column2, column3]   # type: List[Tuple[str, str, Iterable[object]]]
+    column0 = ('float\nprecision\n3', '.3f', [1.23456789, 999.87654321])    # type: ColumnTuple
+    column1 = ('units of\nthousands', '(thousands).1f', [35200, 1660])    # type: ColumnTuple
+    column2 = ('datetime\n9/16/16', 'week-%U-day-%j', [d])    # type: ColumnTuple
+    column3 = ('bool to\nyes/no', '(boolean)yes,no', [True, False])    # type: ColumnTuple
+    columns = [column0, column1, monotable.VR_COL, column2, column3]   # type: List[ColumnTuple]
 
     title = 'Float, thousands, datetime, boolean formatting.'
     text = monotable.table.cotable(columns, title=title)
@@ -240,8 +240,7 @@ def test_cotable_vr_col():    # type: () -> None
     assert text2 == expected
 
 
-
-def test_datetime():    # type: () -> None
+def test_datetime() -> None:
     """Test formatting datetime object.
 
     Title is left justified '<' and textwrapped '='.
@@ -273,7 +272,8 @@ def test_datetime():    # type: () -> None
     text2 = monotable.mono(headings, formats, cells, title=title, bordered=True)
     assert text2 == expected
 
-def test_millions_billions_trillions_formatting():    # type: () -> None
+
+def test_millions_billions_trillions_formatting() -> None:
     headings = ['units of\nmillions',
                 'units of\nbillions',
                 'units of\ntrillions']
@@ -284,7 +284,7 @@ def test_millions_billions_trillions_formatting():    # type: () -> None
 
     cells = [[37000000, 99457000000, -98654321456123],
              [-2123123, -123777000, 654000000000],
-             [0, 0.0, 0]]    # type: List[List[object]]
+             [0, 0.0, 0]]    # type: CellGrid
 
     text = monotable.table.table(headings, formats, cells)
 
@@ -303,7 +303,8 @@ def test_millions_billions_trillions_formatting():    # type: () -> None
     text2 = monotable.mono(headings, formats, cells)
     assert text2 == expected
 
-def test_milli_micor_nano_pico_formatting():    # type: () -> None
+
+def test_milli_micor_nano_pico_formatting() -> None:
     headings = ['units of\nmilli',
                 'units of\nmicro',
                 'units of\nnano',
@@ -331,7 +332,8 @@ def test_milli_micor_nano_pico_formatting():    # type: () -> None
     text2 = monotable.mono(headings, formats, cells)
     assert text2 == expected
 
-def test_kibi_mebi_gibi_tebi_formatting():    # type: () -> None
+
+def test_kibi_mebi_gibi_tebi_formatting() -> None:
     headings = ['units of\nkibi',
                 'units of\nmebi',
                 'units of\ngibi',
@@ -359,7 +361,8 @@ def test_kibi_mebi_gibi_tebi_formatting():    # type: () -> None
     text2 = monotable.mono(headings, formats, cells)
     assert text2 == expected
 
-def test_template_substitution_and_multiline():    # type: () -> None
+
+def test_template_substitution_and_multiline() -> None:
     """Show values using string.Template substitution.  Show multi-line cells.
 
     Use format_option_spec for the second column to specify
@@ -393,7 +396,7 @@ def test_template_substitution_and_multiline():    # type: () -> None
     assert text2 == expected
 
 
-def test_mapping_and_multiline():    # type: () -> None
+def test_mapping_and_multiline() -> None:
     """Show values from a mapping using mformat().  Show multi-line cells.
 
     Use format_option_spec for the second column to specify
@@ -474,7 +477,7 @@ def test_printf_style_with_tuple_format_and_subclass_for_format_func():
     assert text == expected
 
 
-def test_horizontal_and_vertical_guidelines_and_indent():    # type: () -> None
+def test_horizontal_and_vertical_guidelines_and_indent() -> None:
     """Test horizontal and vertical rules, and table indent.
 
     Test the following:
@@ -492,7 +495,7 @@ def test_horizontal_and_vertical_guidelines_and_indent():    # type: () -> None
              ['place', 'home'],
              [monotable.table.HR],
              ['sound', 'bell'],
-             ['volume', 'very loud']]    # type: List[List[object]]
+             ['volume', 'very loud']]    # type: CellGrid
     text = t.table(headings, formats, cells)
     expected = '\n'.join([
         "*****------------------",
@@ -511,7 +514,7 @@ def test_horizontal_and_vertical_guidelines_and_indent():    # type: () -> None
     assert text2 == expected
 
 
-def test_width_format_option():    # type: () -> None
+def test_width_format_option() -> None:
     """Limit the width of a column using width format option."""
 
     headings = ['Id Number', 'Duties', 'Start Date']
@@ -538,7 +541,7 @@ def test_width_format_option():    # type: () -> None
     assert text2 == expected
 
 
-def test_width_fixed_format_option():    # type: () -> None
+def test_width_fixed_format_option() -> None:
     """Fix the width of a column using width format option.
 
     Look for 5 extra spaces after 1234567890123 and Raise capital."""
@@ -565,7 +568,8 @@ def test_width_fixed_format_option():    # type: () -> None
     text2 = monotable.mono(headings, formats, cells, title=title)
     assert text2 == expected
 
-def test_width_fixed_format_option_with_none_and_missing_cells():    # type: () -> None
+
+def test_width_fixed_format_option_with_none_and_missing_cells() -> None:
     """Fix the width of a column using width and fixed format options.
 
     Show that cell of value None and the empty cells added to a
@@ -576,7 +580,7 @@ def test_width_fixed_format_option_with_none_and_missing_cells():    # type: () 
     formats = ['', '>(width=18;fixed)']
     cells = [[1, '1234567890123', '06/02/2016'],
              [2, None, '06/10/2016'],
-             [3]]    # type: List[List[object]]
+             [3]]    # type: CellGrid
     title = 'Fixed center column to 15 characters.'
     text = monotable.table.table(headings, formats, cells, title=title)
     expected = '\n'.join([
@@ -595,7 +599,7 @@ def test_width_fixed_format_option_with_none_and_missing_cells():    # type: () 
     assert text2 == expected
 
 
-def test_width_fixed_right_justified_format_option():    # type: () -> None
+def test_width_fixed_right_justified_format_option() -> None:
     """Fix the width of a column using width and fixed format options.
 
     Look for 5 extra spaces before 1234567890123 and Raise capital."""
@@ -623,7 +627,7 @@ def test_width_fixed_right_justified_format_option():    # type: () -> None
     assert text2 == expected
 
 
-def test_wrap_format_option():    # type: () -> None
+def test_wrap_format_option() -> None:
     """Limit the width of a column using width and wrap format options.
 
     Note that the center column actually occupies 11 characters since no
@@ -658,7 +662,8 @@ def test_wrap_format_option():    # type: () -> None
     text2 = monotable.mono(headings, formats, cells, title=title)
     assert text2 == expected
 
-def test_fixed_wrap_format_option():    # type: () -> None
+
+def test_fixed_wrap_format_option() -> None:
     """Limit the width of a column using width and wrap format options.
 
     Note that without the fixed option the center column wraps to 9
@@ -691,7 +696,7 @@ def test_fixed_wrap_format_option():    # type: () -> None
     assert text2 == expected
 
 
-def test_fixed_wrap_right_justified_format_option():    # type: () -> None
+def test_fixed_wrap_right_justified_format_option() -> None:
     """Limit the width of a column using width and wrap format options.
 
     Note that without the fixed option the center column wraps to 9
@@ -725,7 +730,7 @@ def test_fixed_wrap_right_justified_format_option():    # type: () -> None
     assert text2 == expected
 
 
-def test_width_fixed_format_option_missing_cells():    # type: () -> None
+def test_width_fixed_format_option_missing_cells() -> None:
     """Do fixed width on a column that is missing cells.
 
     Leave out the heading too and center justify.  Result should be an
@@ -756,7 +761,7 @@ def test_width_fixed_format_option_missing_cells():    # type: () -> None
     assert text2 == expected
 
 
-def test_width_fixed_format_option_only_none_cells():    # type: () -> None
+def test_width_fixed_format_option_only_none_cells() -> None:
     """Do fixed width on a column that has only None.
 
     Leave out the heading too and center justify.  Result should be an
@@ -787,7 +792,7 @@ def test_width_fixed_format_option_only_none_cells():    # type: () -> None
     assert text2 == expected
 
 
-def test_zero_with_numbers_arbitrary_precision():    # type: () -> None
+def test_zero_with_numbers_arbitrary_precision() -> None:
     """Check zero processing for numbers with non-default float precision."""
     headings = ['Numbers']
     formats = ['(zero =--).4f']    # test with space before equals sign
@@ -801,7 +806,7 @@ def test_zero_with_numbers_arbitrary_precision():    # type: () -> None
              [-0.000000e+00],
              [-1e-04],
              [-1e-05],
-            ]    # type: List[List[object]]
+            ]    # type: CellGrid
     title = 'zero processing for numbers at arbitrary precision.'
     text = monotable.mono(headings, formats, cells, title)
     expected = '\n'.join([
@@ -842,7 +847,7 @@ def test_zero_with_numbers_default_precision():  # type: () -> None
              [-0.000000e+00],
              [-1e-06],
              [-1e-07],  # rounded to 0 by default_float_format_spec.
-            ]    # type: List[List[object]]
+            ]    # type: CellGrid
     title = 'zero processing for numbers at default precision.'
     text = monotable.mono(headings, formats, cells, title)
     expected = '\n'.join([
@@ -875,7 +880,7 @@ def test_zero_and_thousands_with_numbers():  # type: () -> None
              [0.000000e+00],
              [1e-03],
              [1e-04],
-             [1e-07]]    # type: List[List[object]]    # rounded to 0 by format_spec='.6f'    # noqa: E501
+             [1e-07]]    # type: CellGrid    # rounded to 0 by format_spec='.6f'    # noqa: E501
     title = 'zero processing for numbers with (thousands).'
     text = monotable.mono(headings, formats, cells, title)
     expected = '\n'.join([
@@ -907,7 +912,7 @@ def test_zero_non_with_numbers():  # type: () -> None
              ['a-string'],
              [tuple([3, 4])],
              [list()],
-             [None]]    # type: List[List[object]]
+             [None]]    # type: CellGrid
     title = 'zero processing for non-numbers.'
     text = monotable.mono(headings, formats, cells, title)
     expected = '\n'.join([
@@ -1066,7 +1071,7 @@ def test_none_directive():  # type: () -> None
              [None, None],
              [987.543, -1],
              [-8901, 100],
-             [None, 0]]    # type: List[List[object]]
+             [None, 0]]    # type: CellGrid
     title = 'Check none directive.'
     text = monotable.mono(headings, formats, cells, title)
     expected = '\n'.join([
@@ -1227,7 +1232,7 @@ def test_lsep_and_rsep():  # type: () -> None
     assert text == expected
 
 
-def test_auto_align_mixed_cell_types_in_column():    # type: () -> None
+def test_auto_align_mixed_cell_types_in_column() -> None:
     """Check auto alignment when a column has numeric and non-numeric types."""
 
     headings = ['Number', 'Mixed', 'Non-Number']
@@ -1252,7 +1257,7 @@ def test_auto_align_mixed_cell_types_in_column():    # type: () -> None
     assert text2 == expected
 
 
-def test_max_cell_height():    # type: () -> None
+def test_max_cell_height() -> None:
     """Limit the maximum height of cells in the previous table.
 
     This truncates the Duties column at the bottom of the table.
@@ -1287,7 +1292,7 @@ def test_max_cell_height():    # type: () -> None
     assert text == expected
 
 
-def test_bordered_format():    # type: () -> None
+def test_bordered_format() -> None:
     """Add borders to the table from test_max_cell_height()."""
 
     headings = ['Id Number', 'Duties', 'Start Date']
@@ -1321,15 +1326,15 @@ def test_bordered_format():    # type: () -> None
     assert text == expected
 
 
-def test_cobordered_table_missing_cell():    # type: () -> None
+def test_cobordered_table_missing_cell() -> None:
     """Column 2 only has one cell."""
     d = datetime.datetime(2016, 9, 16)
 
-    column0 = ('float\nprecision\n3', '.3f',[1.23456789, 999.87654321])
-    column1 = ('units of\nthousands', '(thousands).1f', [35200, 1660])
-    column2 = ('datetime\n9/16/16', 'week-%U-day-%j', [d])
-    column3 = ('bool to\nyes/no', '(boolean)yes,no', [True, False])
-    columns = [column0, column1, column2, column3]    # type: List[Tuple[str, str, List[Any]]]
+    column0 = ('float\nprecision\n3', '.3f', [1.23456789, 999.87654321])    # type: ColumnTuple
+    column1 = ('units of\nthousands', '(thousands).1f', [35200, 1660])    # type: ColumnTuple
+    column2 = ('datetime\n9/16/16', 'week-%U-day-%j', [d])    # type: ColumnTuple
+    column3 = ('bool to\nyes/no', '(boolean)yes,no', [True, False])    # type: ColumnTuple
+    columns = [column0, column1, column2, column3]    # type: List[ColumnTuple]
 
     title = 'Float, thousands, datetime, boolean formatting.'
     text = monotable.table.cobordered_table(columns, title=title)
@@ -1352,7 +1357,7 @@ def test_cobordered_table_missing_cell():    # type: () -> None
     assert text2 == expected
 
 
-def test_user_defined_format_function():    # type: () -> None
+def test_user_defined_format_function() -> None:
     """Set a user defined format function in the 3rd column.
 
     Right justify the title by prefixing with '>'.
@@ -1369,7 +1374,7 @@ def test_user_defined_format_function():    # type: () -> None
     formats = ['', '', '(show_last_four)']
 
     class CustomMonoTable(monotable.table.MonoTable):
-        format_func_map = myformatfuncmap    # type: ignore
+        format_func_map = myformatfuncmap
     t = CustomMonoTable()
     cells = [[1, 'President and CEO', '123'],
              [2, 'Raise capital', '12345'],
@@ -1396,7 +1401,7 @@ def test_user_defined_format_function():    # type: () -> None
     assert text2 == expected
 
 
-def test_example_guideline_chars_and_right_align():    # type: () -> None
+def test_example_guideline_chars_and_right_align() -> None:
     """Omit bottom guideline, change others, right align left column.
 
     Right align the left column, the None cell string 'rest' should be
@@ -1411,7 +1416,7 @@ def test_example_guideline_chars_and_right_align():    # type: () -> None
              [0.0, 'passed on'],
              [None, 'is no more'],
              [-1],
-             [0, 'ceased to be']]    # type: List[List[object]]
+             [0, 'ceased to be']]    # type: CellGrid
     text = monotable.mono(
         headings, formats, cells,
         title='Complaint\n(registered)',
@@ -1435,7 +1440,7 @@ def test_example_guideline_chars_and_right_align():    # type: () -> None
     assert text == expected
 
 
-def test_default_float_format_spec():    # type: () -> None
+def test_default_float_format_spec() -> None:
     """Change default_float_format_spec.
 
     Do a different float precision in each column.
@@ -1460,7 +1465,7 @@ def test_default_float_format_spec():    # type: () -> None
     assert text == expected
 
 
-def test_disable_default_float_format_spec():    # type: () -> None
+def test_disable_default_float_format_spec() -> None:
     """Disable default_float_format_spec feature by setting to ''.
 
     The 4th column has the same float precision as the cell value.
@@ -1485,7 +1490,7 @@ def test_disable_default_float_format_spec():    # type: () -> None
     assert text == expected
 
 
-def test_override_format_none_as_with_auto_alignment():    # type: () -> None
+def test_override_format_none_as_with_auto_alignment() -> None:
     """Override class variable format_none_as."""
 
     class CustomMonoTable(monotable.table.MonoTable):
@@ -1497,7 +1502,7 @@ def test_override_format_none_as_with_auto_alignment():    # type: () -> None
              [66, 'passed on'],
              [None, 'is no more'],
              [9, None],
-             [10, 'ceased to be']]    # type: List[List[object]]
+             [10, 'ceased to be']]    # type: CellGrid
     text = t.table(headings, [], cells, '<format_none_as')
     expected = '\n'.join([
         "format_none_as",
@@ -1514,7 +1519,8 @@ def test_override_format_none_as_with_auto_alignment():    # type: () -> None
     ])
     assert text == expected
 
-def test_override_format_none_as_with_format_align_specs():    # type: () -> None
+
+def test_override_format_none_as_with_format_align_specs() -> None:
     """Override class variable format_none_as, force right align.
 
     Right align the left column, the None cell string should be
@@ -1529,7 +1535,7 @@ def test_override_format_none_as_with_format_align_specs():    # type: () -> Non
              [66, 'passed on'],
              [None, 'is no more'],
              [9, None],
-             [10, 'ceased to be']]    # type: List[List[object]]
+             [10, 'ceased to be']]    # type: CellGrid
     text = t.table(headings, formats, cells, '<format_none_as')
     expected = '\n'.join([
         "format_none_as",
@@ -1546,7 +1552,8 @@ def test_override_format_none_as_with_format_align_specs():    # type: () -> Non
     ])
     assert text == expected
 
-def test_heading_left_align_spec_and_format_left_align_spec():    # type: () -> None
+
+def test_heading_left_align_spec_and_format_left_align_spec() -> None:
     """Test align_specs.
 
     This test uses the same cellgrid as test_default_float_format_spec().
@@ -1577,7 +1584,7 @@ def test_heading_left_align_spec_and_format_left_align_spec():    # type: () -> 
     assert text == expected
 
 
-def test_heading_center_align_spec_and_format_center_align_spec():    # type: () -> None
+def test_heading_center_align_spec_and_format_center_align_spec() -> None:
     """Test center align_spec.
 
     Test heading align follows format center align_spec in column 2.
@@ -1602,7 +1609,7 @@ def test_heading_center_align_spec_and_format_center_align_spec():    # type: ()
     assert text == expected
 
 
-def test_heading_and_format_right_align_spec():    # type: () -> None
+def test_heading_and_format_right_align_spec() -> None:
     """Show default_float_format_spec with right align_spec.
 
     Subclass MonoTable and override the class var default_float_format_spec.
@@ -1628,7 +1635,7 @@ def test_heading_and_format_right_align_spec():    # type: () -> None
     assert text == expected
 
 
-def test_override_align_spec_chars():    # type: () -> None
+def test_override_align_spec_chars() -> None:
     """Change the class var align_spec_chars on an instance.
 
     This works as long as noe of the headings, formats, and title start
@@ -1652,7 +1659,7 @@ def test_override_align_spec_chars():    # type: () -> None
     assert text == expected
 
 
-def test_override_title_wrap_spec_char():    # type: () -> None
+def test_override_title_wrap_spec_char() -> None:
     """Change the class var wrap_spec_char on an instance.
 
     The [wrap_spec] in the title selects textwrap.
@@ -1679,7 +1686,7 @@ def test_override_title_wrap_spec_char():    # type: () -> None
     assert text == expected
 
 
-def test_override_heading_valign():    # type: () -> None
+def test_override_heading_valign() -> None:
     """Change the class var heading_valign on an instance.
 
     heading_valign controls vertical alignment of headings.
@@ -1704,7 +1711,7 @@ def test_override_heading_valign():    # type: () -> None
     assert text == expected
 
 
-def test_override_guideline_chars():    # type: () -> None
+def test_override_guideline_chars() -> None:
     """Change all three guideline chars."""
 
     cells = [[123, 'import', 4567, 'this']]
@@ -1730,7 +1737,7 @@ def test_override_guideline_chars():    # type: () -> None
     assert text2 == expected
 
 
-def test_override_separated_guidelines():    # type: () -> None
+def test_override_separated_guidelines() -> None:
     class SeparatedMonoTable(monotable.table.MonoTable):
         separated_guidelines = True
         guideline_chars = '==='
@@ -1760,7 +1767,7 @@ def test_override_separated_guidelines():    # type: () -> None
     assert text == expected
 
 
-def test_override_separated_guidelines_no_bottom_guideline():    # type: () -> None
+def test_override_separated_guidelines_no_bottom_guideline() -> None:
     """Test separated guideline style with no bottom guideline."""
 
     class SeparatedMonoTable(monotable.table.MonoTable):
@@ -1782,7 +1789,7 @@ def test_override_separated_guidelines_no_bottom_guideline():    # type: () -> N
     assert text == expected
 
 
-def test_omit_top_and_bottom_guidelines():    # type: () -> None
+def test_omit_top_and_bottom_guidelines() -> None:
     """Override guideline_chars to omit top and bottom guidelines."""
 
     guidelines = ' = '
@@ -1809,7 +1816,8 @@ def test_omit_top_and_bottom_guidelines():    # type: () -> None
                            guideline_chars=guidelines)
     assert text2 == expected
 
-def test_top_guideline_is_dots_and_only_guideline():    # type: () -> None
+
+def test_top_guideline_is_dots_and_only_guideline() -> None:
     """Omit heading and bottom guidelines.  Top guideline is '.'"""
 
     guidelines = '.'
@@ -1836,7 +1844,7 @@ def test_top_guideline_is_dots_and_only_guideline():    # type: () -> None
     assert text2 == expected
 
 
-def test_override_cell_vertical_alignment_to_center_top():    # type: () -> None
+def test_override_cell_vertical_alignment_to_center_top() -> None:
     """Change cell vertical alignment to CENTER_TOP."""
 
     class CustomMonoTable(monotable.table.MonoTable):
@@ -1844,7 +1852,7 @@ def test_override_cell_vertical_alignment_to_center_top():    # type: () -> None
 
     cells = [['A\n4\nline\ncell', '3\nline\ncell', '2 line\ncell'],
              [monotable.table.HR],
-             ['A\nfour\nline\ncell', 'three\nline\ncell', 'two line\ncell']]    # type: List[List[object]]
+             ['A\nfour\nline\ncell', 'three\nline\ncell', 'two line\ncell']]    # type: CellGrid
     headings = ['4 line cells', '3 line cells', '2 line cells']
     t = CustomMonoTable()
     text = t.table(headings, [], cells, title='cell_valign=CENTER_TOP')
@@ -1867,7 +1875,7 @@ def test_override_cell_vertical_alignment_to_center_top():    # type: () -> None
     assert text == expected
 
 
-def test_override_cell_vertical_alignment_to_center_bottom():    # type: () -> None
+def test_override_cell_vertical_alignment_to_center_bottom() -> None:
     """Change cell vertical alignment to CENTER_BOTTOM."""
 
     class CustomMonoTable(monotable.table.MonoTable):
@@ -1875,7 +1883,7 @@ def test_override_cell_vertical_alignment_to_center_bottom():    # type: () -> N
 
     cells = [['A\n4\nline\ncell', '3\nline\ncell', '2 line\ncell'],
              [monotable.table.HR],
-             ['A\nfour\nline\ncell', 'three\nline\ncell', 'two line\ncell']]    # type: List[List[object]]
+             ['A\nfour\nline\ncell', 'three\nline\ncell', 'two line\ncell']]    # type: CellGrid
     headings = ['4 line cells', '3 line cells', '2 line cells']
 
     t = CustomMonoTable()
@@ -1917,7 +1925,7 @@ def test_override_more_marker_override_max_cell_height_option_max_width():
 
     cells = [['A\n4\nline\ncell', '3\nline\ncell', '2 line\ncell'],
              [monotable.table.HR],
-             ['A\nfour\nline\ncell', 'three\nline\ncell', 'two line\ncell']]    # type: List[List[object]]
+             ['A\nfour\nline\ncell', 'three\nline\ncell', 'two line\ncell']]    # type: CellGrid
     headings = ['4 line', '3', '2 line']
     formats = ['', '(width=3)', '']
 
@@ -1939,7 +1947,7 @@ def test_override_more_marker_override_max_cell_height_option_max_width():
     assert text == expected
 
 
-def test_comma_format_spec():    # type: () -> None
+def test_comma_format_spec() -> None:
     """Center title, multi-line headings and cell, and more.
 
     The comma format spec is new in Python 2.7.
@@ -1977,7 +1985,7 @@ def test_comma_format_spec():    # type: () -> None
     assert text2 == expected
 
 
-def test_default_when_override_border_chars_to_empty_string():    # type: () -> None
+def test_default_when_override_border_chars_to_empty_string() -> None:
     """Override class var border_chars to empty string.
 
     '+' is the hard coded default used for missing border_chars.
@@ -2004,7 +2012,7 @@ def test_default_when_override_border_chars_to_empty_string():    # type: () -> 
     assert text == expected
 
 
-def test_override_border_chars():    # type: () -> None
+def test_override_border_chars() -> None:
     """Change border_chars to 'TBSCH'
 
     TBSCH corresponds to top, bottom, sides, corner, heading guideline.
@@ -2032,7 +2040,7 @@ def test_override_border_chars():    # type: () -> None
     assert text == expected
 
 
-def test_override_hmargin_vmargin():    # type: () -> None
+def test_override_hmargin_vmargin() -> None:
     """Change class variables hmargin and vmargin in subclass."""
 
     class BigMarginMonoTable(monotable.table.MonoTable):
@@ -2070,7 +2078,7 @@ def test_override_hmargin_vmargin():    # type: () -> None
     assert text == expected
 
 
-def test_tile_four_tables_together():    # type: () -> None
+def test_tile_four_tables_together() -> None:
     """Tile tables together.
 
     Create a string for each of the 3 tables.  One for upper left, one for
@@ -2090,7 +2098,7 @@ def test_tile_four_tables_together():    # type: () -> None
     ta = CenterBottomMonoTable()
     cells0 = [['A\n4\nline\ncell', '3\nline\ncell'],
               [monotable.table.HR],
-              ['A\nfour\nline\ncell', 'three\nline\ncell']]    # type: List[List[object]]
+              ['A\nfour\nline\ncell', 'three\nline\ncell']]    # type: CellGrid
     taf = ta.table(headings, [], cells0, title='vertical align CENTER_BOTTOM')
 
     headings = ['4 line', '3', '2 line']
@@ -2103,7 +2111,7 @@ def test_tile_four_tables_together():    # type: () -> None
     tb = CustomMonoTable()
     cells1 = [['A\n4\nline\ncell', '3\nline\ncell', '2 line\ncell'],
               [monotable.table.HR],
-              ['A\nfour\nline\ncell', 'three\nline\ncell', 'two line\ncell']]    # type: List[List[object]]
+              ['A\nfour\nline\ncell', 'three\nline\ncell', 'two line\ncell']]    # type: CellGrid
     tbf = tb.table(headings, formats, cells1, title="max_cell_height=2")
 
     headings = ['one\ndigit\nint', 'another\nint', 'floats']
@@ -2113,7 +2121,7 @@ def test_tile_four_tables_together():    # type: () -> None
         default_float_format_spec = '.4f'
 
     tc = BadBorderCharsFloat4fMonoTable()
-    cells2 = [[1, 29, 3.5], [4, 5, 16.34]]    # type: List[List[object]]
+    cells2 = [[1, 29, 3.5], [4, 5, 16.34]]    # type: CellGrid
     tcf = tc.bordered_table(headings, [], cells2, '^centered title\n of 2 lines')
 
     class NoGuidelinesMonoTable(monotable.table.MonoTable):
@@ -2124,7 +2132,7 @@ def test_tile_four_tables_together():    # type: () -> None
     cells3 = [[taf, tbf],
               [None, None],  # to insert space between the top and bottom rows
               # same table twice in the bottom row
-              [tcf, tcf]]    # type: List[List[object]]
+              [tcf, tcf]]    # type: CellGrid
     text = tiled.table([], [], cells3)
     expected = '\n'.join([
         "vertical align CENTER_BOTTOM       max_cell_height=2",

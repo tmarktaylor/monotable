@@ -20,7 +20,7 @@
    MonoBlock   manages a two dimensional block of text.
 """
 
-from typing import Optional    # noqa : F401
+from typing import Optional
 
 import monotable.alignment
 from monotable.alignment import LEFT
@@ -74,8 +74,7 @@ class MonoBlock:
             List of lines of text.
     """
 
-    def __init__(self, text='', halign=LEFT):
-        # type: (str, int) -> None
+    def __init__(self, text: str = '', halign: int = LEFT) -> None:
         """
         Create MonoBlock from caller's string.
 
@@ -100,15 +99,13 @@ class MonoBlock:
         self._is_hjustified = False
         self._update_height_and_width()
 
-    def is_all_spaces(self):
-        # type: () -> bool
+    def is_all_spaces(self) -> bool:
         """Return True if MonoBlock is all spaces, False otherwise."""
 
         # Concatenate lines, strip spaces, test for not empty string.
         return not ''.join(self.lines).strip()
 
-    def chop_to_fieldsize(self, fieldsize, more_marker=''):
-        # type: (int, str) -> None
+    def chop_to_fieldsize(self, fieldsize: int, more_marker: str = '') -> None:
         """
         Truncate any lines longer than fieldsize and insert the more_marker.
 
@@ -135,8 +132,7 @@ class MonoBlock:
         self.lines = truncated_lines
         self._update_height_and_width()
 
-    def hjustify(self, width=None):
-        # type: (Optional[int]) -> None
+    def hjustify(self, width: Optional[int] = None) -> None:
         """
         Horizontally justify each text line and pad to uniform length.
 
@@ -171,8 +167,12 @@ class MonoBlock:
         self._update_height_and_width()
         self._is_hjustified = True        # keep track for add_border()
 
-    def vjustify(self, valign, height, more_marker=''):
-        # type: (int, int, str) -> None
+    def vjustify(
+            self,
+            valign: int,
+            height: int,
+            more_marker: str = ''
+            ) -> None:
         """Vertically justify lines per valign into field of height lines.
 
         If the MonoBlock has more lines than height, the first height
@@ -237,11 +237,12 @@ class MonoBlock:
                 assert False, 'missing branch for valid enumeration value.'
         self._update_height_and_width()
 
-    def add_border(self,
-                   hmargin=1,
-                   vmargin=0,
-                   border_chars='--|+'):
-        # type: (int, int, str) -> None
+    def add_border(
+            self,
+            hmargin: int = 1,
+            vmargin: int = 0,
+            border_chars: str = '--|+'
+            ) -> None:
         """
         Expand MonoBlock to include ascii char borders and blank margins.
 
@@ -301,8 +302,7 @@ class MonoBlock:
         self.lines = [top_border] + self.lines + [bottom_border]
         self._update_height_and_width()
 
-    def remove_top_line(self):
-        # type: () -> None
+    def remove_top_line(self) -> None:
         """Remove top line of MonoBlock. Used for stacking bordered blocks.
 
         If the MonoBlock only has 1 line it is shortened to the empty string.
@@ -314,8 +314,7 @@ class MonoBlock:
             self.lines = ['']
         self._update_height_and_width()
 
-    def remove_left_column(self):
-        # type: () -> None
+    def remove_left_column(self) -> None:
         """
         Remove left column of MonoBlock. Used to join adjacent bordered blocks.
         """
@@ -324,14 +323,12 @@ class MonoBlock:
             self.lines = [line[1:] for line in self.lines]
             self._update_height_and_width()
 
-    def _update_height_and_width(self):
-        # type: () -> None
+    def _update_height_and_width(self) -> None:
         self.height = len(self.lines)
         line_widths = [len(line) for line in self.lines]
         for width in line_widths:
             assert width >= 0, 'len_func must return value >= 0.'
         self.width = max(line_widths)
 
-    def __str__(self):
-        # type: () -> str
+    def __str__(self) -> str:
         return '\n'.join(self.lines)

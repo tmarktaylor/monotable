@@ -23,7 +23,7 @@ from typing import Dict, Callable, Optional, Sequence, Tuple, Iterable    # noqa
 
 from .table import HR
 from .table import MonoTable
-
+from monotable.table import CellGrid, ColumnTuple, FormatFuncMap
 
 HR_ROW = (HR,)
 """Row containing a horizontal rule to use as a row in cellgrid."""
@@ -33,41 +33,41 @@ VR_COL = ('', '(lsep= |;rsep= )', ())
 
 
 def mono(
-        headings=(),        # type: Iterable[str]
-        formats=(),         # type: Iterable[str]
-        cellgrid=((),),     # type: Iterable[Iterable[object]]
-        title='',           # type: str
+        headings: Iterable[str] = (),
+        formats: Iterable[str] = (),
+        cellgrid: CellGrid = ((),),
+        title: str = '',
         *,
-        bordered=False,  # type: bool
-        format_func_map=None,  # type: Optional[Dict[str, Callable[[object, str], str]]]   # noqa E501
-        guideline_chars='---',  # type: str
-        indent=''  # type: str
-        ):
-    # type: (...) -> str
+        bordered: bool = False,
+        format_func_map: Optional[FormatFuncMap] = None,
+        guideline_chars: str = '---',
+        indent: str = ''
+        ) -> str:
     """Generate ASCII table from cellgrid.
 
     Args:
-        headings (Iterable[str]):
+        headings
             Iterable of strings for each column heading.
 
-        formats (Iterable[str]):
+        formats
             Iterable of format strings of the form
             ``[align_spec][directives][format_spec]``.
             Please see :ref:`Format directive string syntax
             <Format directive string syntax>`.
 
-        cellgrid (Iterable[Iterable[object]]):
+        cellgrid
             representing table cells.
 
-        title (str): ``[align_spec][wrap_spec]string``.
+        title
+            ``[align_spec][wrap_spec]string``.
             Text to be aligned and printed above the text table.
             Please see :ref:`Title string syntax <Title string syntax>`.
 
     Keyword Args:
-        bordered (bool):
+        bordered
             True means generate table with ASCII cell border characters.
 
-        format_func_map (Mapping[str, Callable[[object, str], str]])
+        format_func_map
             Dictionary of format functions keyed by name.
             name, when used as a format directive in a format string,
             selects the corresponding function from the dictionary.
@@ -80,15 +80,21 @@ def mono(
             :py:attr:`~monotable.table.MonoTable.format_func_map`
             in the MonoTable instance that generates the table.
 
-        guideline_chars (str):
+        guideline_chars
             String of 0 to 3 characters to specify top, heading, and bottom
             guideline appearance.
             This value overrides
             :py:attr:`~monotable.table.MonoTable.guideline_chars`
             in the MonoTable instance that generates the table.
 
-        indent (str):
+        indent
             String added to the beginning of each line in the text table.
+
+    Returns:
+        The text table as a single string.
+
+    Raises:
+        MonoTableCellError
    """
     tbl = MonoTable(indent=indent)
     tbl.format_func_map = format_func_map
@@ -100,19 +106,18 @@ def mono(
 
 
 def monocol(
-        column_tuples=(),   # type: Sequence[Tuple[str, str, Iterable[object]]]    # noqa : E501
-        title='',           # type: str
+        column_tuples: Sequence[ColumnTuple] = (),
+        title: str = '',
         *,
-        bordered=False,  # type: bool
-        format_func_map=None,  # type: Optional[Dict[str, Callable[[object, str], str]]]   # noqa E501
-        guideline_chars='---',  # type: str
-        indent=''  # type: str
-):
-    # type: (...) -> str
+        bordered: bool = False,
+        format_func_map: Optional[FormatFuncMap] = None,
+        guideline_chars: str = '---',
+        indent: str = ''
+        ) -> str:
     """Generate ASCII table from column tuples.
 
     Args:
-        column_tuples (Sequence[Tuple[str, str, Iterable[object]]]):
+        column_tuples
             List of tuple of (heading string, format string,
             iterable of cell objects).
 
@@ -128,15 +133,16 @@ def monocol(
 
             Iterable of cell objects represent the cells in the column.
 
-        title (str): ``[align_spec][wrap_spec]string``.
+        title
+            ``[align_spec][wrap_spec]string``.
             Text to be aligned and printed above the text table.
             Please see :ref:`Title string syntax <Title string syntax>`.
 
     Keyword Args:
-        bordered (bool):
+        bordered
             True means generate table with ASCII cell border characters.
 
-        format_func_map (Mapping[str, Callable[[object, str], str]])
+        format_func_map
             Dictionary of format functions keyed by name.
             name, when used as a format directive in a format string,
             selects the corresponding function from the dictionary.
@@ -149,15 +155,21 @@ def monocol(
             :py:attr:`~monotable.table.MonoTable.format_func_map`
             in the MonoTable instance that generates the table.
 
-        guideline_chars (str):
+        guideline_chars
             String of 0 to 3 characters to specify top, heading, and bottom
             guideline appearance.
             This value overrides
             :py:attr:`~monotable.table.MonoTable.guideline_chars`
             in the MonoTable instance that generates the table.
 
-        indent (str):
+        indent
             String added to the beginning of each line in the text table.
+
+    Returns:
+        The text table as a single string.
+
+    Raises:
+        MonoTableCellError
     """
 
     tbl = MonoTable(indent=indent)

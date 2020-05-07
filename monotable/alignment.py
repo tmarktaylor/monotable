@@ -32,7 +32,7 @@
    BOTTOM         Align vertically to bottom.
 """
 
-from typing import Tuple    # noqa : F401
+from typing import Tuple
 
 # repository: https://github.com/tmarktaylor/monotable
 
@@ -54,8 +54,7 @@ _HALIGN_HELP = '\n'.join([
     'Allowed values are: _NOT_SPECIFIED, _LEFT, _CENTER, _RIGHT'])
 
 
-def validate_horizontal_align(value):
-    # type: (int) -> None
+def validate_horizontal_align(value: int) -> None:
     """Check if value is a valid enumeration value."""
 
     assert value in _HALIGN_ALLOWED, _HALIGN_HELP.format(value)
@@ -80,15 +79,13 @@ _VALIGN_HELP = '\n'.join([
     'Allowed values are: TOP, CENTER_TOP, CENTER_BOTTOM, BOTTOM'])
 
 
-def validate_vertical_align(value):
-    # type: (int) -> None
+def validate_vertical_align(value: int) -> None:
     """Check if value is a valid enumeration value."""
 
     assert value in _VALIGN_ALLOWED, _VALIGN_HELP.format(value)
 
 
-def split_up(prefixed_string, align_spec_chars):
-    # type: (str, str) -> Tuple[int, str]
+def split_up(prefixed_string: str, align_spec_chars: str) -> Tuple[int, str]:
     """Split up string that starts with an optional one char align_spec.
 
     prefixed_string

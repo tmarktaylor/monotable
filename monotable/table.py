@@ -16,12 +16,12 @@
 
 """ASCII table: per column format specs, formatting directives, multi-line.
 
-   Formats 2D array of Python objects to ASCII table format.
+   Formats 2D array of Python values to ASCII table format.
    The table looks pretty when printed in a monospaced font.
    See class MonoTable docstring for details.
 
    Classes:
-   MonoTable   Format Python objects to ASCII table for monospaced font.
+   MonoTable   Format Python values to ASCII table for monospaced font.
 
    Functions:
    table               Convenience wrapper for MonoTable.table()
@@ -43,38 +43,33 @@ import string
 import textwrap
 import traceback
 from itertools import zip_longest
-from typing import List, Dict, Tuple, Optional, Callable    # noqa : F401
-from typing import Union, Any, Sequence, Iterable    # noqa : F401
+from typing import List, Tuple, Optional, Callable, Mapping
+from typing import Union, Any, Sequence, Iterable
+from typing import cast
 
 import monotable.plugin
 import monotable.scanner
-from monotable.scanner import FormatScanner    # noqa : F401
+from monotable.scanner import FormatScanner
 from monotable.monoblock import MonoBlock
+from monotable.cellerror import MonoTableCellError
 
 from monotable.alignment import NOT_SPECIFIED
 from monotable.alignment import LEFT
 from monotable.alignment import RIGHT
 
+Cell = Any
+Row = Iterable[Cell]
+CellGrid = Iterable[Row]
+FormatFunc = Callable[[Any, str], str]
+FormatFuncMap = Mapping[str, FormatFunc]
+ColumnTuple = Tuple[str, str, Sequence]
+
 # repository: https://github.com/tmarktaylor/monotable
 # Docstrings are Google Style for Sphinx plugin sphinx.ext.napoleon.
 
 
-def _transpose(grid):
-    # type: (Iterable[Iterable[Any]]) -> List[List[Any]]
-    """Swap rows for columns or columns for rows.
-
-    Please note that the return type is probably best described as
-    List[Tuple[Any]] because zip(iterable) in Python 3 returns an
-    iterator that yields tuples.
-    However mypy seems to be interpreting the return type as
-    Tuple[Any, ...] if tuple(zip(*grid)) is used here.
-
-    error: Incompatible return value type (got Tuple[Any, ...],
-    expected List[List[Any]])
-
-    List[List[Any]] is easier to understand and more expressive
-    than Tuple[Any, ...] even though inaccurate.
-    """
+def _transpose(grid: Iterable[Iterable[Any]]) -> List[Tuple[Any, ...]]:
+    """Swap rows for columns or columns for rows."""
     return list(zip(*grid))
 
 
@@ -297,7 +292,7 @@ class MonoTable:
     of the table.  seps refers to characters placed between heading and
     cell columns in the table.
     """
-    format_func_map = None    # type: Optional[Dict[str, Callable[[object, str], str]]]   # noqa E501
+    format_func_map = None    # type: Optional[FormatFuncMap]
     """Adds format functions selectable by a format directive.
 
     Dictionary of format functions keyed by name.
@@ -407,32 +402,32 @@ class MonoTable:
 
     def table(
             self,
-            headings=(),       # type: Iterable[str]
-            formats=(),        # type: Iterable[str]
-            cellgrid=((),),    # type: Iterable[Iterable[object]]
-            title='',          # type: str
-            ):
-        # type: (...) -> str
+            headings: Iterable[str] = (),
+            formats: Iterable[str] = (),
+            cellgrid: CellGrid = ((),),
+            title: str = '',
+    ) -> str:
         """Format printable text table.  It is pretty in monospaced font.
 
         Args:
-            headings (Iterable[str]):
+            headings
                 Iterable of strings for each column heading.
 
-            formats (Iterable[str]):
+            formats
                 Iterable of format strings of the form
                 ``[align_spec][directives][format_spec]``.
                 `Format directive string syntax`_
 
-            cellgrid (Iterable[Iterable[object]]):
+            cellgrid
                 representing table cells.
 
-            title (str): ``[align_spec][wrap_spec]string``.
+            title
+                ``[align_spec][wrap_spec]string``.
                 Text to be aligned and printed above the text table.
                 `Title string syntax`_
 
         Returns:
-            str : The text table as a single string.
+            The text table as a single string.
 
         Raises:
             MonoTableCellError
@@ -671,11 +666,10 @@ class MonoTable:
 
     def _format_and_justify(
             self,
-            headings,    # type: Iterable[str]
-            formats,     # type: Iterable[str]
-            cellgrid     # type: Iterable[Iterable[object]]
-            ):
-        # type: (...) -> Tuple[List[MonoBlock], List[List[MonoBlock]], List[int], List[str]]   # noqa : E501
+            headings: Iterable[str] = (),
+            formats: Iterable[str] = (),
+            cellgrid: CellGrid = ((),),
+    ) -> Tuple[List[MonoBlock], List[Tuple[MonoBlock]], List[int], List[str]]:
         """Format, align, and justify the text table.
 
         headings
@@ -688,12 +682,12 @@ class MonoTable:
             See description for the constructor argument 'formats'.
 
         cellgrid
-            Iterable of Iterable of Python objects representing table cells.
+            Iterable of Iterable of Python values representing table cells.
 
         Returns tuple:
             Row of heading MonoBlocks ready to be justified.
 
-            List of list of MonoBlocks representing formatted cells.
+            List of Tuple of MonoBlocks representing formatted cells.
             MonoBlocks are ready to be justified.
 
             List of width of each column.  The width is the length of
@@ -731,20 +725,28 @@ class MonoTable:
         self._justify_headings(processed_headings, widths)
         self._justify_cell_columns(formatted_cell_columns, widths)
 
+        # typing cast explained:
+        # 1. _transpose() returns type List[Tuple[Any, ...]]
+        # 2. formatted_cell_columns is type List[List[MonoBlock]]
+        # 3. _format_and_justify returns a four item tuple. The second item
+        #    is type List[Tuple[MonoBlock]] which is the result of the cast.
+        # 4. _transpose() returns type List[Tuple[Any, ...]].
+        # Here _transpose() converts the inner most type from MonoBlock
+        # to the more general Any.
+        # The cast changes the inner most type back to MonoBlock.
         return (
             processed_headings,
-            _transpose(formatted_cell_columns),
+            cast(List[Tuple[MonoBlock]], _transpose(formatted_cell_columns)),
             widths,
             self._make_list_of_seps(processed_formats)
             )
 
     @staticmethod
     def _extend_short_rows(
-            headings,    # type: Iterable[str]
-            formats,     # type: Iterable[str]
-            cellgrid     # type: Iterable[Iterable[object]]
-            ):
-        # type: (...) -> Tuple[List[str], List[str], List[List[object]]]
+            headings: Iterable[str] = (),
+            formats: Iterable[str] = (),
+            cellgrid: CellGrid = ((),),
+            ) -> Tuple[List[str], List[str], List[List[Cell]]]:
         """Create new headings, formats, and cellgrid so rows are equal length.
 
         Returns new lists of headings, formats, and a new cellgrid.
@@ -761,7 +763,7 @@ class MonoTable:
 
         # Convert cellgrid to list of lists in order to determine the length
         # of each row.  Also test that each row is iterable.
-        xcellgrid = []    # type: List[List[object]]
+        xcellgrid = []    # type: List[List[Cell]]
         for row in cellgrid:
             try:
                 xcellgrid.append(list(row))  # copy and convert row to list
@@ -791,8 +793,12 @@ class MonoTable:
 
         return xheadings, xformats, xcellgrid
 
-    def _process_headings(self, headings, formats, cellgrid_row):
-        # type: (List[str], List[str], List[object]) ->  List[MonoBlock]
+    def _process_headings(
+            self,
+            headings: Iterable[str],
+            formats: Iterable[str],
+            cellgrid_row: Row
+            ) -> List[MonoBlock]:
         """Determine align for each heading, convert to MonoBlocks."""
 
         heading_monoblocks = []     # type: List[MonoBlock]
@@ -811,8 +817,7 @@ class MonoTable:
         return heading_monoblocks
 
     @staticmethod
-    def _halign_suggestion(item):
-        # type: (object) -> int
+    def _halign_suggestion(item: Cell) -> int:
         """
         Return horizontal alignment enum value determined from the item type.
         """
@@ -821,8 +826,7 @@ class MonoTable:
         else:
             return LEFT
 
-    def _process_formats(self, formats):
-        # type: (List[str]) -> List[FormatScanner]
+    def _process_formats(self, formats: List[str]) -> List[FormatScanner]:
         """Scan format for align_spec, format_spec, and format options.
 
         Return list of FormatScanner instances that describe
@@ -859,14 +863,13 @@ class MonoTable:
 
     def _format_cells_as_columns(
             self,
-            cellgrid,    # type: List[List[object]]
-            processed_formats  # type: List[FormatScanner]
-            ):
-        # type: (...) -> List[List[MonoBlock]]
+            cellgrid: CellGrid,
+            processed_formats: List[FormatScanner]
+            ) -> List[List[MonoBlock]]:
         """Format each cell of cellgrid by calling the format_func.
 
         cellgrid
-            Iterable of Iterable of Python objects representing table cells.
+            Iterable of Iterable of Python values representing table cells.
 
         processed_formats
             List of instances of FormatScanner.  Each instance
@@ -883,7 +886,7 @@ class MonoTable:
         If the cell is a MonoBlock instance, skip all the formatting
         steps and put a copy of the MonoBlock directly in the output.
 
-        If the cell in None, treat it as a MonoBlock.
+        If the cell is None, treat it as a MonoBlock.
         """
 
         formatted_columns = []    # type: List[List[MonoBlock]]
@@ -891,10 +894,10 @@ class MonoTable:
 
         column_index_range = range(len(processed_formats))
 
-        inputs = list(zip(
+        inputs = zip(
             column_index_range,
             processed_formats,
-            cell_columns))
+            cell_columns)
 
         for column_index, formatobj, cell_column in inputs:
 
@@ -919,11 +922,10 @@ class MonoTable:
 
     def _formatting_step(
             self,
-            column_index,    # type: int
-            formatobj,       # type: FormatScanner
-            cell_column      # type: List[object]
-            ):
-        # type: (...) -> List[Union[MonoBlock, str]]
+            column_index: int,
+            formatobj: FormatScanner,
+            cell_column: Iterable[Cell],
+            ) -> List[Union[MonoBlock, str]]:
         """Format cells in the column and handle special case cells."""
         formatted_column = []    # type: List[Union[MonoBlock, str]]
         for row_index, item in enumerate(cell_column):
@@ -953,7 +955,6 @@ class MonoTable:
                 if text.startswith('-'):
                     text = text[1:].join('()')
 
-            # todo- do I still need # noqa : E501 for long type annotations?
             # for zero directive replace the formatted number if all zeros.
             if formatobj.zero is not None and isinstance(item, numbers.Number):
                 is_digit = [c in string.digits for c in text]
@@ -966,11 +967,10 @@ class MonoTable:
 
     @staticmethod
     def _justify_parentheses(
-            formatobj,      # type: FormatScanner
-            cell_column,    # type: List[object]
-            formatted_column    # type: List[Union[MonoBlock, str]]
-            ):
-        # type: (...) -> List[Union[MonoBlock, str]]
+            formatobj: FormatScanner,
+            cell_column: Iterable[Cell],
+            formatted_column: List[Union[MonoBlock, str]]
+            ) -> List[Union[MonoBlock, str]]:
         """If parentheses directive re-justify since added all|some|no ')'."""
 
         if not formatobj.parentheses:
@@ -979,14 +979,12 @@ class MonoTable:
         # select text strings that were formatted from cells that were numbers.
         formatted_numbers = []
         for item, text in zip(cell_column, formatted_column):
-            if isinstance(item, numbers.Number):
+            if isinstance(item, numbers.Number) and isinstance(text, str):
                 formatted_numbers.append(text)
 
         # for the formatted numbers, determine if any but not all
         # are enclosed by parentheses.
-        # todo- issue- formatted_column contains a mix of str and MonoBlock...
-        # ... see todo- a few lines below.
-        has_parentheses = [text.endswith(')') for text in formatted_numbers]    # type: ignore    # noqa : E501
+        has_parentheses = [text.endswith(')') for text in formatted_numbers]
         if not any(has_parentheses) or all(has_parentheses):
             return formatted_column    # not a mix of (xxx) and yyy.
 
@@ -994,21 +992,19 @@ class MonoTable:
         # formatted numbers without parentheses are padded with one space
         # to maintain vertical alignment of the digits/decimal point.
         # (provided the column is ultimately right justified).
-        parentheses_column = []
+        parentheses_column = []    # type: List[Union[MonoBlock, str]]
 
-        # todo- issue- formatted_column contains a mix of str and MonoBlock...
-        # ... This causes mypy error: Item "MonoBlock" of
-        # "Union[MonoBlock, str]" has no attribute "endswith".
-        # This won't happen because the cell type will not be Number in any
-        # of the special cases.  A MonoBlock can come from special cases
-        # like caller's cell, _HR, or a None cell.
-        # This issue should be addressed so that changes to _special_cases()
-        # won't cause breakage here.
-        # Also, it is desirable that all format directives can be applied
-        # to caller supplied MonoBlocks.
+        # Note that formatted_column contains a mix of str and MonoBlock.
+        # The MonoBlocks get there by bypassing the formatting step.
+        # To satisfy mypy, make sure there is no path that calls
+        # endswith() on a MonoBlock.
+        # This is done by explicitly testing that the variable text
+        # is a str before calling text.endswith().
         for item, text in zip(cell_column, formatted_column):
-            if isinstance(item, numbers.Number) and not text.endswith(')'):    # type: ignore    # noqa : E501
-                parentheses_column.append(text + ' ')    # type: ignore    # noqa : E501
+            if (isinstance(item, numbers.Number)
+                    and isinstance(text, str)
+                    and not text.endswith(')')):
+                parentheses_column.append(text + ' ')
             else:
                 # This branch handles:
                 # 1. formatted text for items that aren't numbers
@@ -1022,11 +1018,10 @@ class MonoTable:
 
     def _width_step(
             self,
-            formatobj,      # type: FormatScanner
-            cell_column,    # type: List[object]
-            formatted_column    # type: List[Union[MonoBlock, str]]
-            ):
-        # type: (...) -> List[MonoBlock]
+            formatobj: FormatScanner,
+            cell_column: Iterable[Cell],
+            formatted_column: List[Union[MonoBlock, str]]
+            ) -> List[MonoBlock]:
         """Create MonoBlocks, determine alignment, implement width control."""
         if formatobj.width is not None and formatobj.wrap:
             text_wrapper = textwrap.TextWrapper(
@@ -1061,8 +1056,11 @@ class MonoTable:
             self._adjust_width(formatobj, block)
         return monoblock_column
 
-    def _special_cases(self, item, formatobj):
-        # type: (object, FormatScanner) -> Optional[MonoBlock]
+    def _special_cases(
+            self,
+            item: Cell,
+            formatobj: FormatScanner
+    ) -> Optional[MonoBlock]:
         """Handle special cases that make a MonoBlock without format_func."""
 
         if isinstance(item, _HR):
@@ -1110,8 +1108,7 @@ class MonoTable:
         else:
             return None
 
-    def _make_format_spec(self, item, formatobj):
-        # type: (object, FormatScanner) -> str
+    def _make_format_spec(self, item: Cell, formatobj: FormatScanner) -> str:
         """Return a custom format_spec if special cases."""
 
         format_spec = formatobj.format_spec
@@ -1129,8 +1126,11 @@ class MonoTable:
 
         return format_spec
 
-    def _adjust_width(self, formatobj, block):
-        # type: (FormatScanner, MonoBlock) -> None
+    def _adjust_width(
+            self,
+            formatobj: FormatScanner,
+            block: MonoBlock
+            ) -> None:
         """Control width of block.  Modifies callers block."""
 
         if formatobj.width is not None:
@@ -1141,8 +1141,8 @@ class MonoTable:
                 block.hjustify(formatobj.width)
 
     @staticmethod
-    def _make_list_of_seps(processed_formats):
-        # type: (List[FormatScanner]) -> List[str]
+    def _make_list_of_seps(
+            processed_formats: List[FormatScanner]) -> List[str]:
         """
         Make list of column right side separator strings.
 
@@ -1165,8 +1165,9 @@ class MonoTable:
         return rseps
 
     @staticmethod
-    def _calculate_column_widths(heading_monoblocks, cell_monoblock_columns):
-        # type: (List[MonoBlock], List[List[MonoBlock]]) -> List[int]
+    def _calculate_column_widths(
+            heading_monoblocks: List[MonoBlock],
+            cell_monoblock_columns: List[List[MonoBlock]]) -> List[int]:
         """Determine width of each column in the table."""
 
         # width is length of widest heading or formatted cell
@@ -1179,8 +1180,11 @@ class MonoTable:
                         zip(heading_column_widths, cellgrid_column_widths)]
         return table_widths
 
-    def _justify_headings(self, processed_headings, widths):
-        # type: (List[MonoBlock], List[int]) -> None
+    def _justify_headings(
+            self,
+            processed_headings: List[MonoBlock],
+            widths: List[int]
+    ) -> None:
         """Justify headings horizontally and vertically."""
 
         # The caller typically sets the halign attribute at MonoBlock
@@ -1195,8 +1199,11 @@ class MonoTable:
                 tb.vjustify(self.heading_valign,
                             max_heading_height, more_marker='n/a')
 
-    def _justify_cell_columns(self, cell_monoblock_columns, widths):
-        # type: (List[List[MonoBlock]], List[int]) -> None
+    def _justify_cell_columns(
+            self,
+            cell_monoblock_columns: List[List[MonoBlock]],
+            widths: List[int]
+            ) -> None:
         """Justify cell columns horizontally and vertically."""
 
         # The caller typically sets the halign attribute at MonoBlock
@@ -1219,8 +1226,12 @@ class MonoTable:
             for tb in row:
                 tb.vjustify(self.cell_valign, height, self.more_marker)
 
-    def _make_guidelines(self, table_width, widths, seps):
-        # type: (int, List[int], List[str]) -> List[str]
+    def _make_guidelines(
+            self,
+            table_width: int,
+            widths: List[int],
+            seps: List[str]
+            ) -> List[str]:
         # Return tuple (top guideline, heading guideline, bottom guideline).
         # Create them based on the first 3 chars in self.guideline_chars.
         # The corresponding guideline is the empty string if the char is
@@ -1249,8 +1260,7 @@ class MonoTable:
             stripped = [guideline.strip() for guideline in guidelines]
             return stripped
 
-    def _make_title_lines(self, title, width):
-        # type: (str, int) -> List[str]
+    def _make_title_lines(self, title: str, width: int) -> List[str]:
         """Convert title to text lines and justify if narrower than table."""
 
         align, text = monotable.alignment.split_up(title,
@@ -1268,15 +1278,16 @@ class MonoTable:
         return mb.lines
 
     @staticmethod
-    def _has_headings(justified_headings):
-        # type: (List[MonoBlock]) -> bool
+    def _has_headings(justified_headings: List[MonoBlock]) -> bool:
         """False when all heading MonoBlocks contain only spaces."""
 
         return any((not t.is_all_spaces() for t in justified_headings))
 
     @staticmethod
-    def _monoblock_row_to_strings(row_of_monoblocks, seps=None):
-        # type: (List[MonoBlock], Optional[List[str]]) -> List[str]
+    def _monoblock_row_to_strings(
+            row_of_monoblocks: Sequence[MonoBlock],
+            seps: Optional[List[str]] = None
+            ) -> List[str]:
         """Convert a row of MonoBlock to a list of lines.
 
         Returns a list of text lines.
@@ -1295,32 +1306,32 @@ class MonoTable:
 
     def bordered_table(
             self,
-            headings=(),       # type: Iterable[str]
-            formats=(),        # type: Iterable[str]
-            cellgrid=((),),    # type: Iterable[Iterable[object]]
-            title='',          # type: str
-            ):
-        # type: (...) -> str
+            headings: Iterable[str] = (),
+            formats: Iterable[str] = (),
+            cellgrid: CellGrid = ((),),
+            title: str = '',
+            ) -> str:
         """Format printable text table with individual cell borders.
 
         Args:
-            headings (Iterable[str]):
+            headings
                 Iterable of strings for each column heading.
 
-            formats (Iterable[str]):
+            formats
                 Iterable of format strings of the form
                 ``[align_spec][directives][format_spec]``.
                 `Format directive string syntax`_
 
-            cellgrid (Iterable[Iterable[object]]):
+            cellgrid
                 representing table cells.
 
-            title (str): ``[align_spec][wrap_spec]string``.
+            title
+                ``[align_spec][wrap_spec]string``.
                 Text to be aligned and printed above the text table.
                 `Title string syntax`_
 
         Returns:
-            str : The text table as a single string.
+            The text table as a single string.
 
         Raises:
             MonoTableCellError
@@ -1395,8 +1406,11 @@ class MonoTable:
 
         return self.indent + ('\n' + self.indent).join(lines)
 
-    def _add_borders_to_monoblock_row(self, row_of_monoblocks, border_chars):
-        # type: (List[MonoBlock], str) -> None
+    def _add_borders_to_monoblock_row(
+            self,
+            row_of_monoblocks: Sequence[MonoBlock],
+            border_chars: str
+            ) -> None:
         """Add borders to row of monoblocks.  Modifies in-place."""
 
         for monoblock in row_of_monoblocks:
@@ -1408,8 +1422,10 @@ class MonoTable:
         for monoblock in row_of_monoblocks[1:]:
             monoblock.remove_left_column()
 
-    def _calculate_bordered_table_width(self, widths_before_borders):
-        # type: (List[int]) -> int
+    def _calculate_bordered_table_width(
+            self,
+            widths_before_borders: List[int]
+            ) -> int:
         """Calculate width of entire table with borders."""
 
         num_columns = len(widths_before_borders)
@@ -1423,27 +1439,27 @@ class MonoTable:
 
     def row_strings(
             self,
-            headings=(),      # type: Iterable[str]
-            formats=(),       # type: Iterable[str]
-            cellgrid=((),),   # type: Iterable[Iterable[object]]
-            strip=False,      # type: bool
-            ):
-        # type: (...) -> List[List[str]]
+            headings: Iterable[str] = (),
+            formats: Iterable[str] = (),
+            cellgrid: CellGrid = ((),),
+            strip: bool = False,
+    ) -> List[List[str]]:
         """Format and justify table.  Return rows of the strings.
 
         Args:
-            headings (Iterable[str]):
+            headings
                 Iterable of strings for each column heading.
 
-            formats (Iterable[str]):
+            formats
                 Iterable of format strings of the form
                 ``[align_spec][directives][format_spec]``.
                 `Format directive string syntax`_
 
-            cellgrid (Iterable[Iterable[object]]):
+            cellgrid
                 representing table cells.
 
-            strip (bool): If True remove leading and trailing spaces.
+            strip
+                If True remove leading and trailing spaces.
 
         Returns:
             list of rows of string : First row is headings, following rows
@@ -1463,7 +1479,19 @@ class MonoTable:
                                                          cellgrid)
         # Combine the resulting MonoBlocks into a single list.
         # Headings is the first row followed by the cell rows.
-        combined = [justified_headings]    # type: List[List[MonoBlock]]
+        #
+        # typing cast explained:
+        # Given the parameters
+        # justified_headings is type List[MonoBlock] and
+        # justified_cells is type List[Tuple[MonoBlock]].
+        #
+        # justified_headings needs to be Tuple[MonoBlock] so that
+        # after enclosing it in a List the List is of type
+        # List[Tuple[MonoBlock]].
+        # That type is needed so that it can be extended with
+        # justified_cells which is also type List[Tuple[MonoBlock]].
+        tupled_justified_headings = cast(Tuple[MonoBlock], justified_headings)
+        combined = [tupled_justified_headings]
         combined.extend(justified_cells)
 
         # Convert to strings/strip.
@@ -1477,14 +1505,13 @@ class MonoTable:
 
     def cotable(
             self,
-            column_tuples=(),  # type: Sequence[Tuple[str, str, Iterable[object]]]    # noqa : E501
-            title='',          # type: str
-            ):
-        # type: (...) -> str
+            column_tuples: Sequence[ColumnTuple] = (),
+            title: str = '',
+            ) -> str:
         """Format printable text table from tuples describing columns.
 
         Args:
-            column_tuples (Sequence[Tuple[str, str, Iterable[object]]]):
+            column_tuples
                 List of tuple of (heading string, format string,
                 iterable of cell objects).
 
@@ -1499,9 +1526,16 @@ class MonoTable:
 
                 Iterable of cell objects represent the cells in the column.
 
-            title (str): ``[align_spec][wrap_spec]string``.
+            title
+                ``[align_spec][wrap_spec]string``.
                 Text to be aligned and printed above the text table.
                 `Title string syntax`_
+
+        Returns:
+            The text table as a single string.
+
+        Raises:
+            MonoTableCellError
         """
         if len(column_tuples) == 0:
             return title
@@ -1513,14 +1547,13 @@ class MonoTable:
 
     def cobordered_table(
             self,
-            column_tuples=(),  # type: Sequence[Tuple[str, str, Iterable[object]]]    # noqa : E501
-            title='',          # type: str
-            ):
-        # type: (...) -> str
+            column_tuples: Sequence[ColumnTuple] = (),
+            title: str = ''
+            ) -> str:
         """Format printable bordered text table from tuples describing columns.
 
         Args:
-            column_tuples (Sequence[Tuple[str, str, Iterable[object]]]):
+            column_tuples
                 List of tuple of (heading string, format string,
                 iterable of cell objects).
 
@@ -1535,10 +1568,17 @@ class MonoTable:
 
                 Iterable of cell objects represent the cells in the column.
 
-            title (str): ``[align_spec][wrap_spec]string``.
+            title
+                ``[align_spec][wrap_spec]string``.
                 Text to be aligned and printed above the text table.
                 `Title string syntax`_
-        """
+
+        Returns:
+            The text table as a single string.
+
+        Raises:
+            MonoTableCellError
+       """
         if len(column_tuples) == 0:
             return title
         for tup in column_tuples:
@@ -1551,89 +1591,43 @@ class MonoTable:
 # Convenience Functions
 
 def table(
-        headings=(),       # type: Iterable[str]
-        formats=(),        # type: Iterable[str]
-        cellgrid=((),),    # type: Iterable[Iterable[object]]
-        title='',          # type: str
-        ):
-    # type: (...) -> str
+        headings: Iterable[str] = (),
+        formats: Iterable[str] = (),
+        cellgrid: CellGrid = ((),),
+        title: str = '',
+        ) -> str:
     """Wrapper to :py:meth:`monotable.table.MonoTable.table`."""
     tbl = MonoTable()
     return tbl.table(headings, formats, cellgrid, title)
 
 
 def bordered_table(
-        headings=(),     # type: Iterable[str]
-        formats=(),      # type: Iterable[str]
-        cellgrid=((),),  # type: Iterable[Iterable[object]]
-        title='',        # type: str
-        ):
-    # type: (...) -> str
+        headings: Iterable[str] = (),
+        formats: Iterable[str] = (),
+        cellgrid: CellGrid = ((),),
+        title: str = '',
+        ) -> str:
     """Wrapper to :py:meth:`monotable.table.MonoTable.bordered_table`."""
     tbl = MonoTable()
     return tbl.bordered_table(headings, formats, cellgrid, title)
 
 
 def cotable(
-        column_tuples=(),  # type: Sequence[Tuple[str, str, Iterable[object]]]    # noqa : E501
-        title='',          # type: str
-        ):
-    # type: (...) -> str
+        column_tuples: Sequence[ColumnTuple] = (),
+        title: str = '',
+        ) -> str:
     """Wrapper to :py:meth:`monotable.table.MonoTable.cotable`."""
     tbl = MonoTable()
     return tbl.cotable(column_tuples, title)
 
 
 def cobordered_table(
-        column_tuples=(),  # type: Sequence[Tuple[str, str, Iterable[object]]]    # noqa : E501
-        title='',          # type: str
-        ):
-    # type: (...) -> str
+        column_tuples: Sequence[ColumnTuple] = (),
+        title: str = '',
+        ) -> str:
     """Wrapper to :py:meth:`monotable.table.MonoTable.cobordered_table`."""
     tbl = MonoTable()
     return tbl.cobordered_table(column_tuples, title)
-
-
-class MonoTableCellError(Exception):
-    """Raised when format_func fails.  Identifies the offending cell.
-
-        Attributes:
-            row (int):
-                Cell grid row index of value causing format_func exception.
-
-            column (int):
-                Cell grid column index of value causing format_func exception.
-
-            format_spec (str):
-                Format_spec passed to format_func when exception occurred.
-
-            trace_text (str):
-                Exception trace information for root cause of the exception.
-
-            name (str):
-                Name of the exception shown in the string representation.
-    """
-
-    def __init__(self, row, column, format_spec='', trace_text=None):
-        # type: (int, int, str, Optional[str]) -> None
-
-        self.row = row
-        self.column = column
-        self.format_spec = format_spec
-        self.trace_text = trace_text
-        self.name = 'MonoTableCellError'
-
-    def __str__(self):
-        # type: () -> str
-        """Show cell's position, format_spec, and trace info."""
-
-        fmt = '{}: cell[{:d}][{:d}], format_spec= {}'
-        exception_msg = fmt.format(
-            self.name,
-            self.row,
-            self.column,
-            self.format_spec)
-        return exception_msg
 
 
 class _InternalGuideline(MonoBlock):

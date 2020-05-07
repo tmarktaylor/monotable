@@ -51,9 +51,9 @@ Maintainers- Please add new format functions to format_functions dict below.
 """
 
 import string
-from typing import Tuple, Union, Mapping    # noqa : F401
+from typing import Any, Mapping
 
-from . import table
+from monotable.cellerror import MonoTableCellError
 
 #
 # Format functions selectable by a format directive of the same name.
@@ -61,8 +61,7 @@ from . import table
 # or on an instance.
 
 
-def boolean(bool_value, format_spec='T,F'):
-    # type: (bool, str) -> str
+def boolean(bool_value: bool, format_spec: str = 'T,F') -> str:
     """Format function that formats the boolean values to user's strings.
 
     The format_spec is a string ``'true-truth-value,false-truth-value'`` of
@@ -89,92 +88,79 @@ def boolean(bool_value, format_spec='T,F'):
 # Note- For the Mypy type annotations below int and float are duck type
 #       compatible with complex.  See mypy.pdf Chapter 12.
 
-def thousands(numeric_value, format_spec=''):
-    # type: (complex, str) -> str     # see note above.
+def thousands(numeric_value: complex, format_spec: str = '') -> str:
     """Format function that divides by 1.0e3."""
 
     return format(numeric_value / 1.0e3, format_spec)
 
 
-def millions(numeric_value, format_spec=''):
-    # type: (complex, str) -> str     # see note above.
+def millions(numeric_value: complex, format_spec: str = '') -> str:
     """Format function that divides by 1.0e6."""
 
     return format(numeric_value / 1.0e6, format_spec)
 
 
-def billions(numeric_value, format_spec=''):
-    # type: (complex, str) -> str     # see note above.
+def billions(numeric_value: complex, format_spec: str = '') -> str:
     """Format function that divides by 1.0e9."""
 
     return format(numeric_value / 1.0e9, format_spec)
 
 
-def trillions(numeric_value, format_spec=''):
-    # type: (complex, str) -> str     # see note above.
+def trillions(numeric_value: complex, format_spec: str = '') -> str:
     """Format function that divides by 1.0e12."""
 
     return format(numeric_value / 1.0e12, format_spec)
 
 
-def milli(numeric_value, format_spec=''):
-    # type: (complex, str) -> str     # see note above.
+def milli(numeric_value: complex, format_spec: str = '') -> str:
     """Format function that multiplies by 1.0e3."""
 
     return format(numeric_value * 1.0e3, format_spec)
 
 
-def micro(numeric_value, format_spec=''):
-    # type: (complex, str) -> str     # see note above.
+def micro(numeric_value: complex, format_spec: str = '') -> str:
     """Format function that multiplies by 1.0e6."""
 
     return format(numeric_value * 1.0e6, format_spec)
 
 
-def nano(numeric_value, format_spec=''):
-    # type: (complex, str) -> str     # see note above.
+def nano(numeric_value: complex, format_spec: str = '') -> str:
     """Format function that multiplies by 1.0e9."""
 
     return format(numeric_value * 1.0e9, format_spec)
 
 
-def pico(numeric_value, format_spec=''):
-    # type: (complex, str) -> str     # see note above.
+def pico(numeric_value: complex, format_spec: str = '') -> str:
     """Format function that multiplies by 1.0e12."""
 
     return format(numeric_value * 1.0e12, format_spec)
 
 
-def kibi(numeric_value, format_spec=''):
-    # type: (complex, str) -> str     # see note above.
+def kibi(numeric_value: complex, format_spec: str = '') -> str:
     """Format function that divides by 1024."""
 
     return format(numeric_value / 1024.0, format_spec)
 
 
-def mebi(numeric_value, format_spec=''):
-    # type: (complex, str) -> str     # see note above.
+def mebi(numeric_value: complex, format_spec: str = '') -> str:
     """Format function that divides by 1024^2."""
 
     return format(numeric_value / 1024.0**2, format_spec)
 
 
-def gibi(numeric_value, format_spec=''):
-    # type: (complex, str) -> str     # see note above.
+def gibi(numeric_value: complex, format_spec: str = '') -> str:
     """Format function that divides by 1024^3."""
 
     return format(numeric_value / 1024.0**3, format_spec)
 
 
-def tebi(numeric_value, format_spec=''):
-    # type: (complex, str) -> str     # see note above.
+def tebi(numeric_value: complex, format_spec: str = '') -> str:
     """Format function that divides by 1024^4."""
 
     return format(numeric_value / 1024.0**4, format_spec)
 
 
-def mformat(mapping, format_spec=''):
-    # type: (Mapping[str, object], str) -> str
+def mformat(mapping: Mapping[str, Any], format_spec: str = '') -> str:
     """Format function that selects values from a dictionary.
 
     In the format_spec use references to keyword arguments
@@ -212,19 +198,20 @@ def mformat(mapping, format_spec=''):
     return formatter.vformat(format_spec, (), mapping)
 
 
-def pformat(value, format_spec=''):
-    # type: (Union[object, Tuple[object]], str) -> str
+def pformat(value: Any, format_spec: str = '') -> str:
     """Format function adapter to percent operator %.
 
     The exact number % replacements in the printf-style format spec must
     be satisfied by items from value.
     """
 
-    return format_spec % value
+    # Added enclosing str() to prevent mypy thinking Any is returned.
+    # Perhaps mypy is unable to choose between numeric modulo operator
+    # and printf style formatting from the context.
+    return str(format_spec % value)
 
 
-def sformat(value, format_spec=''):
-    # type: (object, str) -> str
+def sformat(value: Any, format_spec: str = '') -> str:
     """Format function adapter to str.format().
 
     Please keep in mind that only a single replacement field can be used.
@@ -233,11 +220,7 @@ def sformat(value, format_spec=''):
     return format_spec.format(value)
 
 
-def tformat(value, format_spec=''):
-    # type: (Mapping[str, str], str) -> str         # todo-...
-    # todo- want:   type: (Mapping[str, object], str) -> str
-    # monotable\plugin.py:117: error: Argument 1 to "substitute" of "Template"
-    # has incompatible type Mapping[str, object]; expected Mapping[str, str]
+def tformat(value: Mapping[str, Any], format_spec: str = '') -> str:
     """Format function adapter to string.Template.substitute()."""
 
     template = string.Template(format_spec)
@@ -272,15 +255,13 @@ format_functions = {
 #
 
 
-def raise_it(cell_error_exception):
-    # type:(table.MonoTableCellError)->None
+def raise_it(cell_error_exception: MonoTableCellError) -> None:
     """Format function error callback.  Exception is raised."""
 
     raise cell_error_exception
 
 
-def print_it(cell_error_exception):
-    # type: (table.MonoTableCellError) -> str
+def print_it(cell_error_exception: MonoTableCellError) -> str:
     """Format function error callback.  Prints exception. Returns '???'."""
 
     print(cell_error_exception)
@@ -289,18 +270,7 @@ def print_it(cell_error_exception):
     return '???'
 
 
-def ignore_it(_):
-    # type: (table.MonoTableCellError) -> str
+def ignore_it(_: MonoTableCellError) -> str:
     """Format function error callback.  No action taken.  Returns '???'."""
 
     return '???'
-
-# todo-
-# note-  Designating type: ignore on the callbacks because...
-#        When "from monotable.table import MonoTableCellError" is present
-#        plugin disappears from dir(monotable).  I am guessing this is due
-#        to a circular import (table <-> plugin), but have not investigated
-#        further to confirm or refute.  If true, it might indicate an
-#        issue with the design.  For now, since static type checking is
-#        experimental the type check is ignored and the type: comment
-#        remains for the human readers.
