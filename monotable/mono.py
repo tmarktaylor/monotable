@@ -19,10 +19,10 @@
 """Convenience function access to ASCII table class.
 """
 
-from typing import Dict, Callable, Optional, Sequence, Tuple, Iterable    # noqa F401 E501
+from typing import Optional, Sequence, Iterable
 
-from .table import HR
-from .table import MonoTable
+from monotable.table import HR
+from monotable.table import MonoTable
 from monotable.table import CellGrid, ColumnTuple, FormatFuncMap
 
 HR_ROW = (HR,)

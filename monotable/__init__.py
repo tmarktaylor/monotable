@@ -22,8 +22,8 @@ __version__ = '3.0.0'
 
 __all__ = ['HR_ROW', 'VR_COL', 'mono', 'monocol', 'MonoTable']
 
-from .mono import HR_ROW
-from .mono import VR_COL
-from .mono import mono
-from .mono import monocol
-from .table import MonoTable
+from monotable.mono import HR_ROW
+from monotable.mono import VR_COL
+from monotable.mono import mono
+from monotable.mono import monocol
+from monotable.table import MonoTable
