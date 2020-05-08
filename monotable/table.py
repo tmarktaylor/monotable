@@ -1060,7 +1060,7 @@ class MonoTable:
             self,
             item: Cell,
             formatobj: FormatScanner
-    ) -> Optional[MonoBlock]:
+            ) -> Optional[MonoBlock]:
         """Handle special cases that make a MonoBlock without format_func."""
 
         if isinstance(item, _HR):
@@ -1184,7 +1184,7 @@ class MonoTable:
             self,
             processed_headings: List[MonoBlock],
             widths: List[int]
-    ) -> None:
+            ) -> None:
         """Justify headings horizontally and vertically."""
 
         # The caller typically sets the halign attribute at MonoBlock
@@ -1443,7 +1443,7 @@ class MonoTable:
             formats: Iterable[str] = (),
             cellgrid: CellGrid = ((),),
             strip: bool = False,
-    ) -> List[List[str]]:
+            ) -> List[List[str]]:
         """Format and justify table.  Return rows of the strings.
 
         Args:
