@@ -1,6 +1,73 @@
 More Examples
 ==============
 
+Join tables together side by side
+---------------------------------
+
+The function **monotable.join_strings()** lays out
+multi-line strings side by side.  In this example table1, table2, and
+table3 are multi-line strings representing rendered ASCII tables.
+Note how the vertical alignment within each table is maintained in the
+result.
+
+.. testcode::
+
+    from monotable import join_strings
+
+    table1 = '\n'.join([
+        "',' and '%' formats.",
+        "--------------------",
+        "      comma  percent",
+        "--------------------",
+        "123,456,789    33.0%",
+        "  2,345,678    99.5%",
+        "--------------------"
+    ])
+
+    table2 = '\n'.join([
+        "     Formatting directives.",
+        "--------------------------------",
+        "      24 hour",
+        "         temp     wind   precip.",
+        "hour   change    speed  (inches)",
+        "--------------------------------",
+        "07         -2       11      3.40",
+        "08       same     calm",
+        "09         +5  offline      0.67",
+        "--------------------------------"
+    ])
+
+    table3 = '\n'.join([
+        "  parentheses directive.",
+        "-------------------------",
+        "Description        Amount",
+        "-------------------------",
+        "receivables           51",
+        "other assets       9,050",
+        "gifts                n/a",
+        "pending payments     (75)",
+        "other liabilities   (623)",
+        "-------------------------",
+    ])
+
+    tables = [table1, table2, table3]
+    print(join_strings(
+        tables,
+        rsep='   '))   # 3 spaces between each table
+
+.. testoutput::
+
+    ',' and '%' formats.        Formatting directives.          parentheses directive.
+    --------------------   --------------------------------   -------------------------
+          comma  percent         24 hour                      Description        Amount
+    --------------------            temp     wind   precip.   -------------------------
+    123,456,789    33.0%   hour   change    speed  (inches)   receivables           51
+      2,345,678    99.5%   --------------------------------   other assets       9,050
+    --------------------   07         -2       11      3.40   gifts                n/a
+                           08       same     calm             pending payments     (75)
+                           09         +5  offline      0.67   other liabilities   (623)
+                           --------------------------------   -------------------------
+
 User defined format function
 ----------------------------
 

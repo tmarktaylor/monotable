@@ -19,11 +19,13 @@
 """Convenience function access to ASCII table class.
 """
 
-from typing import Optional, Sequence, Iterable
+from typing import Optional, Sequence, Iterable, List
 
 from monotable.table import HR
 from monotable.table import MonoTable
 from monotable.table import CellGrid, ColumnTuple, FormatFuncMap
+from monotable.alignment import TOP
+
 
 HR_ROW = (HR,)
 """Row containing a horizontal rule to use as a row in cellgrid."""
@@ -180,3 +182,45 @@ def monocol(
         return tbl.cotable(column_tuples, title)
     else:
         return tbl.cobordered_table(column_tuples, title)
+
+
+def join_strings(
+        multi_line_strings: List[str],
+        *,
+        title: str = '',
+        rsep: str = '    ',
+        valign: int = TOP) -> str:
+    """Join side-by-side multi-line strings preserving vertical alignment.
+
+    Args:
+        multi_line_strings
+            List of strings.
+
+    Keyword Args:
+        title
+            Text to be aligned and printed above the joined strings.
+            Please see :ref:`Title string syntax <Title string syntax>`.
+
+        rsep
+            Text placed between each line of the multi-line strings
+            on the right hand side.
+            It is not applied to the right-most multi-line string.
+
+        valign
+            Alignment used for vertical justification of multi-line
+            strings when the number of lines in the strings differ.
+            Callers should use one of TOP,
+            CENTER_TOP, CENTER_BOTTOM, or BOTTOM
+            defined in monotable.alignment.
+    """
+    tbl = MonoTable()
+    tbl.cell_valign = valign
+    tbl.guideline_chars = ''
+    formats = ['(rsep={})'.format(rsep) for _ in multi_line_strings]
+    cells = (multi_line_strings,)
+    return tbl.table(
+        headings=(),
+        formats=formats,
+        cellgrid=cells,
+        title=title
+        )

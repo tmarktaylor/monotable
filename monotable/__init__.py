@@ -20,10 +20,11 @@
 """
 __version__ = '3.0.0'
 
-__all__ = ['HR_ROW', 'VR_COL', 'mono', 'monocol', 'MonoTable']
+__all__ = ['HR_ROW', 'VR_COL', 'mono', 'monocol', 'join_strings', 'MonoTable']
 
 from monotable.mono import HR_ROW
 from monotable.mono import VR_COL
 from monotable.mono import mono
 from monotable.mono import monocol
+from monotable.mono import join_strings
 from monotable.table import MonoTable

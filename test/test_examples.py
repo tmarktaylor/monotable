@@ -2163,3 +2163,143 @@ def test_tile_four_tables_together() -> None:
         "+++++++++++++++++++++++++++++    +++++++++++++++++++++++++++++",
     ])
     assert text == expected
+
+
+def test_join_strings() -> None:
+    """Create two tables and join the resulting strings."""
+
+    headings = ['4 line cells', '3 line cells']
+
+    class CenterBottomMonoTable(monotable.table.MonoTable):
+        cell_valign = monotable.alignment.CENTER_BOTTOM
+
+    ta = CenterBottomMonoTable()
+    cells0 = [['A\n4\nline\ncell', '3\nline\ncell'],
+              [monotable.table.HR],
+              ['A\nfour\nline\ncell', 'three\nline\ncell']]    # type: CellGrid
+    taf = ta.table(headings, [], cells0, title='vertical align CENTER_BOTTOM')
+
+    headings = ['4 line', '3', '2 line']
+    formats = ['', '(width=3)', '']
+
+    class CustomMonoTable(monotable.table.MonoTable):
+        more_marker = '**'
+        max_cell_height = 2
+
+    tb = CustomMonoTable()
+    cells1 = [['A\n4\nline\ncell', '3\nline\ncell', '2 line\ncell'],
+              [monotable.table.HR],
+              ['A\nfour\nline\ncell', 'three\nline\ncell', 'two line\ncell']]    # type: CellGrid
+    tbf = tb.table(headings, formats, cells1, title="max_cell_height=2")
+
+    headings = ['one\ndigit\nint', 'another\nint', 'floats']
+
+    text = monotable.join_strings(
+        [taf, tbf], title='side by side demo', rsep='  |  ')
+    expected = '\n'.join([
+        "                  side by side demo",
+        "vertical align CENTER_BOTTOM  |    max_cell_height=2",
+        "--------------------------    |  ---------------------",
+        "4 line cells  3 line cells    |  4 line  3    2 line",
+        "--------------------------    |  ---------------------",
+        "A                             |  A       3    2 line",
+        "4             3               |  4   **  l**  cell",
+        "line          line            |  ---------------------",
+        "cell          cell            |  A       t**  two line",
+        "--------------------------    |  four**  l**  cell",
+        "A                             |  ---------------------",
+        "four          three           |",
+        "line          line            |",
+        "cell          cell            |",
+        "--------------------------    |",
+    ])
+    assert text == expected
+
+
+def test_join_strings_three_tables():
+    """Create three tables and join the resulting strings."""
+    from monotable import mono, join_strings
+    from monotable.alignment import BOTTOM
+    from datetime import datetime
+    headings = ['comma', 'percent']
+    formats = [',', '.1%']
+    cells = [[123456789, 0.33], [2345678, 0.995]]
+    table1 = mono(
+        headings, formats, cells, title="',' and '%' formats.")
+
+    headings = [
+        'hour',
+        '24 hour\ntemp\nchange',
+        'wind\nspeed',
+        'precip.\n(inches)'
+    ]
+
+    formats = [
+        '%H',
+        '(zero=same)+.0f',
+        '(zero=calm;none=offline).0f',
+        '(zero=).2f',
+    ]
+
+    h7 = datetime(2019, 2, 28, 7, 0, 0)
+    h8 = datetime(2019, 2, 28, 8, 0, 0)
+    h9 = datetime(2019, 2, 28, 9, 0, 0)
+
+    cells = [
+        [h7, -2.3,   11, 3.4],
+        [h8,  0.1,    0, 0.0],
+        [h9,    5, None, 0.6734]
+    ]
+    table2 = mono(
+        headings, formats, cells, title='=Formatting directives.')
+
+    headings = ['Description', 'Amount']
+    formats = ['', '(zero=n/a;parentheses),']
+
+    cells = [
+        ['receivables', 51],
+        ['other assets', 9050],
+        ['gifts', 0],
+        ['pending payments',  -75],
+        ['other liabilities', -623]
+    ]
+
+    table3 = mono(
+        headings, formats, cells, title='parentheses directive.')
+
+    tables = [table1, table2, table3]
+    text1 = join_strings(tables, title='Three tables joined side by side\n')
+    expected = '\n'.join([
+        "                           Three tables joined side by side",
+        "',' and '%' formats.         Formatting directives.           parentheses directive.",   # noqa: E501
+        "--------------------    --------------------------------    -------------------------",   # noqa: E501
+        "      comma  percent          24 hour                       Description        Amount",   # noqa: E501
+        "--------------------             temp     wind   precip.    -------------------------",   # noqa: E501
+        "123,456,789    33.0%    hour   change    speed  (inches)    receivables           51",   # noqa: E501
+        "  2,345,678    99.5%    --------------------------------    other assets       9,050",   # noqa: E501
+        "--------------------    07         -2       11      3.40    gifts                n/a",   # noqa: E501
+        "                        08       same     calm              pending payments     (75)",   # noqa: E501
+        "                        09         +5  offline      0.67    other liabilities   (623)",   # noqa: E501
+        "                        --------------------------------    -------------------------",   # noqa: E501
+    ])
+    assert text1 == expected
+
+    text2 = join_strings(
+        tables,
+        title='Three tables joined side by side\n',
+        rsep=' | ',
+        valign=BOTTOM)
+    expected = '\n'.join([
+        "                          Three tables joined side by side",
+        "                     |      Formatting directives.      |   parentheses directive.",   # noqa: E501
+        "                     | -------------------------------- | -------------------------",   # noqa: E501
+        "                     |       24 hour                    | Description        Amount",   # noqa: E501
+        "',' and '%' formats. |          temp     wind   precip. | -------------------------",   # noqa: E501
+        "-------------------- | hour   change    speed  (inches) | receivables           51",   # noqa: E501
+        "      comma  percent | -------------------------------- | other assets       9,050",   # noqa: E501
+        "-------------------- | 07         -2       11      3.40 | gifts                n/a",   # noqa: E501
+        "123,456,789    33.0% | 08       same     calm           | pending payments     (75)",   # noqa: E501
+        "  2,345,678    99.5% | 09         +5  offline      0.67 | other liabilities   (623)",   # noqa: E501
+        "-------------------- | -------------------------------- | -------------------------",   # noqa: E501
+    ])
+    assert text2 == expected

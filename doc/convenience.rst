@@ -27,6 +27,7 @@ and call a member function.
 
 .. autofunction:: mono
 .. autofunction:: monocol
+.. autofunction:: join_strings
 
 .. issue- using autodata:: monotable.HR_ROW and others here included
 .. unwanted text

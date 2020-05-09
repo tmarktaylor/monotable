@@ -49,6 +49,7 @@ Here is a list of some of the things Monotable does:
 - Generate a table with borders.
 - Directives to limit column width and text wrap.
 - Add horizontal and vertical rules.
+- Join ASCII tables horizontally.
 - Is *thoroughly* documented and tested.
 
 Installation
@@ -445,6 +446,8 @@ Recent Changes
 3.0.0 - 2020-05-xx
 
 - Remove Python 2.7 compatibility.
+- Move typing comments into function annotations.  Rework typing.
+- Add monotable.join_strings().
 
 2.1.0 - 2019-02-25
 
