@@ -2216,16 +2216,16 @@ def test_join_strings() -> None:
     assert text == expected
 
 
-def test_join_strings_three_tables():
+def test_join_strings_three_tables() -> None:
     """Create three tables and join the resulting strings."""
     from monotable import mono, join_strings
     from monotable.alignment import BOTTOM
     from datetime import datetime
     headings = ['comma', 'percent']
     formats = [',', '.1%']
-    cells = [[123456789, 0.33], [2345678, 0.995]]
+    cells1 = [[123456789, 0.33], [2345678, 0.995]]    # type: CellGrid
     table1 = mono(
-        headings, formats, cells, title="',' and '%' formats.")
+        headings, formats, cells1, title="',' and '%' formats.")
 
     headings = [
         'hour',
@@ -2245,27 +2245,27 @@ def test_join_strings_three_tables():
     h8 = datetime(2019, 2, 28, 8, 0, 0)
     h9 = datetime(2019, 2, 28, 9, 0, 0)
 
-    cells = [
+    cells2 = [
         [h7, -2.3,   11, 3.4],
         [h8,  0.1,    0, 0.0],
         [h9,    5, None, 0.6734]
-    ]
+    ]    # type: CellGrid
     table2 = mono(
-        headings, formats, cells, title='=Formatting directives.')
+        headings, formats, cells2, title='=Formatting directives.')
 
     headings = ['Description', 'Amount']
     formats = ['', '(zero=n/a;parentheses),']
 
-    cells = [
+    cells3 = [
         ['receivables', 51],
         ['other assets', 9050],
         ['gifts', 0],
         ['pending payments',  -75],
         ['other liabilities', -623]
-    ]
+    ]    # type: CellGrid
 
     table3 = mono(
-        headings, formats, cells, title='parentheses directive.')
+        headings, formats, cells3, title='parentheses directive.')
 
     tables = [table1, table2, table3]
     text1 = join_strings(tables, title='Three tables joined side by side\n')
