@@ -7,10 +7,6 @@ formatting directives, column width control.
 [![PyPI](https://img.shields.io/pypi/v/monotable.svg)](https://pypi.python.org/pypi/monotable)
 [![PyPI Python Versions](https://img.shields.io/pypi/pyversions/monotable.svg)](https://pypi.python.org/pypi/monotable)
 
-[Python Package Index/monotable](https://pypi.python.org/pypi/monotable)
-
-[Latest Docs](https://monotable.readthedocs.io/en/latest/?badge=latest#) 
-
 ### master branch status
 
 [![Documentation Status](https://readthedocs.org/projects/monotable/badge/?version=latest)](https://monotable.readthedocs.io/en/latest/?badge=latest) on [Read the Docs](https://readthedocs.org)
@@ -18,6 +14,12 @@ formatting directives, column width control.
 [![Build Status](https://travis-ci.org/tmarktaylor/monotable.svg?branch=master)](https://travis-ci.org/tmarktaylor/monotable) on [Travis CI](https://travis-ci.org/)
 
 [![Code Coverage](https://codecov.io/gh/tmarktaylor/monotable/coverage.svg?branch=master)](https://codecov.io/gh/tmarktaylor/monotable?branch=master)
+
+[Documentation](https://monotable.readthedocs.io/en/latest/) |
+[Homepage](https://github.com/tmarktaylor/monotable) |
+[Build](https://travis-ci.org/tmarktaylor/monotable) |
+[Codecov](https://codecov.io/gh/tmarktaylor/monotable?branch=master) |
+[License](https://github.com/tmarktaylor/monotable/blob/master/LICENSE)
 
 ### Sample usage
 ```python
