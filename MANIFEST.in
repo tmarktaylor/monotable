@@ -1,6 +1,7 @@
 # sdist should contain all files from the version control system
 include .gitignore
 include .travis.yml
+include .readthedocs.yml
 include checklist.txt
 include LICENSE
 include *.md
