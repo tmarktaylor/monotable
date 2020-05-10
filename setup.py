@@ -95,7 +95,7 @@ def make_long_description():
 
 setup(
     name='monotable',
-    version='3.0.0',
+    version='3.0.1',
     description=('ASCII table with per column format specs, '
                  'multi-line content, formatting directives, '
                  'column width control.'),

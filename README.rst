@@ -443,7 +443,7 @@ alignment engine available in list form.  Please look for the function
 
 Recent Changes
 ==============
-3.0.0 - 2020-05-10
+3.0.1 - 2020-05-10
 
 - Remove Python 2.7 compatibility.
 - Move typing comments into function annotations.  Rework typing.
