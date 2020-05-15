@@ -493,7 +493,7 @@ def test_horizontal_and_vertical_guidelines_and_indent() -> None:
 
     cells = [['time', '12:45'],
              ['place', 'home'],
-             [monotable.table.HR],
+             monotable.HR_ROW,
              ['sound', 'bell'],
              ['volume', 'very loud']]    # type: CellGrid
     text = t.table(headings, formats, cells)
@@ -2175,7 +2175,7 @@ def test_join_strings() -> None:
 
     ta = CenterBottomMonoTable()
     cells0 = [['A\n4\nline\ncell', '3\nline\ncell'],
-              [monotable.table.HR],
+              monotable.HR_ROW,
               ['A\nfour\nline\ncell', 'three\nline\ncell']]    # type: CellGrid
     taf = ta.table(headings, [], cells0, title='vertical align CENTER_BOTTOM')
 
@@ -2188,7 +2188,7 @@ def test_join_strings() -> None:
 
     tb = CustomMonoTable()
     cells1 = [['A\n4\nline\ncell', '3\nline\ncell', '2 line\ncell'],
-              [monotable.table.HR],
+              monotable.HR_ROW,
               ['A\nfour\nline\ncell', 'three\nline\ncell', 'two line\ncell']]    # type: CellGrid
     tbf = tb.table(headings, formats, cells1, title="max_cell_height=2")
 
