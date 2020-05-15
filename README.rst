@@ -443,7 +443,7 @@ alignment engine available in list form.  Please look for the function
 
 Recent Changes
 ==============
-3.1.0 - 2020-05-xx
+3.1.0 - 2020-05-15
 
 - Add py.typed designation. Add to setup() zip_safe=False.
 
