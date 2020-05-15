@@ -16,6 +16,11 @@ Hints
 - When any scaling format function (thousands(), millions(), ...) is applied
   to a cell of type integer, the resulting value is promoted to float before
   it is formatted.  A format spec compatible with float should be used.
+- For the none, zero, lsep, rsep formatting directives a semicolon
+  cannot be used in the =ccc part since it is
+  interpreted as the delimiter between formatting directives.
+  The delimiters may be changed by overriding the MonoTable class var
+  option_spec_delimiters.
 - Check spelling carefully when overriding a class variable.  Misspelling
   will be silently ignored.
 - Format directive none=ccc is all lower case.

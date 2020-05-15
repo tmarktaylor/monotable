@@ -12,7 +12,7 @@ ASCII table with per column format specs, multi-line content,
 formatting directives, column width control.
 
 - Licensed under Apache 2.0.
-- Python versions 3.5-3.7, and pypy3
+- Python versions 3.5-3.8, and pypy3
   default versions supported by Travis-CI.
 - No required dependencies.
 

@@ -114,6 +114,7 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',
         'Topic :: Software Development :: Libraries',
@@ -122,7 +123,7 @@ setup(
     ],
     python_requires='>=3.5',
     package_data={"monotable": ["py.typed"]},
-    zip_safe=False,    # per mypy 26.2  Making PEP 561 compatible packages 
+    zip_safe=False,    # per mypy 26.2  Making PEP 561 compatible packages
     packages=['monotable'],
     keywords='ascii table pretty',
 
@@ -136,11 +137,11 @@ setup(
     # $ pip install -e .[test,docs]
 
     # These dependencies mirror those in tox.ini.
-    extras_require={'test': ['tox', 'pytest'],
-                    'inspect': ['flake8', 'pep8-naming'],
-                    'experimental_static_type_checking': ['typing', 'mypy'],
-                    'cover': ['pytest-cov', 'codecov'],
-                    'readme': ['readme_renderer'],
-                    'docs': ['sphinx', 'sphinx_rtd_theme'],
+    extras_require={'cover': ['coverage', 'pytest', 'codecov'],
+                    'inspect': [
+                        'flake8', 'pep8-naming', 'mypy', 'typing',
+                        'check-manifest', 'twine'
+                    ],
+                    'docs': ['sphinx<=1.8.5', 'sphinx_rtd_theme<=0.5'],
                     },
 )
