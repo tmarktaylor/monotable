@@ -95,7 +95,7 @@ def make_long_description():
 
 setup(
     name='monotable',
-    version='3.0.1',
+    version='3.1.0',
     description=('ASCII table with per column format specs, '
                  'multi-line content, formatting directives, '
                  'column width control.'),
@@ -121,6 +121,8 @@ setup(
         'Topic :: Utilities',
     ],
     python_requires='>=3.5',
+    package_data={"monotable": ["py.typed"]},
+    zip_safe=False,    # per mypy 26.2  Making PEP 561 compatible packages 
     packages=['monotable'],
     keywords='ascii table pretty',
 

@@ -443,6 +443,10 @@ alignment engine available in list form.  Please look for the function
 
 Recent Changes
 ==============
+3.1.0 - 2020-05-xx
+
+- Add py.typed designation. Add to setup() zip_safe=False.
+
 3.0.1 - 2020-05-10
 
 - Remove Python 2.7 compatibility.

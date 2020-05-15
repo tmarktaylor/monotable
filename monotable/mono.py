@@ -23,14 +23,14 @@ from typing import Optional, Sequence, Iterable, List
 
 from monotable.table import HR
 from monotable.table import MonoTable
-from monotable.table import CellGrid, ColumnTuple, FormatFuncMap
+from monotable.table import CellGrid, Row, ColumnTuple, FormatFuncMap
 from monotable.alignment import TOP
 
 
-HR_ROW = (HR,)
+HR_ROW = (HR,)    # type: Row
 """Row containing a horizontal rule to use as a row in cellgrid."""
 
-VR_COL = ('', '(lsep= |;rsep= )', ())
+VR_COL = ('', '(lsep= |;rsep= )', ())    # type: ColumnTuple
 """Vertical rule column for use as a column_tuple with monocol()."""
 
 
