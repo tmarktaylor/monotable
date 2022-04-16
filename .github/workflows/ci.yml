@@ -25,7 +25,7 @@ jobs:
             pip freeze
         - name: Test suite
           run: |
-            pytest -v tests
+            pytest -v test
 
   os:
     runs-on: ${{ matrix.os }}
@@ -55,9 +55,9 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install --no-deps "."
         pip install pytest
-    - name: Tests
+    - name: pytest
       run: |
-        pytest -v tests
+        pytest -v test
 
   coverage:
     runs-on: ubuntu-latest
@@ -74,12 +74,13 @@ jobs:
         pip install pytest
         pip install coverage
         pip freeze
-    - name: Tests
+    - name: Coverage test
       run: |
-        coverage run --branch --source=src -m pytest -v tests
+        coverage run --branch --source=src -m pytest -v test
         coverage report --show-missing
         coverage xml
     # todo- Upload coverage to Codecov
+    # todo- phmdoctest README on command line
 
   inspect:
     runs-on: ubuntu-latest
@@ -116,7 +117,7 @@ jobs:
         flake8 --exit-zero --max-complexity=10
     - name: Deployable
       run: |
-        # python tests/check_classifiers.py
+        # python test/check_classifiers.py
         check-manifest -v
         python -m build
         twine check dist/*
