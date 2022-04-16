@@ -103,14 +103,14 @@ jobs:
         pip install trove-classifiers
         pip freeze
     # todo- mypy, typing
-    - name: Formatting
+    #- name: Formatting
       # todo- Show reformatting changes.
       # Make the changes.
       # Subsequent steps run with the modified files.
       #run: |
       #  black --diff --color "."
       #  black "."
-      continue-on-error: true
+      # continue-on-error: true
     - name: Code Style
       run: |
         flake8 --exit-zero --max-complexity=10
