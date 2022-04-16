@@ -23,10 +23,11 @@ jobs:
 
     - name: Deployable
       run: |
-        check-manifest -v
         python -m build
         python -m pip hash dist/*
+        check-manifest -v
         twine check dist/*
+      continue-on-error: true
 
     - name: Upload dist
       uses: actions/upload-artifact@v3
