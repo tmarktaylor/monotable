@@ -137,6 +137,7 @@ setup(
     # $ pip install -e .[test,docs]
 
     # These dependencies mirror those in tox.ini.
+    # todo- unpin/delete the whole section
     extras_require={'cover': ['coverage', 'pytest', 'codecov'],
                     'inspect': [
                         'flake8', 'pep8-naming', 'mypy', 'typing',

@@ -34,7 +34,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: []  # todo- restore [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest]  # todo- restore [ubuntu-latest, windows-latest, macos-latest]
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python 3.x
