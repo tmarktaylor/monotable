@@ -11,4 +11,8 @@ https://packaging.python.org/en/latest/distributing.html
 # Always prefer setuptools over distutils
 from setuptools import setup
 
-setup()
+setup(
+    package_data={"monotable": ["py.typed"]},
+    zip_safe=False,  # per mypy 26.2  Making PEP 561 compatible packages
+    packages=['monotable'],
+)
