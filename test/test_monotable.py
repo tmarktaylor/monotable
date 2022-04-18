@@ -1,6 +1,7 @@
 """Assertion based test cases for monotable.table.MonoTable for pytest."""
 
 from collections import namedtuple
+import configparser
 from pathlib import Path
 import re
 
@@ -22,13 +23,12 @@ class TestConsistentVersionStrings:
     """
     auth_version = monotable.__version__    # authoritative
 
-    def test_setup_py_version(self):
-        # -------------------------------------------------------
-        # setup.py
-        # example: version='0.1.0',
-        setup_text = Path('setup.py').read_text(encoding="utf-8")
-        match = re.search(r" *version=['\"]([^'\"]*)['\"]", setup_text, re.M)
-        assert match.group(1) == self.auth_version
+    def test_setup_cfg(self):
+        """Check the version in setup.cfg."""
+        config = configparser.ConfigParser()
+        config.read("setup.cfg")
+        metadata_version = config["metadata"]["version"]
+        assert metadata_version == self.auth_version
 
     def test_conf_py_version_and_release(self):
         # -------------------------------------------------------

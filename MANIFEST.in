@@ -13,5 +13,7 @@ include doc/*.txt
 include doc/make.bat
 include doc/Makefile
 recursive-include test *.txt
+recursive-include monotable *.py
+recursive-include monotable *.typed
 prune doc/_static
 prune doc/_build
