@@ -12,5 +12,6 @@ include doc/*.rst
 include doc/*.txt
 include doc/make.bat
 include doc/Makefile
+recursive-include test *.txt
 prune doc/_static
 prune doc/_build
