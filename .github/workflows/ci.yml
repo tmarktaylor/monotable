@@ -79,7 +79,7 @@ jobs:
         pip freeze
     - name: Coverage test
       run: |
-        coverage run --branch --source=monotable -m pytest -v test -k "not TestConsistentVersionStrings
+        coverage run --branch --source=monotable -m pytest -v test -k "not TestConsistentVersionStrings"
         coverage report --show-missing
         coverage xml
     # todo- Upload coverage to Codecov
@@ -150,5 +150,5 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: docs
-        path: docbuild/html
+        path: doc/docbuild/html
         retention-days: 5
