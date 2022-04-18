@@ -7,6 +7,7 @@ API
    :maxdepth: 2
 
 .. module:: monotable
+   :noindex:
 
 monotable.HR_ROW
     Row containing a horizontal rule to use as a row in cellgrid.
@@ -39,6 +40,7 @@ The details of the function parameters are provided in the class MonoTable
 docstrings located by following the links below.
 
 .. module:: monotable.table
+   :noindex:
 
 .. autofunction:: table
 .. autofunction:: bordered_table

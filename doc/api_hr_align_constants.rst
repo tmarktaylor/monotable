@@ -5,6 +5,7 @@ HR, Vertical Align Constants
    :maxdepth: 2
 
 .. module:: monotable.table
+   :noindex:
 
 Horizontal Rule
 ---------------
@@ -26,4 +27,3 @@ Use these to specify a value for MonoTable class variable
 .. autodata:: monotable.alignment.CENTER_TOP
 .. autodata:: monotable.alignment.CENTER_BOTTOM
 .. autodata:: monotable.alignment.BOTTOM
-
