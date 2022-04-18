@@ -25,8 +25,6 @@ jobs:
             pip freeze
         - name: Test suite
           run: |
-            python -c "from pathlib import Path; d = Path('test') / 'tmp'; d.mkdir(mode=0o700)"
-            phmdoctest README.md --outfile test/tmp/test_README.py
             pytest -v test
 
   os:
@@ -59,8 +57,6 @@ jobs:
         pip freeze
     - name: pytest
       run: |
-        python -c "from pathlib import Path; d = Path('test') / 'tmp'; d.mkdir(mode=0o700)"
-        phmdoctest README.md --outfile test/tmp/test_README.py
         pytest -v test
 
   coverage:
@@ -83,7 +79,6 @@ jobs:
         coverage report --show-missing
         coverage xml
     # todo- Upload coverage to Codecov
-    # todo- phmdoctest README on command line
 
   inspect:
     runs-on: ubuntu-latest
