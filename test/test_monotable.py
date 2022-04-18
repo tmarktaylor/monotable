@@ -1,7 +1,7 @@
 """Assertion based test cases for monotable.table.MonoTable for pytest."""
 
 from collections import namedtuple
-from os import path
+from pathlib import Path
 import re
 
 import pytest
@@ -9,16 +9,6 @@ import pytest
 import monotable
 import monotable.plugin
 import monotable.table
-
-
-def read_file(*path_components):
-    """Read a text file from the source tree into a string.
-
-    The path is relative to the directory containing this file.
-    """
-    here = path.abspath(path.dirname(__file__))
-    with open(path.join(here, *path_components)) as f:
-        return f.read()
 
 
 class TestConsistentVersionStrings:
@@ -36,7 +26,7 @@ class TestConsistentVersionStrings:
         # -------------------------------------------------------
         # setup.py
         # example: version='0.1.0',
-        setup_text = read_file('..', 'setup.py')
+        setup_text = Path('setup.py').read_text(encoding="utf-8")
         match = re.search(r" *version=['\"]([^'\"]*)['\"]", setup_text, re.M)
         assert match.group(1) == self.auth_version
 
@@ -46,8 +36,8 @@ class TestConsistentVersionStrings:
         # example:
         # # The short X.Y version.
         # version = u'0.1.0'
-        conf_text = read_file('..', 'doc', 'conf.py')
-        match = re.search(r"^version = u['\"]([^'\"]*)['\"]", conf_text, re.M)
+        conf_text = Path('doc/conf.py').read_text(encoding="utf-8")
+        match = re.search(r"^release = u['\"]([^'\"]*)['\"]", conf_text, re.M)
         assert match.group(1) == self.auth_version
 
         # conf.py
@@ -63,7 +53,7 @@ class TestConsistentVersionStrings:
         # example:
         # monotable version 1.0.1.
         # Note the final period is required.
-        index_text = read_file('..', 'doc', 'index.rst')
+        index_text = Path('doc/index.rst').read_text(encoding="utf-8")
         version_re = re.compile(r"monotable version (\d+\.\d+\.\d+)\.", re.M)
         match = version_re.search(index_text)
         assert match.group(1) == self.auth_version
