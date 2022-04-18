@@ -269,7 +269,10 @@ class MonoBlock:
         # with '+'s if it is too short.  Truncate if it is too long.
         # 1 char each for border: top, bottom, sides, corner.
         border_chars = (border_chars + '++++')[:4]
-        top_char, bottom_char, side_char, corner_char = border_chars
+        top_char = border_chars[0]
+        bottom_char = border_chars[1]
+        side_char = border_chars[2]
+        corner_char = border_chars[3]
 
         # Assure MonoBlock lines are all the same length.
         if not self._is_hjustified:

@@ -112,8 +112,8 @@ jobs:
         flake8 --exit-zero --max-complexity=10
     - name: Type Hints
       run: |
-        mypy src/phmdoctest --strict
-        mypy tests/test_type_packaging.py --strict
+        mypy monotable --strict
+        mypy test/test_examples.py --strict
       continue-on-error: true
     - name: Deployable
       run: |
