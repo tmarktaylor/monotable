@@ -443,6 +443,14 @@ alignment engine available in list form.  Please look for the function
 
 Recent Changes
 ==============
+3.1.1 - 2022-xx-xx
+
+- Replace previous CI provider.
+- Add GitHub actions to implement CI tests.
+- Add requirements files for test and inspections.
+- Move metadata to setup.cfg. Remove extras_require=.
+
+
 3.1.0 - 2020-05-15
 
 - Add py.typed designation. Add to setup() zip_safe=False.

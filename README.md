@@ -3,21 +3,18 @@
 ASCII table with per column format specs, multi-line content,
 formatting directives, column width control.
 
+### default branch status
+
 [![](https://img.shields.io/pypi/l/monotable.svg)](http://www.apache.org/licenses/LICENSE-2.0)
-[![PyPI](https://img.shields.io/pypi/v/monotable.svg)](https://pypi.python.org/pypi/monotable)
-[![PyPI Python Versions](https://img.shields.io/pypi/pyversions/monotable.svg)](https://pypi.python.org/pypi/monotable)
+[![](https://img.shields.io/pypi/v/monotable.svg)](https://pypi.python.org/pypi/monotable)
+[![](https://img.shields.io/pypi/pyversions/monotable.svg)](https://pypi.python.org/pypi/monotable)
 
-### master branch status
+[![CI Test](https://github.com/tmarktaylor/monotable/actions/workflows/ci.yml/badge.svg)](https://github.com/tmarktaylor/monotable/actions/workflows/ci.yml)
+[![readthedocs](https://readthedocs.org/projects/monotable/badge/?version=latest)](https://monotable.readthedocs.io/en/latest/?badge=latest)
 
-[![Documentation Status](https://readthedocs.org/projects/monotable/badge/?version=latest)](https://monotable.readthedocs.io/en/latest/?badge=latest) on [Read the Docs](https://readthedocs.org)
 
-[![Build Status](https://travis-ci.org/tmarktaylor/monotable.svg?branch=master)](https://travis-ci.org/tmarktaylor/monotable) on [Travis CI](https://travis-ci.org/)
-
-[![Code Coverage](https://codecov.io/gh/tmarktaylor/monotable/coverage.svg?branch=master)](https://codecov.io/gh/tmarktaylor/monotable?branch=master)
-
-[Documentation](https://monotable.readthedocs.io/en/latest/) |
-[Homepage](https://github.com/tmarktaylor/monotable) |
-[Build](https://travis-ci.org/tmarktaylor/monotable) |
+[Docs](https://monotable.readthedocs.io/en/latest/) |
+[Repos](https://github.com/tmarktaylor/monotable) |
 [Codecov](https://codecov.io/gh/tmarktaylor/monotable?branch=master) |
 [License](https://github.com/tmarktaylor/monotable/blob/master/LICENSE)
 

@@ -1,18 +1,33 @@
+Checklist
 - Update __init__.py.__version__ per Semantic Versioning.  Tests will fail
   until all version strings are the same.
-- Check for outstanding 'to do' notes.
-- Make sure Sphinx api_*.rst sources have autodoc directives for API additions.
-- update recent changes in README.rst
+- Check for outstanding to do's.
+- update recent changes in recent_changes.md
 - update copyright year
 - Run code inspections.
-- Run pytest cases.
-- Run pytest cases with python warnings enabled. 'python -W once -m pytest'
-- Run tests against Python 3 versions.
-- Run pytest with statement and branch coverage.
-- Run Sphinx doctest.
-- Run readme_preview.py.
-- Build Sphinx docs.
-- Verify sdist archive contains at least all the files under version control.
-- Run mypy against monotable and on test/test_examples.py.
+- Run pytest cases on lowest Py version
+- Run pytest cases with python warnings enabled.
+  - python -W once -m pytest -vv tests
+  - python -W default -m pytest -vv tests
+- Run coverage on test suite.
+- Run check-manifest Verify sdist archive contains at least all the files under version control.
+- git ls-files
+- Run mypy against package sources
+- Run black code reformatter
 - Run flake8
-
+- Run flake8 on doc and tests (fixture import and use errors are expected)
+- Build the Sphinx html documents and check/update doc/requirements.txt)
+- Release on GitHub
+  - tag= v0.0.0
+  - release= monotable 0.0.0 (description just below tag, press the +)
+  - description= Version 0.0.0 uploaded to Python Package Index.
+- upload to PYPI
+  - Download zip from github to scratch directory
+  - upload to PYPI
+    python -m pip install --upgrade pip
+	python -m pip install --upgrade build setuptools wheel twine
+	python -m build
+	twine upload dist/*
+	# Look up on PYPI and check version
+	# install from PYPI and verify monotable.__version__
+	# install in venv on Ubuntu
