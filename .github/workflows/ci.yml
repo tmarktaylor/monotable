@@ -21,8 +21,7 @@ jobs:
           run: |
             python -m pip install --upgrade pip
             pip install --no-deps "."
-            pip install pytest
-            pip install phmdoctest
+            pip install -r test/requirements.txt
             pip freeze
         - name: Test suite
           run: |
@@ -56,10 +55,12 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install --no-deps "."
-        pip install pytest
-    - name: pytest
+        pip install -r test/requirements.txt
+        pip freeze
+   - name: pytest
       run: |
+        python -c "from pathlib import Path; d = Path('test') / 'tmp'; d.mkdir(mode=0o700)"
+        phmdoctest README.md --outfile test/tmp/test_README.py
         pytest -v test
 
   coverage:
@@ -74,8 +75,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install pytest
-        pip install coverage
+        pip install -r test/requirements.txt
         pip freeze
     - name: Coverage test
       run: |
@@ -96,17 +96,9 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install black
-        pip install flake8
-        pip install pep8-naming
-        pip install mypy
-        pip install typing
-        pip install check-manifest
-        pip install build
-        pip install twine
+        pip install -r test/requirements_inspect.txt
         pip install trove-classifiers
         pip freeze
-    # todo- mypy, typing
     #- name: Formatting
       # todo- Show reformatting changes.
       # Make the changes.
@@ -118,9 +110,14 @@ jobs:
     - name: Code Style
       run: |
         flake8 --exit-zero --max-complexity=10
+    - name: Type Hints
+      run: |
+        mypy src/phmdoctest --strict
+        mypy tests/test_type_packaging.py --strict
+      continue-on-error: true
     - name: Deployable
       run: |
-        # python test/check_classifiers.py
+        # python test/check_classifiers.py # todo- restore
         check-manifest -v
         python -m build
         twine check dist/*

@@ -126,23 +126,4 @@ setup(
     zip_safe=False,    # per mypy 26.2  Making PEP 561 compatible packages
     packages=['monotable'],
     keywords='ascii table pretty',
-
-    # setup_requires= Note to Contributors: Please do not add any install
-    # time dependencies.  Please use extras_requires instead.
-
-    # Advice from https://github.com/pypa/sampleproject/blob/master/setup.py
-    # List additional groups of dependencies here (e.g. development
-    # dependencies). You can install these using the following syntax,
-    # for example:
-    # $ pip install -e .[test,docs]
-
-    # These dependencies mirror those in tox.ini.
-    # todo- unpin/delete the whole section
-    extras_require={'cover': ['coverage', 'pytest', 'codecov'],
-                    'inspect': [
-                        'flake8', 'pep8-naming', 'mypy', 'typing',
-                        'check-manifest', 'twine'
-                    ],
-                    'docs': ['sphinx<=1.8.5', 'sphinx_rtd_theme<=0.5'],
-                    },
 )
