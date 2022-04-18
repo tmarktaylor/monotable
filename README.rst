@@ -466,7 +466,7 @@ Recent Changes
 - Add formatting directives none, zero, parentheses, lsep, and rsep.
 - Reorder/rework docs examples and other sections.
 - Change what (boolean) prints when malformed format spec.
-- Drop Python 3.3 and 3.4 classifiers. Drop Python 3.4 tests from Travis CI.
+- Drop Python 3.3 and 3.4 classifiers. Drop Python 3.4 tests from CI.
 
 2.0.1 - 2018-05-12
 
