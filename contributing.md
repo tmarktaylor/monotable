@@ -43,9 +43,6 @@ The test suite checks that all uses of the
 version number are the same.  The developer can update the version number
 in __init__.py and then let the test suite failures show the other usages.
 
-The script readme_preview.py generates html from
-the output of ``setup.py --long-description``.
-
 Experimental static type checking and code conformance checks are performed
 during Continuous Integration.  Errors raised by these tools will not
 fail the build.  Please check the log files manually.

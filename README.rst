@@ -1,7 +1,5 @@
-.. This file is used by Sphinx and for the setup.py long_description.
+.. This file is used by Sphinx.
 .. The examples are doctested by Sphinx.
-.. The doctest directives here are replaced when setup.py creates
-.. the setup() argument long_description.
 
 .. _Format Specification Mini-Language:
    https://docs.python.org
@@ -27,7 +25,7 @@
    https://github.com/tmarktaylor/monotable/issues
 .. _Python Package Index/monotable:
    https://pypi.python.org/pypi/monotable
-.. _Master branch build status, coverage, testing:
+.. _Default branch build status, coverage, testing:
    https://github.com/tmarktaylor/monotable/blob/master/README.md
 .. _Contributing:
    https://github.com/tmarktaylor/monotable/blob/master/contributing.md
@@ -420,7 +418,7 @@ Links to License, Docs, Repos, Issues, PYPI page
 - `Repository`_
 - `Issue Tracker`_
 - `Python Package Index/monotable`_
-- `Master branch build status, coverage, testing`_
+- `Default branch build status, coverage, testing`_
 
 What monotable does not do
 ==========================
