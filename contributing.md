@@ -1,29 +1,11 @@
 # Contributing
 
-Please submit contributions by raising an issue and/or making a pull
-request to the repository.
+- Create an issue or submit a pull request forked from the develop branch.
+- For pull requests please refer to steps 1-6 at the top of [Contributing to Simple Icons](https://github.com/simple-icons/simple-icons/blob/develop/CONTRIBUTING.md)
 
-Please include updates to the documentation and tests to provide
-full test coverage.
-
-Here are some suggestions:
-
-* CJK wide characters.
-* A stand-alone helper function to add an index row to a cell grid.  It
-  can go in a new file perhaps named addons.py.  It should accept
-  cellgrid of type Iterable of Iterable and handle short rows.
-* Additional format exception handlers.
-* Additional format functions.  These can be added to plugin.py.
-* New format directives should be general purpose
-  and applicable to more than one application domain.  (Whatever that
-  means).
-* monotable should still run with no required PYPI dependencies.
-* Handle ANSI escape terminal color sequences.  Please keep in mind colors
-  should be preserved when a cell is:
-
-  * max_cell_height limited.
-  * text wrapped, truncated, or padded by the **width**, **fixed**,
-    and **wrap** format options.
+Preconditions for pull request merge:
+- For bug fixes a test that fails.
+- Documentation and test updates for features.
 
 # Developing
 

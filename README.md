@@ -11,7 +11,7 @@ formatting directives, column width control.
 
 [![CI Test](https://github.com/tmarktaylor/monotable/actions/workflows/ci.yml/badge.svg)](https://github.com/tmarktaylor/monotable/actions/workflows/ci.yml)
 [![readthedocs](https://readthedocs.org/projects/monotable/badge/?version=latest)](https://monotable.readthedocs.io/en/latest/?badge=latest)
-
+[![codecov](https://codecov.io/gh/tmarktaylor/monotable/branch/master/graph/badge.svg?token=qanSaWfGAQ)](https://codecov.io/gh/tmarktaylor/monotable)
 
 [Docs](https://monotable.readthedocs.io/en/latest/) |
 [Repos](https://github.com/tmarktaylor/monotable) |
