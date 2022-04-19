@@ -79,7 +79,15 @@ jobs:
         coverage run --branch --source=monotable -m pytest -v test
         coverage report --show-missing
         coverage xml
-    # todo- Upload coverage to Codecov
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v2
+      if: success() && ((github.ref == 'refs/heads/master') || (github.ref == 'refs/heads/develop'))
+      continue-on-error: true
+      with:
+        file: coverage.xml
+        flags: pytest,python-${{ steps.setuppython.outputs.python-version }},ubuntu-latest
+        fail_ci_if_error: false
+        token: ${{ secrets.CODECOV_TOKEN }}
 
   inspect:
     runs-on: ubuntu-latest
@@ -113,6 +121,7 @@ jobs:
       run: |
         flake8 --exit-zero --max-complexity=10
     - name: Type Hints
+      # requires Python>=3.10
       run: |
         mypy monotable --strict
         mypy test/test_examples.py --strict

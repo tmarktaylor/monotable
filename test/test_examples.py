@@ -459,7 +459,7 @@ def test_printf_style_with_tuple_format_and_subclass_for_format_func():
     # Could not get mypy to accept the class var format_func
     # so using ignore below.
     class CustomMonoTable(monotable.table.MonoTable):
-        format_func = staticmethod(monotable.plugin.pformat)    # type: ignore
+        format_func = staticmethod(monotable.plugin.pformat)
 
     t = CustomMonoTable()
 
