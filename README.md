@@ -20,26 +20,31 @@ formatting directives, column width control.
 
 ### Sample usage
 ```python
-
 from monotable import mono
 
-headings = ['purchased\nparrot\nheart rate', 'life\nstate']
+headings = ["purchased\nparrot\nheart rate", "life\nstate"]
 
 # > is needed to right align None cell since it auto-aligns to left.
 # monotable uses empty string to format the second column.
-formats = ['>(none=rest).0f']
-cells = [[0, 'demised'],
-         [0.0, 'passed on'],
-         [None, 'is no more'],
-         [-1],
-         [0, 'ceased to be']]
+formats = [">(none=rest).0f"]
+cells = [
+    [0, "demised"],
+    [0.0, "passed on"],
+    [None, "is no more"],
+    [-1],
+    [0, "ceased to be"],
+]
 
-print(mono(
-    headings, formats, cells,
-    title='Complaint\n(registered)',
-
-    # top guideline is equals, heading is period, bottom is omitted.
-    guideline_chars='=. '))
+print(
+    mono(
+        headings,
+        formats,
+        cells,
+        title="Complaint\n(registered)",
+        # top guideline is equals, heading is period, bottom is omitted.
+        guideline_chars="=. ",
+    )
+)
 ```
 
 sample output:
