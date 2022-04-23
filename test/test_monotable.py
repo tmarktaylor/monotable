@@ -23,6 +23,10 @@ class TestConsistentVersionStrings:
     """
     auth_version = monotable.__version__    # authoritative
 
+    def test_deploy_yml(self):
+        text = Path('.github/workflows/deploy.yml').read_text(encoding="utf-8")
+        assert "ref: v" + self.auth_version + "\n" in text
+
     def test_setup_cfg(self):
         """Check the version in setup.cfg."""
         config = configparser.ConfigParser()
@@ -34,16 +38,9 @@ class TestConsistentVersionStrings:
         # -------------------------------------------------------
         # conf.py
         # example:
-        # # The short X.Y version.
-        # version = u'0.1.0'
-        conf_text = Path('doc/conf.py').read_text(encoding="utf-8")
-        match = re.search(r"^release = u['\"]([^'\"]*)['\"]", conf_text, re.M)
-        assert match.group(1) == self.auth_version
-
-        # conf.py
-        # example:
         # # The full version, including alpha/beta/rc tags.
         # release = u'0.1.0'
+        conf_text = Path('doc/conf.py').read_text(encoding="utf-8")
         match = re.search(r"^release = u['\"]([^'\"]*)['\"]", conf_text, re.M)
         assert match.group(1) == self.auth_version
 
