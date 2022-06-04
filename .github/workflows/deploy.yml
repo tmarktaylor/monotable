@@ -1,8 +1,11 @@
 name: Build Dist
 # todo- ref is specified in two places. (see ref: v3.1.0).
+# todo- uncomment workflow_dispatch
 # Important Note- monotable tests are in folder called "test".
+#on:
+#  workflow_dispatch:
 on:
-  workflow_dispatch:
+  push:
 
 jobs:
   buildwheel:
