@@ -56,6 +56,9 @@ jobs:
         path: dist
     - name: Install/test dist
       run: |
+        # Delete the sources to prove we are testing the installed wheel.
+        rm -fr monotable
+        rm -f dist/*.gz
         python -m pip install --upgrade pip
         pip install --no-index --find-links=dist monotable
         pip freeze
