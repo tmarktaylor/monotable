@@ -1,6 +1,7 @@
 name: Build Dist
 # todo- ref is specified in two places. (see ref: v3.1.0).
 # todo- uncomment workflow_dispatch
+# todo- uncomment # todo- restore    pip install -r test/requirements.txt
 # Important Note- monotable tests are in folder called "test".
 #on:
 #  workflow_dispatch:
@@ -58,6 +59,8 @@ jobs:
         python -m pip install --upgrade pip
         pip install --no-index --find-links=dist monotable
         pip freeze
-        pip install -r test/requirements.txt
+        # manually install test requirements since not currently in ref v3.1.0
+        pip install pytest
+        # todo- restore    pip install -r test/requirements.txt
         pip freeze
         pytest -vv test
