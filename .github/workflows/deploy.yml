@@ -55,6 +55,7 @@ jobs:
         path: dist
     - name: Install/test dist
       run: |
+        python -m pip install --upgrade pip
         pip install --no-index --find-links=dist monotable
         pip freeze
         pip install -r test/requirements.txt
