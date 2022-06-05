@@ -1,12 +1,11 @@
 name: Build Dist
-# todo- ref is specified in two places. (see ref: v3.1.0).
-# todo- uncomment workflow_dispatch
 # todo- uncomment # todo- restore    pip install -r test/requirements.txt
 # Important Note- monotable tests are in folder called "test".
-#on:
-#  workflow_dispatch:
 on:
-  push:
+  workflow_dispatch:
+env:
+  repos: tmarktaylor/monotable
+  ref: v3.1.0
 
 jobs:
   buildwheel:
@@ -14,8 +13,8 @@ jobs:
     steps:
     - uses: actions/checkout@v2
       with:
-        repository: tmarktaylor/monotable
-        ref: v3.1.0
+        repository: ${{ env.repos }}
+        ref: ${{ env.ref }}
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
@@ -28,12 +27,12 @@ jobs:
     - name: Build dist
       run: |
         python -m build --no-isolation
-        pip hash dist/*
         pip freeze
+        pip hash dist/*
     - name: Upload dist
       uses: actions/upload-artifact@v3
       with:
-        name: dist
+        name: dist-${{ env.ref }}
         path: dist/*
         retention-days: 5
 
@@ -43,8 +42,8 @@ jobs:
     steps:
     - uses: actions/checkout@v2
       with:
-        repository: tmarktaylor/monotable
-        ref: v3.1.0
+        repository: ${{ env.repos }}
+        ref: ${{ env.ref }}
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
@@ -52,7 +51,7 @@ jobs:
     - name: Download dist
       uses: actions/download-artifact@v3
       with:
-        name: dist
+        name: dist-${{ env.ref }}
         path: dist
     - name: Install/test dist
       run: |
@@ -60,6 +59,7 @@ jobs:
         rm -fr monotable
         rm -f dist/*.gz
         python -m pip install --upgrade pip
+        pip hash dist/*
         pip install --no-index --find-links=dist monotable
         pip freeze
         # manually install test requirements since not currently in ref v3.1.0
