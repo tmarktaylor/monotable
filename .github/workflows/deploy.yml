@@ -23,6 +23,7 @@ jobs:
     - name: Install build
       run: |
         python -m pip install --upgrade pip
+        python -m pip --version
         pip install build wheel
         pip freeze
     - name: Build dist
@@ -60,6 +61,7 @@ jobs:
         rm -fr monotable
         rm -f dist/*.gz
         python -m pip install --upgrade pip
+        python -m pip --version
         pip hash dist/*
         pip install --no-index --find-links=dist monotable
         pip freeze
