@@ -87,7 +87,7 @@ jobs:
         coverage report --show-missing
         coverage xml
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v2
+      uses: codecov/codecov-action@v5
       if: success() && ((github.ref == 'refs/heads/master') || (github.ref == 'refs/heads/develop'))
       continue-on-error: true
       with:
