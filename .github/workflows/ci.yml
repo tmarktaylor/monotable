@@ -2,9 +2,9 @@ name: CI
 
 on:
   workflow_dispatch:
-  push:
-    paths-ignore:
-      - .github/workflows/deploy.yml
+  # push:
+  #   paths-ignore:
+  #     - .github/workflows/deploy.yml
   pull_request:
     branches: [develop]
     paths-ignore:
@@ -39,9 +39,9 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Set up Python 3.x
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
       with:
         python-version: 3.x
     - name: Windows Venv
@@ -69,10 +69,10 @@ jobs:
   coverage:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Set up Python 3.x
       id: setuppython
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
       with:
         python-version: 3.x
     - name: Install dependencies
@@ -98,7 +98,7 @@ jobs:
   inspect:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     # check out this repos just to use tests/check_classifiers.py
     - uses: actions/checkout@v3
       with:
@@ -106,7 +106,7 @@ jobs:
         ref: v1.0.0
         path: .test_tool
     - name: Setup Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
       with:
         python-version: 3.x
     - name: Install dependencies
@@ -142,9 +142,9 @@ jobs:
   docs:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Setup Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
       with:
         # This should be the same as in .readthedocs.yml
         python-version: 3.x
