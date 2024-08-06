@@ -67,6 +67,7 @@ jobs:
         pytest -v test
 
   coverage:
+    needs: os
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -96,11 +97,12 @@ jobs:
         token: ${{ secrets.CODECOV_TOKEN }}
 
   inspect:
+    needs: coverage
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
     # check out this repos just to use tests/check_classifiers.py
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         repository: tmarktaylor/pytest-phmdoctest
         ref: v1.0.0
@@ -140,6 +142,7 @@ jobs:
         twine check dist/*
 
   docs:
+    needs: inspect
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
