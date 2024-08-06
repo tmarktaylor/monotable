@@ -100,7 +100,8 @@ jobs:
     needs: coverage
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v4  # monotable
+    - uses: actions/checkout@v4  # test_tool
       with:
         repository: tmarktaylor/pytest-phmdoctest
         ref: v1.0.0
