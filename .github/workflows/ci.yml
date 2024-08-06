@@ -87,7 +87,7 @@ jobs:
         coverage report --show-missing
         coverage xml
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v5
+      uses: codecov/codecov-action@v4
       if: success() && ((github.ref == 'refs/heads/master') || (github.ref == 'refs/heads/develop'))
       continue-on-error: true
       with:
@@ -100,8 +100,6 @@ jobs:
     needs: coverage
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    # check out this repos just to use tests/check_classifiers.py
     - uses: actions/checkout@v4
       with:
         repository: tmarktaylor/pytest-phmdoctest
