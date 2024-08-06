@@ -62,7 +62,7 @@ Row = Iterable[Cell]
 CellGrid = Iterable[Row]
 FormatFunc = Callable[[Any, str], str]
 FormatFuncMap = Mapping[str, FormatFunc]
-ColumnTuple = Tuple[str, str, Sequence]
+ColumnTuple = Tuple[str, str, Sequence[Any]]
 
 # repository: https://github.com/tmarktaylor/monotable
 # Docstrings are Google Style for Sphinx plugin sphinx.ext.napoleon.
