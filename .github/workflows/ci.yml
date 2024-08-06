@@ -17,9 +17,9 @@ jobs:
         matrix:
           python-version: ["pypy-3.7", "3.7", "3.8", "3.9", "3.10"]
       steps:
-        - uses: actions/checkout@v3
+        - uses: actions/checkout@v4
         - name: Setup Python
-          uses: actions/setup-python@v3
+          uses: actions/setup-python@v4
           with:
             python-version: ${{ matrix.python-version }}
         - name: Install dependencies
@@ -161,7 +161,7 @@ jobs:
         sphinx-build -b html -d docbuild/doctrees . docbuild/html
       working-directory: doc
     - name: Upload docs
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: docs
         path: doc/docbuild/html
