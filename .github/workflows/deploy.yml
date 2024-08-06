@@ -2,8 +2,8 @@ name: Build Dist
 # todo- uncomment # todo- restore    pip install -r test/requirements.txt
 # Important Note- monotable tests are in folder called "test".
 on:
-  push:
-  #workflow_dispatch:
+  # push:
+  workflow_dispatch:
 env:
   repos: tmarktaylor/monotable
   ref: v3.1.0
