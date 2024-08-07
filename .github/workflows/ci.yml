@@ -2,13 +2,13 @@ name: CI
 
 on:
   workflow_dispatch:
-  # push:
-  #   paths-ignore:
-  #     - .github/workflows/deploy.yml
   pull_request:
-    branches: [develop]
+  push:
+    branches:
+      - 'main'
     paths-ignore:
-      - .github/workflows/deploy.yml
+      - '.github/workflows/publish.yml'
+      - '.github/workflows/wheel.yml'
 
 jobs:
   versions:

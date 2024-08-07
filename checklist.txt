@@ -13,14 +13,37 @@ Checklist
 - Run check-manifest Verify sdist archive contains at least all the files under version control.
 - git ls-files
 - Run mypy against package sources
-- Run black code reformatter
 - Run flake8
-- Run flake8 on doc and tests (fixture import and use errors are expected)
 - Build the Sphinx html documents and check/update doc/requirements.txt)
-- Release on GitHub
+
+Prepare release on the develop branch.
+( ) On GitHub manually dispatch action "CI" (ci.yml) on the develop branch.
+
+( ) On GitHub manually dispatch action "Buildable" (build.yml).
+    Inspect the log to make sure newly added files are copied to the dist.
+
+( ) Open pull request and merge develop branch to main branch.
+
+On main branch
+( ) Create a release on GitHub (where 0.0.0 -> published version)
   - tag= v0.0.0
-  - release= monotable 0.0.0 (description just below tag, press the +)
+  - release= phmutest 0.0.0
   - description= Version 0.0.0 uploaded to Python Package Index.
+
+( ) Publish to PYPI
+  On GitHub manually dispatch action "Publish to PYPI" (publish.yml).
+  Configure trusted publishing on both test PYPI and PYPI if this is
+  the first release.
+
+Check the release on PYPI
+( ) The hash on PYPI should be the same as the hash shown by the
+    publish.yml builddist action step.
+
+( ) Manually dispatch "Install from PYPI" (wheel.yml) to show pip
+    install succeeds.
+
+  -------------------------------------------------------------------------
+  Legacy manual steps
 - upload to PYPI
   - Download zip from github to scratch directory
   - upload to PYPI

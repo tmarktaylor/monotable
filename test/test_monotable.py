@@ -23,9 +23,13 @@ class TestConsistentVersionStrings:
     """
     auth_version = monotable.__version__    # authoritative
 
-    def test_deploy_yml(self):
-        text = Path('.github/workflows/deploy.yml').read_text(encoding="utf-8")
+    def test_publish_yml(self):
+        text = Path('.github/workflows/publish.yml').read_text(encoding="utf-8")
         assert "ref: v" + self.auth_version + "\n" in text
+
+    def test_wheel_yml(self):
+        text = Path('.github/workflows/wheel.yml').read_text(encoding="utf-8")
+        assert "version: " + self.auth_version + "\n" in text
 
     def test_setup_cfg(self):
         """Check the version in setup.cfg."""
