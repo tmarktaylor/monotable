@@ -153,10 +153,6 @@ def _format(
         visited = [id(dataclass_instance)]
     else:
         visited.append(id(dataclass_instance))
-    # print(f"visiting={visited[-1]}")
-
-    # todo- dataclass_type = dataclass_instance.__class__.__qualname__ need to try in the model
-    # todo- note- above breaks phmutest since something like test_spec_is_callable.<locals>.WindInline
     dataclass_type = dataclass_instance.__class__.__name__
     nested_dataclasses = []
     rows = []

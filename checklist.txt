@@ -27,7 +27,7 @@ Prepare release on the develop branch.
 On main branch
 ( ) Create a release on GitHub (where 0.0.0 -> published version)
   - tag= v0.0.0
-  - release= phmutest 0.0.0
+  - release= monotable 0.0.0
   - description= Version 0.0.0 uploaded to Python Package Index.
 
 ( ) Publish to PYPI

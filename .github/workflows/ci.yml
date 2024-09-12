@@ -119,14 +119,6 @@ jobs:
         pip install -r test/requirements_inspect.txt
         pip install trove-classifiers
         pip freeze
-    #- name: Formatting
-      # todo- Show reformatting changes.
-      # Make the changes.
-      # Subsequent steps run with the modified files.
-      #run: |
-      #  black --diff --color "."
-      #  black "."
-      # continue-on-error: true
     - name: Code Style
       run: |
         flake8 --exit-zero --max-complexity=10
