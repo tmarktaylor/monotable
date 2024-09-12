@@ -6,6 +6,7 @@
 # Sphinx
 doc/_build/*
 _build/*
+doc/docbuild
 
 
 # Byte-compiled / optimized / DLL files

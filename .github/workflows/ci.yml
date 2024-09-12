@@ -15,7 +15,7 @@ jobs:
       runs-on: ubuntu-latest
       strategy:
         matrix:
-          python-version: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]  # todo- pypy
+          python-version: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12", "pypy3.10"]
       steps:
         - uses: actions/checkout@v4
         - name: Setup Python
@@ -84,6 +84,8 @@ jobs:
     - name: Coverage test
       run: |
         coverage run --branch --source=monotable -m pytest -v test
+        coverage run --branch --source=monotable --append -m phmutest README.md --log --summary
+        coverage run --branch --source=monotable --append -m phmutest README.md --log --summary --replmode
         coverage report --show-missing
         coverage xml
     - name: Upload coverage to Codecov
