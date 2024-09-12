@@ -20,7 +20,17 @@
 """
 __version__ = '3.2.0'
 
-__all__ = ['HR_ROW', 'VR_COL', 'mono', 'monocol', 'join_strings', 'MonoTable']
+__all__ = [
+    'dataclass_format',
+    'dataclass_print',
+    'stow',
+    'HR_ROW',
+    'VR_COL',
+    'mono',
+    'monocol',
+    'join_strings',
+    'MonoTable',
+]
 
 from monotable.datacls import dataclass_format
 from monotable.datacls import dataclass_print
