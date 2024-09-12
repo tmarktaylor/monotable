@@ -20,7 +20,7 @@
 
 import dataclasses
 import textwrap
-from typing import Any, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import monotable
 
@@ -297,7 +297,7 @@ def do_nested(
     return formatted_dataclasses
 
 
-def stow(**kwargs: Any) -> dict[str, Any]:
+def stow(**kwargs: Any) -> Dict[str, Any]:
     """Return dict to assign to a dataclass field metadata.
 
     Keyword Args:
@@ -316,7 +316,7 @@ def stow(**kwargs: Any) -> dict[str, Any]:
     return dict(monotable=kwargs)
 
 
-def unstow(metadata: Any) -> dict[str, Any]:
+def unstow(metadata: Any) -> Dict[str, Any]:
     """Return the monotable dict from dataclass field metadata."""
     field_metadata_dict: dict[str, Any] = metadata.get("monotable", dict())
     return field_metadata_dict
