@@ -31,6 +31,11 @@ class TestConsistentVersionStrings:
         text = Path('.github/workflows/wheel.yml').read_text(encoding="utf-8")
         assert "version: " + self.auth_version + "\n" in text
 
+    def test_recent_changes(self):
+        """Look for version at start of Recent Changes section."""
+        text = Path('README.rst').read_text(encoding="utf-8")
+        assert "====\n" + self.auth_version + " -" in text
+
     def test_setup_cfg(self):
         """Check the version in setup.cfg."""
         config = configparser.ConfigParser()
@@ -48,47 +53,25 @@ class TestConsistentVersionStrings:
         match = re.search(r"^release = u['\"]([^'\"]*)['\"]", conf_text, re.M)
         assert match.group(1) == self.auth_version
 
-    def test_index_rst_version(self):
+    def test_readme_rst_link(self):
         # -------------------------------------------------------
+        # README.rst
+        # example:
+        # https://github.com/tmarktaylor/monotable/blob/v3.2.0/README.md#dataclass...
+        # Note that link will not work until the tag is created.
+        readme_text = Path('README.rst').read_text(encoding="utf-8")
+        release_tag = "v" + self.auth_version
+        link = "monotable/blob/" + release_tag + "/README.md#"
+        assert link in readme_text
+
+    def  test_index_rst_version(self):
+        index_text = Path('doc/index.rst').read_text(encoding="utf-8")
         # index.rst
         # example:
-        # monotable version 1.0.1.
-        # Note the final period is required.
+        # monotable 3.2.0
+        # ===============
         index_text = Path('doc/index.rst').read_text(encoding="utf-8")
-        version_re = re.compile(r"monotable version (\d+\.\d+\.\d+)\.", re.M)
-        match = version_re.search(index_text)
-        assert match.group(1) == self.auth_version
-
-        """make sure we properly match possible future versions."""
-        v1 = 'monotable version 10.0.1.'
-        m1 = version_re.search(v1)
-        assert m1.group(1) == '10.0.1'
-
-        v2 = 'monotable version 1.11.1.'
-        m2 = version_re.search(v2)
-        assert m2.group(1) == '1.11.1'
-
-        v3 = 'monotable version 1.0.11.'
-        m3 = version_re.search(v3)
-        assert m3.group(1) == '1.0.11'
-
-        v4 = 'monotable version 12.34.56.'
-        m4 = version_re.search(v4)
-        assert m4.group(1) == '12.34.56'
-
-        # make sure we don't match bogus version strings.
-        v5 = 'monotable version 12.34.56'  # no period
-        m5 = version_re.search(v5)
-        assert m5 is None
-
-        v6 = 'monotable version .34.56'  # missing major version
-        m6 = version_re.search(v6)
-        assert m6 is None
-
-        v7 = 'monotable version 1.Z.56'  # non numeric
-        m7 = version_re.search(v7)
-        assert m7 is None
-
+        assert "monotable " + self.auth_version + "\n===" in index_text
 
 #
 # Test handling of empty lists and default constructor arguments.
