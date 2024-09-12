@@ -33,6 +33,17 @@ and call a member function.
 .. issue- using autodata:: monotable.HR_ROW and others here included
 .. unwanted text
 
+
+Dataclass to ASCII Table
+------------------------
+.. module:: monotable.datacls
+   :noindex:
+
+.. autofunction:: dataclass_print
+.. autofunction:: dataclass_format
+.. autofunction:: stow
+
+
 Legacy Functions
 ----------------
 Since v2.1.0 these functions are superseded by mono() and monocol() above.

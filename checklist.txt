@@ -41,16 +41,3 @@ Check the release on PYPI
 
 ( ) Manually dispatch "Install from PYPI" (wheel.yml) to show pip
     install succeeds.
-
-  -------------------------------------------------------------------------
-  Legacy manual steps
-- upload to PYPI
-  - Download zip from github to scratch directory
-  - upload to PYPI
-    python -m pip install --upgrade pip
-	python -m pip install --upgrade build setuptools wheel twine
-	python -m build
-	twine upload dist/*
-	# Look up on PYPI and check version
-	# install from PYPI and verify monotable.__version__
-	# install in venv on Ubuntu

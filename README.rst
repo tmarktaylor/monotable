@@ -29,18 +29,28 @@
    https://github.com/tmarktaylor/monotable/blob/master/README.md
 .. _Contributing:
    https://github.com/tmarktaylor/monotable/blob/master/contributing.md
+.. _README.md:
+   https://github.com/tmarktaylor/monotable/blob/v3.2.0/README.md#dataclass-to-ascii-table-printer
 
 Introduction, Installation
 ==========================
 
-Monotable is a Python library that generates an ASCII table from
-tabular cell data that looks *pretty* in a monospaced font.
+Python library
+
+- Generates an ASCII table from tabular cell data that looks
+  *pretty* in a monospaced font.
+
+- Generates an ASCII table from a dataclass.
 
 Monotable offers formatting directives_ to reduce messy table
 pre-formatting code.  You can set directives for each column.
 You can also write and plug in your own format function directives.
 
-Here is a list of some of the things Monotable does:
+For dataclasses you can configure the formatting of each field
+in the dataclass definition to set a format spec or a format
+function. See examples in  `README.md`_
+
+Features:
 
 - Allows multi-line title, heading, and cell strings.
 - Supports column oriented cell data.
@@ -441,13 +451,13 @@ alignment engine available in list form.  Please look for the function
 
 Recent Changes
 ==============
-3.1.1 - 2022-xx-xx
+3.2.0 - 2024-xx-xx  todo-
 
+- Add feature to print a dataclass as an ASCII table.
 - Replace previous CI provider.
 - Add GitHub actions to implement CI tests.
 - Add requirements files for test and inspections.
 - Move metadata to setup.cfg. Remove extras_require=.
-
 
 3.1.0 - 2020-05-15
 

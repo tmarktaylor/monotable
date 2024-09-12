@@ -21,11 +21,11 @@ sys.path.insert(0, py_sources_path)
 # -- Project information -----------------------------------------------------
 
 project = u'monotable'
-copyright = u'2020-2022, Mark Taylor'
+copyright = u'2020, 2024, Mark Taylor'
 author = u'Mark Taylor'
 
 # The full version, including alpha/beta/rc tags.
-release = u'3.1.0'
+release = u'3.2.0'
 
 # -- General configuration ------------------------------------------------
 
