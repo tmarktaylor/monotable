@@ -1,5 +1,5 @@
-# Run README.md examples on supported Python versions.
 name: CI_README
+# Run README.md examples on supported Python versions.
 
 on:
   workflow_dispatch:
@@ -45,7 +45,6 @@ jobs:
   # for Python 3.x.
   # We need to know none of the README.md examples break in Python 3.7.
   # We will assume they will still work in Python > 3.7 up to 3.x.
-  # todo- do this for all versions
   run_testfiles:
     needs: generate_testfiles
     runs-on: ubuntu-latest
