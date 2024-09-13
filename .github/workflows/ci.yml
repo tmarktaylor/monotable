@@ -32,7 +32,7 @@ jobs:
         run: |
           pytest -v test
       - name: README.md examples
-        if: ${{ matrix.python-version }} != "3.7"
+        if: ${{ matrix.python-version }} != '3.7'
         run: |
           pip install phmutest
           phmutest README.md --log
