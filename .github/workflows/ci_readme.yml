@@ -1,5 +1,5 @@
-name: CI_README
-# Run README.md examples on supported Python versions.
+name: README_REPL_ON_PY_37
+# Run README.md REPL examples on Python 3.7.
 
 on:
   workflow_dispatch:
@@ -12,9 +12,9 @@ on:
       - '.github/workflows/wheel.yml'
 
 jobs:
-  # Create unittest and doctest testfiles from README.md and upload.
+  # Create a doctest testfile from README.md and upload.
   # This job runs on Python > 3.7 since phmutest does not support Python 3.7.
-  generate_testfiles:
+  generate:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -26,27 +26,20 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install phmutest
-        pip freeze
-    - name: Generate testfiles
+    - name: Generate
       run: |
-        phmutest README.md --generate doc/generated_test_readme.py
-        phmutest README.md --generate doc/generated_test_readme.txt --replmode
-    - name: Upload testfiles
+        mkdir tmp
+        phmutest README.md --generate tmp/readme_repl_examples.txt --replmode
+    - name: Upload
       uses: actions/upload-artifact@v4
       with:
         name: readme-artifact
-        path: doc/generated_test_readme.*
+        path: tmp/*
         retention-days: 5
 
-  # Dowwnload and run the unittest and doctest testfiles generated
-  # from README.md on Python 3.7.
-  # Running these examples is needed for code coverage.
-  # Running ci.yml shows that coverage is 100%, but only
-  # for Python 3.x.
-  # We need to know none of the README.md examples break in Python 3.7.
-  # We will assume they will still work in Python > 3.7 up to 3.x.
+  # On Python 3.7, dowwnload and run the generated testfile.
   run_testfiles:
-    needs: generate_testfiles
+    needs: generate
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -54,6 +47,10 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: 3.7
+    - name: Install monotable
+      run: |
+        python -m pip install --upgrade pip
+        pip install "."
     - uses: actions/download-artifact@v4
       with:
         name: readme-artifact
@@ -62,6 +59,5 @@ jobs:
       run: ls -l testfiles
     - name: Run testfiles
       run: |
-        python -m unittest readme.py -vv
-        python -m doctest readme.txt -vv
+        python -m doctest readme_repl_examples.txt
       working-directory: testfiles

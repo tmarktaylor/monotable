@@ -454,3 +454,45 @@ high  77
 low   60
 --------
 ```
+
+#### Copy of 2 earlier examples in REPL for testing on Python 3.7
+
+```python
+>>> @dataclass
+... class MoreConditions:
+...     visibility: float = field(metadata=stow(help="(mi)",spec=".2f"))
+...     dewpoint: int = field(metadata=stow(help="(degF)"))
+>>>
+>>> more_data = MoreConditions(visibility=10.00,dewpoint=71)
+>>> dataclass_print(more_data)
+     MoreConditions
+-----------------------
+visibility  (mi)  10.00
+dewpoint  (degF)     71
+-----------------------
+>>>
+>>> @dataclass
+... class MoreCurrentConditions:
+...     temperature: float
+...     humidity: float
+...     heat_index: int
+...     wind: Wind = field(metadata=stow(help="(2pm)"))
+>>>
+>>> more_weather_data = MoreCurrentConditions(
+...     80.0, 0.71, 83, Wind(11, Direction.E)
+...     )
+>>> dataclass_print(more_weather_data)
+MoreCurrentConditions
+-----------------
+temperature  80.0
+humidity     0.71
+heat_index     83
+wind  (2pm)  Wind
+-----------------
+<BLANKLINE>
+  MoreCurrentConditions.wind  (2pm) : Wind
+  -------------
+  speed      11
+  direction   E
+  -------------
+```
