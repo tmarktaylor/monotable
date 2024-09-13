@@ -451,7 +451,7 @@ alignment engine available in list form.  Please look for the function
 
 Recent Changes
 ==============
-3.2.0 - 2024-09-xx  todo-
+3.2.0 - 2024-09-14
 
 - Add feature to print a dataclass as an ASCII table.
 - Add test to detect non ASCII chars/trailing spaces in files.
