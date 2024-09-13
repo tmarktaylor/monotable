@@ -4,6 +4,7 @@ from collections import namedtuple
 import configparser
 from pathlib import Path
 import re
+import subprocess
 
 import pytest
 
@@ -72,6 +73,28 @@ class TestConsistentVersionStrings:
         # ===============
         index_text = Path('doc/index.rst').read_text(encoding="utf-8")
         assert "monotable " + self.auth_version + "\n===" in index_text
+
+
+def test_trail_spaces_and_only_ascii():
+    """Fail if files in repository have non-ASCII or trailing spaces.
+
+    Note- The IDE and/or git may be configurable to prevent trailing spaces
+    making this test redundant.
+    Non ASCII gets in when cutting and pasting from HTML. Cut from raw rendering.
+    """
+    completed = subprocess.run(["git", "ls-files"], capture_output=True, text=True)
+    files = completed.stdout.splitlines()
+    assert files, "No files were checked. Check that a git repos is present."
+    found_trailing_spaces = False
+    for name in files:
+        text = Path(name).read_text(encoding="ASCII")  # just ASCII character codes
+        lines = text.splitlines()
+        for num, got in enumerate(lines, start=1):
+            wanted = got.rstrip()
+            if got != wanted:
+                print(name, "line", num, "has trailing whitespace.")
+                found_trailing_spaces = True
+    assert not found_trailing_spaces, "Line has trailing whitespace."
 
 #
 # Test handling of empty lists and default constructor arguments.

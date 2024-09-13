@@ -451,11 +451,11 @@ alignment engine available in list form.  Please look for the function
 
 Recent Changes
 ==============
-3.2.0 - 2024-xx-xx  todo-
+3.2.0 - 2024-09-xx  todo-
 
 - Add feature to print a dataclass as an ASCII table.
-- Replace previous CI provider.
-- Add GitHub actions to implement CI tests.
+- Add test to detect non ASCII chars/trailing spaces in files.
+- Implement CI tests with GitHub actions.
 - Add requirements files for test and inspections.
 - Move metadata to setup.cfg. Remove extras_require=.
 
