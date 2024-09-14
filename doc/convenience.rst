@@ -7,6 +7,7 @@ API
    :maxdepth: 2
 
 .. module:: monotable
+   :noindex:
 
 monotable.HR_ROW
     Row containing a horizontal rule to use as a row in cellgrid.
@@ -32,6 +33,17 @@ and call a member function.
 .. issue- using autodata:: monotable.HR_ROW and others here included
 .. unwanted text
 
+
+Dataclass to ASCII Table
+------------------------
+.. module:: monotable.datacls
+   :noindex:
+
+.. autofunction:: dataclass_print
+.. autofunction:: dataclass_format
+.. autofunction:: stow
+
+
 Legacy Functions
 ----------------
 Since v2.1.0 these functions are superseded by mono() and monocol() above.
@@ -39,6 +51,7 @@ The details of the function parameters are provided in the class MonoTable
 docstrings located by following the links below.
 
 .. module:: monotable.table
+   :noindex:
 
 .. autofunction:: table
 .. autofunction:: bordered_table

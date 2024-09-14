@@ -1,18 +1,45 @@
+Checklist
 - Update __init__.py.__version__ per Semantic Versioning.  Tests will fail
   until all version strings are the same.
-- Check for outstanding 'to do' notes.
-- Make sure Sphinx api_*.rst sources have autodoc directives for API additions.
-- update recent changes in README.rst
+- Check for outstanding to do's.
+- update recent changes in recent_changes.md
 - update copyright year
 - Run code inspections.
-- Run pytest cases.
-- Run pytest cases with python warnings enabled. 'python -W once -m pytest'
-- Run tests against Python 3 versions.
-- Run pytest with statement and branch coverage.
-- Run Sphinx doctest.
-- Run readme_preview.py.
-- Build Sphinx docs.
-- Verify sdist archive contains at least all the files under version control.
-- Run mypy against monotable and on test/test_examples.py.
+- Run pytest cases on lowest Py version
+- Run pytest cases with python warnings enabled.
+  - python -W once -m pytest -vv tests
+  - python -W default -m pytest -vv tests
+- Run coverage on test suite.
+- Run check-manifest Verify sdist archive contains at least all the files under version control.
+- git ls-files
+- Run mypy against package sources
 - Run flake8
+- Build the Sphinx html documents and check/update doc/requirements.txt)
 
+Prepare release on the develop branch.
+( ) On GitHub manually dispatch action "CI" (ci.yml) on the develop branch.
+( ) On GitHub manually dispatch action "README_REPL_ON_PY_37"
+    (ci_readme.yml) on the develop branch.
+
+( ) On GitHub manually dispatch action "Buildable" (build.yml).
+    Inspect the log to make sure newly added files are copied to the dist.
+
+( ) Open pull request and merge develop branch to main branch.
+
+On main branch
+( ) Create a release on GitHub (where 0.0.0 -> published version)
+  - tag= v0.0.0
+  - release= monotable 0.0.0
+  - description= Version 0.0.0 uploaded to Python Package Index.
+
+( ) Publish to PYPI
+  On GitHub manually dispatch action "Publish to PYPI" (publish.yml).
+  Configure trusted publishing on both test PYPI and PYPI if this is
+  the first release.
+
+Check the release on PYPI
+( ) The hash on PYPI should be the same as the hash shown by the
+    publish.yml builddist action step.
+
+( ) Manually dispatch "Install from PYPI" (wheel.yml) to show pip
+    install succeeds.

@@ -1,0 +1,63 @@
+name: README_REPL_ON_PY_37
+# Run README.md REPL examples on Python 3.7.
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - 'main'
+    paths-ignore:
+      - '.github/workflows/publish.yml'
+      - '.github/workflows/wheel.yml'
+
+jobs:
+  # Create a doctest testfile from README.md and upload.
+  # This job runs on Python > 3.7 since phmutest does not support Python 3.7.
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: 3.x
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install phmutest
+    - name: Generate
+      run: |
+        mkdir tmp
+        phmutest README.md --generate tmp/readme_repl_examples.txt --replmode
+    - name: Upload
+      uses: actions/upload-artifact@v4
+      with:
+        name: readme-artifact
+        path: tmp/*
+        retention-days: 5
+
+  # On Python 3.7, dowwnload and run the generated testfile.
+  run_testfiles:
+    needs: generate
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: 3.7
+    - name: Install monotable
+      run: |
+        python -m pip install --upgrade pip
+        pip install "."
+    - uses: actions/download-artifact@v4
+      with:
+        name: readme-artifact
+        path: testfiles
+    - name: Show testfiles
+      run: ls -l testfiles
+    - name: Run testfiles
+      run: |
+        python -m doctest readme_repl_examples.txt
+      working-directory: testfiles

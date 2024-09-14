@@ -1,4 +1,4 @@
-# Copyright 2020 Mark Taylor
+# Copyright 2020, 2024 Mark Taylor
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -38,17 +38,20 @@ class MonoTableCellError(Exception):
                 Name of the exception shown in the string representation.
     """
 
-    def __init__(self, row, column, format_spec='', trace_text=None):
-        # type: (int, int, str, Optional[str]) -> None
-
+    def __init__(
+        self,
+        row: int,
+        column: int,
+        format_spec: str = "",
+        trace_text: Optional[str] = None,
+    ):
         self.row = row
         self.column = column
         self.format_spec = format_spec
         self.trace_text = trace_text
         self.name = 'MonoTableCellError'
 
-    def __str__(self):
-        # type: () -> str
+    def __str__(self) -> str:
         """Show cell's position, format_spec, and trace info."""
 
         fmt = '{}: cell[{:d}][{:d}], format_spec= {}'

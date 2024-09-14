@@ -1,16 +1,17 @@
 # sdist should contain all files from the version control system
 include .gitignore
-include .travis.yml
 include .readthedocs.yml
 include checklist.txt
 include LICENSE
 include *.md
-include readme_preview.py
 include tox.ini
 include doc/conf.py
 include doc/*.rst
 include doc/*.txt
 include doc/make.bat
 include doc/Makefile
+recursive-include test *.txt
+recursive-include monotable *.py
+recursive-include monotable *.typed
 prune doc/_static
 prune doc/_build

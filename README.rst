@@ -1,7 +1,5 @@
-.. This file is used by Sphinx and for the setup.py long_description.
+.. This file is used by Sphinx.
 .. The examples are doctested by Sphinx.
-.. The doctest directives here are replaced when setup.py creates
-.. the setup() argument long_description.
 
 .. _Format Specification Mini-Language:
    https://docs.python.org
@@ -27,22 +25,32 @@
    https://github.com/tmarktaylor/monotable/issues
 .. _Python Package Index/monotable:
    https://pypi.python.org/pypi/monotable
-.. _Master branch build status, coverage, testing:
+.. _Default branch build status, coverage, testing:
    https://github.com/tmarktaylor/monotable/blob/master/README.md
 .. _Contributing:
    https://github.com/tmarktaylor/monotable/blob/master/contributing.md
+.. _README.md:
+   https://github.com/tmarktaylor/monotable/blob/v3.2.0/README.md#dataclass-to-ascii-table-printer
 
 Introduction, Installation
 ==========================
 
-Monotable is a Python library that generates an ASCII table from
-tabular cell data that looks *pretty* in a monospaced font.
+Python library
+
+- Generates an ASCII table from tabular cell data that looks
+  *pretty* in a monospaced font.
+
+- Generates an ASCII table from a dataclass.
 
 Monotable offers formatting directives_ to reduce messy table
 pre-formatting code.  You can set directives for each column.
 You can also write and plug in your own format function directives.
 
-Here is a list of some of the things Monotable does:
+For dataclasses you can configure the formatting of each field
+in the dataclass definition to set a format spec or a format
+function. See examples in  `README.md`_
+
+Features:
 
 - Allows multi-line title, heading, and cell strings.
 - Supports column oriented cell data.
@@ -420,7 +428,7 @@ Links to License, Docs, Repos, Issues, PYPI page
 - `Repository`_
 - `Issue Tracker`_
 - `Python Package Index/monotable`_
-- `Master branch build status, coverage, testing`_
+- `Default branch build status, coverage, testing`_
 
 What monotable does not do
 ==========================
@@ -443,6 +451,15 @@ alignment engine available in list form.  Please look for the function
 
 Recent Changes
 ==============
+3.2.0 - 2024-09-14
+
+- Remove Python 3.6 compatibility.
+- Add feature to print a dataclass as an ASCII table.
+- Implement CI tests with GitHub actions.  Add publish actions.
+- Add requirements files for test and inspections.
+- Move metadata to setup.cfg. Remove extras_require=.
+- Add test to detect non ASCII chars/trailing spaces in files.
+
 3.1.0 - 2020-05-15
 
 - Add py.typed designation. Add to setup() zip_safe=False.
@@ -460,7 +477,7 @@ Recent Changes
 - Add formatting directives none, zero, parentheses, lsep, and rsep.
 - Reorder/rework docs examples and other sections.
 - Change what (boolean) prints when malformed format spec.
-- Drop Python 3.3 and 3.4 classifiers. Drop Python 3.4 tests from Travis CI.
+- Drop Python 3.3 and 3.4 classifiers. Drop Python 3.4 tests from CI.
 
 2.0.1 - 2018-05-12
 

@@ -1,6 +1,6 @@
 # monotable ASCII table formatter.
 #
-# Copyright 2020 Mark Taylor
+# Copyright 2020, 2024 Mark Taylor
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,10 +18,23 @@
 
 """ASCII table: per column format specs, formatting directives, multi-line.
 """
-__version__ = '3.1.0'
+__version__ = '3.2.0'
 
-__all__ = ['HR_ROW', 'VR_COL', 'mono', 'monocol', 'join_strings', 'MonoTable']
+__all__ = [
+    'dataclass_format',
+    'dataclass_print',
+    'stow',
+    'HR_ROW',
+    'VR_COL',
+    'mono',
+    'monocol',
+    'join_strings',
+    'MonoTable',
+]
 
+from monotable.datacls import dataclass_format
+from monotable.datacls import dataclass_print
+from monotable.datacls import stow
 from monotable.mono import HR_ROW
 from monotable.mono import VR_COL
 from monotable.mono import mono

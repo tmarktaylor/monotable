@@ -1,4 +1,4 @@
-# Copyright 2020 Mark Taylor
+# Copyright 2020, 2024 Mark Taylor
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -62,7 +62,7 @@ Row = Iterable[Cell]
 CellGrid = Iterable[Row]
 FormatFunc = Callable[[Any, str], str]
 FormatFuncMap = Mapping[str, FormatFunc]
-ColumnTuple = Tuple[str, str, Sequence]
+ColumnTuple = Tuple[str, str, Sequence[Any]]
 
 # repository: https://github.com/tmarktaylor/monotable
 # Docstrings are Google Style for Sphinx plugin sphinx.ext.napoleon.

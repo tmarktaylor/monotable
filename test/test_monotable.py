@@ -1,24 +1,16 @@
 """Assertion based test cases for monotable.table.MonoTable for pytest."""
 
 from collections import namedtuple
-from os import path
+import configparser
+from pathlib import Path
 import re
+import subprocess
 
 import pytest
 
 import monotable
 import monotable.plugin
 import monotable.table
-
-
-def read_file(*path_components):
-    """Read a text file from the source tree into a string.
-
-    The path is relative to the directory containing this file.
-    """
-    here = path.abspath(path.dirname(__file__))
-    with open(path.join(here, *path_components)) as f:
-        return f.read()
 
 
 class TestConsistentVersionStrings:
@@ -32,72 +24,77 @@ class TestConsistentVersionStrings:
     """
     auth_version = monotable.__version__    # authoritative
 
-    def test_setup_py_version(self):
-        # -------------------------------------------------------
-        # setup.py
-        # example: version='0.1.0',
-        setup_text = read_file('..', 'setup.py')
-        match = re.search(r" *version=['\"]([^'\"]*)['\"]", setup_text, re.M)
-        assert match.group(1) == self.auth_version
+    def test_publish_yml(self):
+        text = Path('.github/workflows/publish.yml').read_text(encoding="utf-8")
+        assert "ref: v" + self.auth_version + "\n" in text
+
+    def test_wheel_yml(self):
+        text = Path('.github/workflows/wheel.yml').read_text(encoding="utf-8")
+        assert "version: " + self.auth_version + "\n" in text
+
+    def test_recent_changes(self):
+        """Look for version at start of Recent Changes section."""
+        text = Path('README.rst').read_text(encoding="utf-8")
+        assert "====\n" + self.auth_version + " -" in text
+
+    def test_setup_cfg(self):
+        """Check the version in setup.cfg."""
+        config = configparser.ConfigParser()
+        config.read("setup.cfg")
+        metadata_version = config["metadata"]["version"]
+        assert metadata_version == self.auth_version
 
     def test_conf_py_version_and_release(self):
         # -------------------------------------------------------
         # conf.py
         # example:
-        # # The short X.Y version.
-        # version = u'0.1.0'
-        conf_text = read_file('..', 'doc', 'conf.py')
-        match = re.search(r"^version = u['\"]([^'\"]*)['\"]", conf_text, re.M)
-        assert match.group(1) == self.auth_version
-
-        # conf.py
-        # example:
         # # The full version, including alpha/beta/rc tags.
         # release = u'0.1.0'
+        conf_text = Path('doc/conf.py').read_text(encoding="utf-8")
         match = re.search(r"^release = u['\"]([^'\"]*)['\"]", conf_text, re.M)
         assert match.group(1) == self.auth_version
 
-    def test_index_rst_version(self):
+    def test_readme_rst_link(self):
         # -------------------------------------------------------
+        # README.rst
+        # example:
+        # https://github.com/tmarktaylor/monotable/blob/v3.2.0/README.md#dataclass...
+        # Note that link will not work until the tag is created.
+        readme_text = Path('README.rst').read_text(encoding="utf-8")
+        release_tag = "v" + self.auth_version
+        link = "monotable/blob/" + release_tag + "/README.md#"
+        assert link in readme_text
+
+    def  test_index_rst_version(self):
+        index_text = Path('doc/index.rst').read_text(encoding="utf-8")
         # index.rst
         # example:
-        # monotable version 1.0.1.
-        # Note the final period is required.
-        index_text = read_file('..', 'doc', 'index.rst')
-        version_re = re.compile(r"monotable version (\d+\.\d+\.\d+)\.", re.M)
-        match = version_re.search(index_text)
-        assert match.group(1) == self.auth_version
+        # monotable 3.2.0
+        # ===============
+        index_text = Path('doc/index.rst').read_text(encoding="utf-8")
+        assert "monotable " + self.auth_version + "\n===" in index_text
 
-        """make sure we properly match possible future versions."""
-        v1 = 'monotable version 10.0.1.'
-        m1 = version_re.search(v1)
-        assert m1.group(1) == '10.0.1'
 
-        v2 = 'monotable version 1.11.1.'
-        m2 = version_re.search(v2)
-        assert m2.group(1) == '1.11.1'
+def test_trail_spaces_and_only_ascii():
+    """Fail if files in repository have non-ASCII or trailing spaces.
 
-        v3 = 'monotable version 1.0.11.'
-        m3 = version_re.search(v3)
-        assert m3.group(1) == '1.0.11'
-
-        v4 = 'monotable version 12.34.56.'
-        m4 = version_re.search(v4)
-        assert m4.group(1) == '12.34.56'
-
-        # make sure we don't match bogus version strings.
-        v5 = 'monotable version 12.34.56'  # no period
-        m5 = version_re.search(v5)
-        assert m5 is None
-
-        v6 = 'monotable version .34.56'  # missing major version
-        m6 = version_re.search(v6)
-        assert m6 is None
-
-        v7 = 'monotable version 1.Z.56'  # non numeric
-        m7 = version_re.search(v7)
-        assert m7 is None
-
+    Note- The IDE and/or git may be configurable to prevent trailing spaces
+    making this test redundant.
+    Non ASCII gets in when cutting and pasting from HTML. Cut from raw rendering.
+    """
+    completed = subprocess.run(["git", "ls-files"], capture_output=True, text=True)
+    files = completed.stdout.splitlines()
+    assert files, "No files were checked. Check that a git repos is present."
+    found_trailing_spaces = False
+    for name in files:
+        text = Path(name).read_text(encoding="ASCII")  # just ASCII character codes
+        lines = text.splitlines()
+        for num, got in enumerate(lines, start=1):
+            wanted = got.rstrip()
+            if got != wanted:
+                print(name, "line", num, "has trailing whitespace.")
+                found_trailing_spaces = True
+    assert not found_trailing_spaces, "Line has trailing whitespace."
 
 #
 # Test handling of empty lists and default constructor arguments.

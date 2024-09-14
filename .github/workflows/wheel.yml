@@ -1,0 +1,28 @@
+name: Install from PYPI
+
+on:
+  workflow_dispatch:
+
+env:
+  project: monotable
+  version: 3.2.0
+
+jobs:
+  pypi-install:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "3.10"
+
+    - name: PIP install
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install "${{ env.project }}==${{ env.version }}"
+        python -c "import ${{ env.project }}; print(${{ env.project }}.__version__)"
+
+    - name: PIP download
+      run: |
+        mkdir wheels
+        python -m pip download "${{ env.project }}==${{ env.version }}" --dest wheels
+        python -m pip hash wheels/*
