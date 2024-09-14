@@ -11,30 +11,11 @@ on:
       - '.github/workflows/wheel.yml'
 
 jobs:
-  version37:
-      runs-on: ubuntu-latest
-      steps:
-      - uses: actions/checkout@v4
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: 3.7
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install --no-deps "."
-          pip install -r test/requirements.txt
-          pip freeze
-      - name: pytest
-        run: |
-          pytest -v test
-
   versions:
-    needs: version37
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "pypy3.10"]
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12", "pypy3.10"]
     steps:
     - uses: actions/checkout@v4
     - name: Setup Python
@@ -51,14 +32,11 @@ jobs:
       run: |
         pytest -v test
     - name: README.md examples
+      if: ${{ matrix.python-version != '3.7' }}
       run: |
         pip install phmutest
         phmutest README.md --log
         phmutest README.md --log --replmode
-
-
-
-
 
   os:
     needs: versions

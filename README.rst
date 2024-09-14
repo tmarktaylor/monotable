@@ -453,11 +453,12 @@ Recent Changes
 ==============
 3.2.0 - 2024-09-14
 
+- Remove Python 3.6 compatibility.
 - Add feature to print a dataclass as an ASCII table.
-- Add test to detect non ASCII chars/trailing spaces in files.
-- Implement CI tests with GitHub actions.
+- Implement CI tests with GitHub actions.  Add publish actions.
 - Add requirements files for test and inspections.
 - Move metadata to setup.cfg. Remove extras_require=.
+- Add test to detect non ASCII chars/trailing spaces in files.
 
 3.1.0 - 2020-05-15
 
