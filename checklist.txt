@@ -18,6 +18,8 @@ Checklist
 
 Prepare release on the develop branch.
 ( ) On GitHub manually dispatch action "CI" (ci.yml) on the develop branch.
+( ) On GitHub manually dispatch action "README_REPL_ON_PY_37"
+    (ci_readme.yml) on the develop branch.
 
 ( ) On GitHub manually dispatch action "Buildable" (build.yml).
     Inspect the log to make sure newly added files are copied to the dist.
